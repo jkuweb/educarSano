@@ -1,0 +1,28 @@
+---
+import RenderBlocks from "@/blocks/RenderBlocks.astro";
+import Hero from "@/globals/Hero.astro";
+import Layout from "@/layouts/Layout.astro";
+import { getAllPages } from "@/lib/getAllPages";
+import { getPageBySlug } from "@/lib/getPageBySlug";
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+    const pages = await getAllPages();
+
+    return pages.map((page) => ({
+        params: { slug: page.slug },
+    }));
+}
+const { slug } = Astro.params;
+const page = await getPageBySlug(slug!, { depth: 2 });
+
+if (!page) {
+    return Astro.redirect("/404");
+}
+---
+
+<Layout>
+    <Hero {...page.hero} />
+    <RenderBlocks blocks={page.layout} />
+</Layout>

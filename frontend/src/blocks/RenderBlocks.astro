@@ -1,0 +1,42 @@
+---
+import BoxContent from "./BoxContent/BoxContent.astro";
+import CallToActionBlock from "./CallToActionBlock/CallToActionBlock.astro";
+import ContactFormBlock from "./ContactFormBlock/ContactFormBlock.astro";
+import ContentBlock from "./ContentBlock/ContentBlock.astro";
+import ListContentBlock from "./ListContentBlock/ListContentBlock.astro";
+import MediaBlock from "./MediaBlock/MediaBlock.astro";
+import QuoteBlock from "./QuoteBlock/QuoteBlock.astro";
+import SimpleListBlock from "./SimpleListBlock/SimpleListBlock.astro";
+import SocialMediaBlock from "./SocialMediaBlock/SocialMediaBlock.astro";
+
+interface BlockType {
+    blockType: string;
+    [key: string]: any;
+}
+
+const blockComponents: { [key: string]: React.FC<any> } = {
+    content: ContentBlock,
+    listContent: ListContentBlock,
+    cta: CallToActionBlock,
+    mediaBlock: MediaBlock,
+    formBlock: ContactFormBlock,
+    social: SocialMediaBlock,
+    simpleListContent: SimpleListBlock,
+    quoteBlock: QuoteBlock,
+    boxContent: BoxContent,
+};
+
+const { blocks }: { blocks?: BlockType[] } = Astro.props;
+---
+
+{
+    blocks && blocks.length > 0
+        ? blocks.map((block: BlockType, i: number) => {
+              const Block = blockComponents[block.blockType];
+              if (Block) {
+                  return <Block {...block} key={i} />;
+              }
+              return null;
+          })
+        : null
+}

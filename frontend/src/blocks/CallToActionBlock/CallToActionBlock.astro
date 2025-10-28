@@ -1,0 +1,64 @@
+---
+import { Link } from "@/components/Link";
+import RichText from "@/components/RichText.astro";
+import type {
+    CallToActionBlock as CallToActionProps,
+    Media,
+} from "@/lib/payloadTypes";
+import AstroImage from "@/components/image/AstroImage.astro";
+import { Separator } from "@/components/Separator/Separator";
+
+const { richText, media, links, bottom, isReverse } =
+    Astro.props as CallToActionProps;
+
+const mediaData = media && typeof media === "object" ? (media as Media) : null;
+const { alt, url, width, height, mimeType } = mediaData || {};
+---
+
+<section class="pt-40 pb-40 relative">
+    <div class={"wrapper m-auto"}>
+        <div class="grid grid-rows-2 gap-12 justify-items-center">
+            <div>
+                {
+                    media && (
+                        <AstroImage
+                            src={url!}
+                            width={width!}
+                            height={height!}
+                            alt={alt!}
+                            mimeType={mimeType!}
+                        />
+                    )
+                }
+            </div>
+            <div class="">
+                <div class="flex items-center my-12">
+                    {
+                        richText && (
+                            <RichText
+                                className="cta-rich-text"
+                                content={richText}
+                            />
+                        )
+                    }
+                </div>
+                <div
+                    class="grid [grid-template-columns:repeat(auto-fit,minmax(15rem,15rem))] gap-2 items-center justify-center mt-12"
+                >
+                    {
+                        (links || []).map(({ link }, i) => {
+                            return (
+                                <Link size="lg" {...link} client:only="react" />
+                            );
+                        })
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <Separator
+        type={"separatorWhite"}
+        reverse={isReverse}
+        style={{ bottom: `${bottom}px` }}
+    />
+</section>

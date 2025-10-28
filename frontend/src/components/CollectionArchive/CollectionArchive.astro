@@ -1,0 +1,27 @@
+---
+import Card, { type CardPostData } from "../Card/Card.astro";
+export type Props = {
+    posts: CardPostData[];
+};
+const { posts } = Astro.props as Props;
+---
+
+<div
+    class="wrapper m-auto grid [grid-template-columns:repeat(auto-fit,minmax(280px,415px))] justify-center gap-x-6 gap-y-12"
+>
+    {
+        posts?.map((result) => {
+            if (typeof result === "object" && result !== null) {
+                return (
+                    <Card
+                        class="h-full"
+                        doc={result}
+                        relationTo="posts"
+                        showCategories
+                    />
+                );
+            }
+            return null;
+        })
+    }
+</div>

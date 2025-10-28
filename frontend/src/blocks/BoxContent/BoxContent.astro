@@ -1,0 +1,40 @@
+---
+import AstroImage from "@/components/image/AstroImage.astro";
+import type { BoxContent as BoxContentProps, Media } from "@/lib/payloadTypes";
+
+const { boxes } = Astro.props as BoxContentProps;
+---
+
+<div
+    class={"relative top-[-50px] z-[100] mx-auto flex max-w-[435px] flex-col justify-center gap-4 px-4 md:top-[-95px] lg:max-w-full lg:flex-row"}
+>
+    {
+        boxes &&
+            boxes.map((box) => {
+                const { richText, title, media } = box;
+                const mediaData =
+                    media && typeof media === "object"
+                        ? (media as Media)
+                        : null;
+                const { alt, url, width, height, mimeType } = mediaData || {};
+
+                return (
+                    <div class="relative">
+                        <div class="absolute bottom-0">
+                            <h2 class="!text-left">{title}</h2>
+                            <p class=" w-[70%] bg-gray-100 p-4 italic text-center">
+                                {richText}
+                            </p>
+                        </div>
+                        <AstroImage
+                            src={url!}
+                            width={width!}
+                            height={height!}
+                            alt={alt!}
+                            mimeType={mimeType!}
+                        />
+                    </div>
+                );
+            })
+    }
+</div>

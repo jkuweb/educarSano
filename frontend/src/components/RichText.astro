@@ -1,0 +1,120 @@
+---
+import BannerBlock from "@/blocks/BannerBlock/BannerBlock.astro";
+import CallToActionBlock from "@/blocks/CallToActionBlock/CallToActionBlock.astro";
+import MediaBlock from "@/blocks/MediaBlock/MediaBlock.astro";
+import QuoteBlock from "@/blocks/QuoteBlock/QuoteBlock.astro";
+import SocialMediaBlock from "@/blocks/SocialMediaBlock/SocialMediaBlock.astro";
+import "@/styles/richtext.css";
+
+interface Props {
+    content: any;
+    className?: string;
+}
+
+const { content, className } = Astro.props;
+
+function RenderBlock(block: any) {
+    const { blockType } = block["fields"];
+    console.log(blockType);
+
+    switch (blockType) {
+        case "banner":
+            return BannerBlock;
+        case "cta":
+            return CallToActionBlock;
+        case "mediaBlock":
+            return MediaBlock;
+        case "quoteBlock":
+            return QuoteBlock;
+        case "social":
+            return SocialMediaBlock;
+        default:
+            return null;
+    }
+}
+
+function lexicalToHTML(nodes: any[]): string {
+    if (!nodes || !Array.isArray(nodes)) return "";
+
+    return nodes
+        .map((node) => {
+            switch (node.type) {
+                case "paragraph":
+                    return `<p>${lexicalToHTML(node.children)}</p>`;
+                case "heading": {
+                    const tag = node.tag || "h2";
+                    return `<${tag}>${lexicalToHTML(node.children)}</${tag}>`;
+                }
+                case "text": {
+                    let text = node.text || "";
+                    if (node.format) {
+                        if (node.format & 1) text = `<strong>${text}</strong>`;
+                        if (node.format & 2) text = `<em>${text}</em>`;
+                        if (node.format & 8) text = `<code>${text}</code>`;
+                        if (node.format & 16) text = `<u>${text}</u>`;
+                    }
+                    return text;
+                }
+                case "link": {
+                    const url = node.fields?.url || node.url || "#";
+                    const rel = node.fields?.newTab
+                        ? "noopener noreferrer"
+                        : "";
+                    const target = node.fields?.newTab ? "_blank" : "";
+                    return `<a href="${url}" ${target ? `target="${target}"` : ""} ${rel ? `rel="${rel}"` : ""}>${lexicalToHTML(node.children)}</a>`;
+                }
+                case "list": {
+                    const listTag = node.tag === "ol" ? "ol" : "ul";
+                    return `<${listTag} class="list-bullet">${lexicalToHTML(node.children)}</${listTag}>`;
+                }
+                case "listitem":
+                    return `<li>${lexicalToHTML(node.children)}</li>`;
+                case "quote":
+                    return `<blockquote>${lexicalToHTML(node.children)}</blockquote>`;
+                case "linebreak":
+                    return "<br />";
+                case "horizontalrule":
+                    return "<hr />";
+                case "upload": {
+                    const imgSrc = node.value?.url || node.fields?.url || "";
+                    const imgAlt = node.value?.alt || node.fields?.alt || "";
+                    const width = node.value?.width || 800;
+                    const height = node.value?.height || 600;
+                    if (!imgSrc) return "";
+                    return `<Image src="${imgSrc}" alt="${imgAlt}" width="${width}" height="${height}" class="mx-auto rounded-lg" />`;
+                }
+                case "block": {
+                    return "";
+                }
+                default:
+                    return node.children ? lexicalToHTML(node.children) : "";
+            }
+        })
+        .join("");
+}
+
+const nodes = content?.root?.children || [];
+---
+
+<div class={`richtext ${className || ""}`}>
+    {
+        nodes.map((node: any) => {
+            if (node.type === "block") {
+                const BlockComponent = RenderBlock(node);
+                const { fields } = node;
+
+                if (BlockComponent === null) {
+                    return (
+                        <div class="unknown-block">
+                            Unknown block: {node.blockType}
+                        </div>
+                    );
+                }
+
+                return <BlockComponent {...fields} />;
+            }
+
+            return <Fragment set:html={lexicalToHTML([node])} />;
+        })
+    }
+</div>

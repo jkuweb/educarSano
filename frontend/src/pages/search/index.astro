@@ -1,0 +1,42 @@
+---
+import PostSearch from "@/components/PostSearch/PostSearch";
+import { Search } from "@/components/search/Search";
+import Layout from "@/layouts/Layout.astro";
+
+const apiUrl = import.meta.env.PUBLIC_PAYLOAD_URL || "http://localhost:3000";
+const initialQuery = Astro.url.searchParams.get("q") || "";
+---
+
+<Layout title="Buscar Posts">
+    <div class="bg-gradient-to-b from-blue-50 to-white py-12">
+        <div class="max-w-6xl mx-auto px-4">
+            <h1 class="text-4xl font-bold text-gray-900 mb-6">Buscar Posts</h1>
+
+            <p class="text-lg text-gray-600">
+                Encuentra contenido por título, categoría o etiquetas
+            </p>
+        </div>
+    </div>
+
+    <!-- Resultados con filtros avanzados -->
+    <PostSearch client:load apiUrl={apiUrl} initialQuery={initialQuery} />
+</Layout>
+
+<style>
+    main {
+        min-height: 100vh;
+    }
+
+    /* Estilos para screen reader only */
+    :global(.sr-only) {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+    }
+</style>

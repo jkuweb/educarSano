@@ -1,0 +1,43 @@
+---
+import AstroImage from "@/components/image/AstroImage.astro";
+import { Link } from "@/components/Link";
+import type {
+    Media,
+    SocialMediaBlock as SocialMediaProps,
+} from "@/lib/payloadTypes";
+import { Image } from "@unpic/astro";
+
+const { rrss } = Astro.props as SocialMediaProps;
+---
+
+{
+    rrss && (
+        <ul class="grid md:grid-cols-2 md:grid-rows-1 grid-rows-2 grid-cols-1 gap-12">
+            {rrss.map((social) => {
+                const { link, title, icon } = social;
+                const mediaData =
+                    icon && typeof icon === "object" ? (icon as Media) : null;
+                const { alt, url, width, height, mimeType } = mediaData || {};
+
+                return (
+                    <li class="grid grid-cols-1 grid-rows-2  ">
+                        <span class="self-center">{title}</span>
+                        <Link
+                            {...link}
+                            className="flex flex-row-reverse items-center justify-end "
+                        >
+                            <AstroImage
+                                src={url!}
+                                width={width!}
+                                height={height!}
+                                alt={alt!}
+                                className="w-9 h-9 relative left-[-4px]"
+                                mimeType={mimeType!}
+                            />
+                        </Link>
+                    </li>
+                );
+            })}
+        </ul>
+    )
+}

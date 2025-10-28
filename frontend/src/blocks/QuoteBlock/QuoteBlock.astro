@@ -1,0 +1,66 @@
+---
+import type { Media, QuoteBlock as QuoteProps } from "@/lib/payloadTypes";
+import { Link } from "@/components/Link";
+import { cn } from "@/utils/ui";
+import AstroImage from "@/components/image/AstroImage.astro";
+import { Separator } from "@/components/Separator/Separator";
+
+const {
+    sectionName,
+    enableImage,
+    image,
+    links,
+    richText,
+    separatorType,
+    bottom,
+    isReverse,
+} = Astro.props as QuoteProps;
+const mediaData = image && typeof image === "object" ? (image as Media) : null;
+const { alt, url, width, height, mimeType } = mediaData || {};
+---
+
+<section class="relative py-56">
+    <div class="wrapper m-auto">
+        {
+            enableImage && image ? (
+                <AstroImage
+                    src={url!}
+                    width={width!}
+                    height={height!}
+                    alt={alt!}
+                    className="w-full"
+                    mimeType={mimeType!}
+                />
+            ) : (
+                ""
+            )
+        }
+        <div class={cn(sectionName)}>
+            {
+                richText ? (
+                    <richText
+                        data={richText}
+                        class="richtext"
+                        enableGutter={false}
+                    />
+                ) : (
+                    ""
+                )
+            }
+        </div>
+        <div
+            class="mt-12 grid [grid-template-columns:repeat(auto-fit,minmax(15rem,15rem))] items-center justify-center gap-2"
+        >
+            {
+                (links || []).map(({ link }, i) => {
+                    return <Link size="lg" {...link} client:only="react" />;
+                })
+            }
+        </div>
+    </div>
+    <Separator
+        type={separatorType || "separatorWhite"}
+        reverse={isReverse}
+        style={{ bottom: `${bottom}px` }}
+    />
+</section>

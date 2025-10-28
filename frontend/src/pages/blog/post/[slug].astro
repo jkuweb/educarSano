@@ -1,0 +1,49 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import RichText from "@/components/RichText.astro";
+import { getAllPosts } from "@/lib/getAllPosts";
+import { getPostBySlug } from "@/lib/getPostBySlug";
+
+// 1️⃣ Generar rutas dinámicas solo con slugs válidos
+export async function getStaticPaths() {
+    const posts = await getAllPosts();
+
+    const validPosts = posts.filter(
+        (post) => typeof post.slug === "string" && post.slug.trim() !== "",
+    );
+
+    if (validPosts.length === 0) {
+        console.warn(
+            "[WARN] No se encontraron slugs válidos para generar páginas.",
+        );
+    }
+
+    return validPosts.map((post) => ({
+        params: { slug: post.slug },
+    }));
+}
+
+// 2️⃣ Extraer slug seguro
+const { slug } = Astro.params;
+
+if (!slug || typeof slug !== "string") {
+    return Astro.redirect("/404");
+}
+
+// 3️⃣ Obtener contenido del post
+const post = await getPostBySlug(slug, { depth: 2 });
+
+if (!post) {
+    return Astro.redirect("/404");
+}
+---
+
+<Layout title={post.title}>
+    <section class="pt-24 pb-12 px-4 max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">{post.title}</h1>
+
+        <div class="prose">
+            <RichText content={post.content} />
+        </div>
+    </section>
+</Layout>

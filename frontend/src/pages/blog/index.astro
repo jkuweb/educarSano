@@ -1,0 +1,27 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getAllPosts } from "@/lib/getAllPosts";
+import SearchAndFilter from "@/components/SearchAndFilter/SearchAndFilter";
+import { getAllCategories } from "@/lib/getAllCategories";
+import { getAllTags } from "@/lib/getAllTags";
+const apiUrl = import.meta.env.PUBLIC_PAYLOAD_URL || "http://localhost:3000";
+const initialQuery = Astro.url.searchParams.get("q") || "";
+
+const [posts, categories, tags] = await Promise.all([
+    getAllPosts(),
+    getAllCategories(),
+    getAllTags(),
+]);
+---
+
+<Layout title="posts">
+    <section class="pt-24 pb-24 px-4 bg-[#E1E7EF]">
+        <h1 class="">Posts</h1>
+        <SearchAndFilter
+            client:load
+            posts={posts}
+            categories={categories}
+            tags={tags}
+        />
+    </section>
+</Layout>

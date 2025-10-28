@@ -1,0 +1,119 @@
+@keyframes enterFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(200px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes enterFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-200px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes exitToRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(200px);
+    }
+}
+
+@keyframes exitToLeft {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-200px);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: rotateX(-10deg) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: rotateX(0deg) scale(1);
+    }
+}
+
+@keyframes scaleOut {
+    from {
+        opacity: 1;
+        transform: rotateX(0deg) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: rotateX(-10deg) scale(0.95);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.enter-from-right[data-motion="from-end"] {
+    animation: enterFromRight 250ms ease forwards;
+}
+
+.enter-from-left[data-motion="from-start"] {
+    animation: enterFromLeft 250ms ease forwards;
+}
+
+.exit-to-right[data-motion="to-end"] {
+    animation: exitToRight 250ms ease forwards;
+}
+
+.exit-to-left[data-motion="to-start"] {
+    animation: exitToLeft 250ms ease forwards;
+}
+
+.scale-in[data-state="open"] {
+    animation: scaleIn 200ms ease forwards;
+}
+
+.scale-out[data-state="closed"] {
+    animation: scaleOut 200ms ease forwards;
+}
+
+.fade-in[data-state="visible"] {
+    animation: fadeIn 200ms ease forwards;
+}
+
+.fade-out[data-state="hidden"] {
+    animation: fadeOut 200ms ease forwards;
+}
+
+.perspective-2000 {
+    perspective: 2000px;
+}

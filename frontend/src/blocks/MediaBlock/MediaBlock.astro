@@ -1,0 +1,16 @@
+---
+import AstroImage from "@/components/image/AstroImage";
+import type { Media, MediaBlock as MediaBlockProps } from "@/lib/payloadTypes";
+
+const { media } = Astro.props as MediaBlockProps;
+const mediaData = media && typeof media === "object" ? (media as Media) : null;
+const { alt, url, width, height, mimeType } = mediaData || {};
+---
+
+<AstroImage
+    src={url!}
+    width={width!}
+    height={height!}
+    alt={alt!}
+    mimeType={mimeType!}
+/>

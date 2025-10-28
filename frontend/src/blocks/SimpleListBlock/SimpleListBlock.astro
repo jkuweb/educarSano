@@ -1,0 +1,129 @@
+---
+import AstroImage from "@/components/image/AstroImage.astro";
+import RichText from "@/components/RichText.astro";
+import { Separator } from "@/components/Separator/Separator";
+import type {
+    Media,
+    SimpleListBlock as SimpleListProps,
+} from "@/lib/payloadTypes";
+import { cn } from "@/utils/ui";
+
+const {
+    enableBackgroundImage,
+    enableTitle,
+    blocks,
+    enableImage,
+    title,
+    fieldImage,
+    sectionName,
+    separatorType,
+    bottom,
+    isReverse,
+} = Astro.props as SimpleListProps;
+const mediaData =
+    fieldImage && typeof fieldImage === "object" ? (fieldImage as Media) : null;
+const { alt, url, width, height, mimeType } = mediaData || {};
+---
+
+<section
+    class={cn(
+        "relative pb-40 pt-40",
+        enableBackgroundImage ? "bg-section" : "",
+        sectionName,
+    )}
+>
+    <div class={cn("wrapper m-auto")}>
+        {enableTitle && title ? <h2 class={cn("text-center")}>{title}</h2> : ""}
+        <div
+            class={cn(
+                `${sectionName}-box flex flex-col px-4 md:grid md:grid-cols-[5rem_15rem_1fr] md:grid-rows-1 `,
+            )}
+        >
+            {
+                enableImage && fieldImage && (
+                    <div
+                        class="w-1/2 md:self-start md:m-0
+						m-auto bg-white px-4 py-8 relative top-[68px] md:col-[1/3] md:row-[1/-1]"
+                    >
+                        <AstroImage
+                            src={url!}
+                            width={width!}
+                            height={height!}
+                            alt={alt!}
+                            className="simple-list-component-svg w-1/2"
+                            mimeType={mimeType!}
+                        />
+                    </div>
+                )
+            }
+            <div
+                class={`${sectionName}-list-box px-4 pt-24 md:col-[2/-1] md:row-1 md:pl-36 md:py-8 md:pr-8	`}
+            >
+                <ul class={`${sectionName}-list flex flex-col gap-8`}>
+                    {
+                        blocks &&
+                            blocks.length > 0 &&
+                            blocks.map((block, index) => {
+                                const {
+                                    richText,
+                                    enableRichText,
+                                    enableIcon,
+                                    media,
+                                    color,
+                                } = block;
+                                const blockMediaData =
+                                    media && typeof media === "object"
+                                        ? (media as Media)
+                                        : null;
+                                const { alt, url, width, height, mimeType } =
+                                    blockMediaData || {};
+
+                                const bgColor =
+                                    color === "green"
+                                        ? "bg-primary"
+                                        : color === "red"
+                                          ? "bg-red-light"
+                                          : color === "yellow"
+                                            ? "bg-yellow-neutral"
+                                            : "bg-transparent";
+
+                                return (
+                                    <li
+                                        class={cn(
+                                            bgColor,
+                                            "grid grid-cols-[2rem_1fr] grid-rows-[minmax(60px,_auto)] items-center gap-4  p-4 font-semibold rounded-md",
+                                        )}
+                                    >
+                                        {enableIcon && media ? (
+                                            <AstroImage
+                                                src={url!}
+                                                width={width!}
+                                                height={height!}
+                                                alt={alt!}
+                                                className="w-full"
+                                                mimeType={mimeType!}
+                                            />
+                                        ) : (
+                                            ""
+                                        )}
+                                        <div>
+                                            {richText && enableRichText ? (
+                                                <RichText content={richText} />
+                                            ) : (
+                                                ""
+                                            )}
+                                        </div>
+                                    </li>
+                                );
+                            })
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+    <Separator
+        type={separatorType || "separatorWhite"}
+        reverse={isReverse}
+        style={{ bottom: `${bottom}px` }}
+    />
+</section>

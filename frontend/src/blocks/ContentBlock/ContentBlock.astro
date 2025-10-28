@@ -1,0 +1,101 @@
+---
+import { cn } from "@/utils/ui";
+import type {
+    ContentBlock as ContentBlockProps,
+    Media,
+} from "@/lib/payloadTypes";
+import RichText from "@/components/RichText.astro";
+import { Link } from "@/components/Link";
+import { Separator } from "@/components/Separator/Separator";
+import AstroImage from "@/components/image/AstroImage.astro";
+
+const {
+    enableImage,
+    enableBackgroundImage,
+    enableLink,
+    sectionName,
+    enableTitle,
+    enableRichText,
+    title,
+    image = {},
+    richText,
+    link,
+    separatorType,
+    isReverse,
+    bottom,
+} = Astro.props as ContentBlockProps;
+
+const mediaData = image && typeof image === "object" ? (image as Media) : null;
+const { alt, url, width, height, mimeType } = mediaData || {};
+---
+
+<section
+    class={cn(
+        "relative min-h-[900px] pb-40",
+        enableBackgroundImage ? "bg-section" : "",
+        sectionName,
+    )}
+>
+    <div class={"wrapper m-auto px-4 text-center lg:p-28"}>
+        {
+            title && enableTitle ? (
+                // <h2 class={cn('', NunitoBold.class)}>{title}</h2>
+                <h2>{title}</h2>
+            ) : (
+                ""
+            )
+        }
+        <div
+            class={cn(
+                "relative flex flex-col items-center",
+                `${sectionName}-box`,
+            )}
+        >
+            {
+                image && enableImage ? (
+                    <AstroImage
+                        src={url!}
+                        width={width!}
+                        height={height!}
+                        alt={alt!}
+                        mimeType={mimeType!}
+                        className="!bg-none"
+                    />
+                ) : (
+                    ""
+                )
+            }
+
+            {
+                richText && enableRichText ? (
+                    <RichText
+                        content={richText}
+                        className={`${sectionName}-richtext`}
+                    />
+                ) : (
+                    ""
+                )
+            }
+            {
+                enableLink && link ? (
+                    <Link
+                        {...link}
+                        className={cn("link", `${sectionName}-link`)}
+                        client:only="react"
+                    />
+                ) : (
+                    ""
+                )
+            }
+        </div>
+        {
+            (
+                <Separator
+                    type={separatorType || "separatorWhite"}
+                    reverse={isReverse}
+                    style={{ bottom: `${bottom}px` }}
+                />
+            )
+        }
+    </div>
+</section>

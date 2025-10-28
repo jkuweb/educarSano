@@ -1,0 +1,33 @@
+---
+// src/pages/preview/[slug].astro
+import RenderBlocks from '@/blocks/RenderBlocks.astro';
+import Layout from '@/layouts/Layout.astro';
+import { getPageBySlug } from '@/lib/getPageBySlug';
+
+const { slug } = Astro.params
+
+const page = await getPageBySlug(slug!, { depth: 2, draft: true })
+
+if (!page) {
+  return Astro.redirect('/404')
+}
+
+Astro.response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+Astro.response.headers.set('Pragma', 'no-cache')
+Astro.response.headers.set('Expires', '0')
+---
+
+<Layout>
+  <div style="background: #ff6b35; color: white; padding: 1rem; text-align: center; position: sticky; top: 0; z-index: 9999;">
+    🔍 Modo Preview - Viendo borrador
+    <a href={`/${slug}`} style="color: white; margin-left: 1rem; text-decoration: underline; font-weight: bold;">
+      Ver publicada
+    </a>
+  </div>
+  
+  <h1>{page.title}</h1>
+  
+  <div class="max-w-4xl mx-auto">
+    <RenderBlocks blocks={page.layout}/>
+  </div>
+</Layout>
