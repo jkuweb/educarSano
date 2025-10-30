@@ -6,11 +6,9 @@ export const searchPostsEndpoint: Endpoint = {
   handler: async (req) => {
     const { payload, query } = req
 
-    // Log para debugging
     console.log('Search endpoint called with query:', query)
 
     try {
-      // Validar payload
       if (!payload) {
         return Response.json(
           {
@@ -21,7 +19,6 @@ export const searchPostsEndpoint: Endpoint = {
         )
       }
 
-      // Extraer parámetros con valores por defecto
       const searchQuery = (query?.q as string) || ''
       const categoryFilter = (query?.category as string) || ''
       const tagFilter = (query?.tag as string) || ''
@@ -49,14 +46,12 @@ export const searchPostsEndpoint: Endpoint = {
         )
       }
 
-      // Construir objeto where para la query
       const whereQuery: any = {
         status: {
           equals: 'published',
         },
       }
 
-      // Agregar búsqueda por texto si existe
       if (searchQuery.trim()) {
         whereQuery.or = [
           {
@@ -72,23 +67,18 @@ export const searchPostsEndpoint: Endpoint = {
         ]
       }
 
-      // Agregar filtro de categoría si existe
       if (categoryFilter.trim()) {
         whereQuery.categories = {
           contains: categoryFilter.trim(),
         }
       }
 
-      // Agregar filtro de tag si existe
       if (tagFilter.trim()) {
         whereQuery.tags = {
           contains: tagFilter.trim(),
         }
       }
 
-      console.log('Executing query with where:', JSON.stringify(whereQuery, null, 2))
-
-      // Ejecutar búsqueda
       const results = await payload.find({
         collection: 'posts',
         where: whereQuery,
@@ -98,9 +88,6 @@ export const searchPostsEndpoint: Endpoint = {
         depth: 2,
       })
 
-      console.log(`Found ${results.totalDocs} results`)
-
-      // Retornar respuesta exitosa
       return Response.json({
         success: true,
         data: results.docs,
@@ -119,14 +106,12 @@ export const searchPostsEndpoint: Endpoint = {
         },
       })
     } catch (error) {
-      // Log detallado del error
       console.error('Search endpoint error:', {
         message: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined,
         query: query,
       })
 
-      // Responder con error
       return Response.json(
         {
           success: false,
@@ -144,7 +129,6 @@ export const searchPostsEndpoint: Endpoint = {
   },
 }
 
-// Endpoint alternativo más simple para debugging
 export const searchPostsSimple: Endpoint = {
   path: '/search/posts-simple',
   method: 'get',
@@ -152,7 +136,6 @@ export const searchPostsSimple: Endpoint = {
     try {
       const { payload } = req
 
-      // Query muy simple sin filtros
       const results = await payload.find({
         collection: 'posts',
         limit: 10,
@@ -168,7 +151,6 @@ export const searchPostsSimple: Endpoint = {
         })),
       })
     } catch (error) {
-      console.error('Simple search error:', error)
       return Response.json(
         {
           success: false,

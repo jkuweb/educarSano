@@ -7,21 +7,14 @@ export const searchPosts: Endpoint = {
     const { payload, query } = req
 
     try {
-      // Extraer y validar parámetros
       const q = typeof query?.q === 'string' ? query.q : ''
       const category = typeof query?.category === 'string' ? query.category : ''
       const tag = typeof query?.tag === 'string' ? query.tag : ''
       const page = typeof query?.page === 'string' ? parseInt(query.page, 10) : 1
       const limit = typeof query?.limit === 'string' ? parseInt(query.limit, 10) : 10
 
-      // Construir where query
-      const where: any = {
-        // status: {
-        //   equals: 'published',
-        // },
-      }
+      const where: any = {}
 
-      // Búsqueda por texto
       if (q.trim()) {
         where.or = [
           {
@@ -29,29 +22,21 @@ export const searchPosts: Endpoint = {
               contains: q.trim(),
             },
           },
-          // {
-          //   excerpt: {
-          //     contains: q.trim(),
-          //   },
-          // },
         ]
       }
 
-      // Filtro por categoría
       if (category.trim()) {
         where.categories = {
           contains: category.trim(),
         }
       }
 
-      // Filtro por tag
       if (tag.trim()) {
         where.tags = {
           contains: tag.trim(),
         }
       }
 
-      // Ejecutar búsqueda
       const results = await payload.find({
         collection: 'posts',
         where,
@@ -61,7 +46,6 @@ export const searchPosts: Endpoint = {
         depth: 2,
       })
 
-      // Retornar respuesta exitosa
       return Response.json({
         success: true,
         data: results.docs,

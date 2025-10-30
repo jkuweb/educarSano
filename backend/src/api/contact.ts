@@ -51,7 +51,8 @@ export const contactEndpoint: Endpoint = {
             status: 'nuevo',
           },
         })
-      } catch (collectionError) {
+      } catch (_collectionError) {
+        // Renombrado con _ para indicar que no se usa
         submission = { id: 'pending' }
       }
 
@@ -64,7 +65,9 @@ export const contactEndpoint: Endpoint = {
           subject: `Confirmación: Hemos recibido tu mensaje`,
           html: getClientEmailTemplate(),
         })
-      } catch (emailError) {}
+      } catch (_emailError) {
+        // Renombrado con _ para indicar que no se usa
+      }
 
       try {
         const adminEmail = process.env.ADMIN_EMAIL
@@ -98,9 +101,10 @@ export const contactEndpoint: Endpoint = {
               </div>
             `,
           })
-        } else {
         }
-      } catch (emailError) {}
+      } catch (_emailError) {
+        // Renombrado con _ para indicar que no se usa
+      }
 
       return Response.json(
         {
@@ -116,7 +120,8 @@ export const contactEndpoint: Endpoint = {
           {
             success: false,
             message: 'Errores de validación',
-            errors: err.errors.map((e) => ({
+            // ✅ CAMBIO CRÍTICO: err.errors → err.issues
+            errors: err.issues.map((e) => ({
               field: e.path[0],
               message: e.message,
             })),
