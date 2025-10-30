@@ -53,15 +53,7 @@ export default buildConfig({
   }),
   sharp,
   plugins: [...plugins],
-  cors: [
-    process.env.FRONTEND_URL || 'http://localhost:4321',
-    'http://localhost:4321',
-    'http://localhost:3000',
-  ].filter(Boolean),
+  cors: [process.env.FRONTEND_URL || 'http://localhost:4321'].filter(Boolean),
 
-  csrf: [
-    process.env.FRONTEND_URL || 'http://localhost:4321',
-    'http://localhost:4321',
-    'http://localhost:3000',
-  ].filter(Boolean),
+  csrf: [process.env.FRONTEND_URL || 'http://localhost:4321'].filter(Boolean),
 })
