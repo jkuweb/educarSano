@@ -22,18 +22,17 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from '@/fields/slug'
+import { authenticated } from '@/access/authenticated'
+import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
   access: {
-    create: () => true,
-    delete: () => true,
-    read: () => true,
-    update: () => true,
+    create: authenticated,
+    delete: authenticated,
+    read: authenticatedOrPublished,
+    update: authenticated,
   },
-  // This config controls what's populated by default when a post is referenced
-  // https://payloadcms.com/docs/queries/select#defaultpopulate-collection-config-property
-  // Type safe if the collection slug generic is passed to `CollectionConfig` - `CollectionConfig<'posts'>
   defaultPopulate: {
     title: true,
     slug: true,
@@ -47,7 +46,8 @@ export const Posts: CollectionConfig<'posts'> = {
     defaultColumns: ['title', 'slug', 'updatedAt'],
     preview: (doc) => {
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4321'
-      return `${frontendUrl}/api/preview?slug=${doc.slug}&secret=${process.env.PREVIEW_SECRET}`
+      if (!doc?.slug) return null
+      return `${frontendUrl}/preview/post/${doc.slug}?secret=${process.env.PREVIEW_SECRET}`
     },
     useAsTitle: 'title',
   },

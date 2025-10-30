@@ -4,6 +4,18 @@ import { fetchGlobal } from "@/lib/getGlobal";
 import type { Footer as FooterType } from "@/lib/payloadTypes";
 import { cn } from "@/utils/ui";
 
+import type { PayloadResponse, Post } from "@/lib/payloadTypes";
+import { payloadFetch } from "@/utils/payloadFetch";
+import PostCard from "@/components/PostCard/PostCard.astro";
+
+const response = await payloadFetch<PayloadResponse<Post>>(
+    `/posts?limit=1&sort=-publishedAt&depth=2`,
+);
+const { docs } = response;
+const post = docs[0] as Post;
+const hasCategories = post.categories && post.categories.length > 0;
+const hasTags = post.tags && post.tags.length > 0;
+
 const footerData = await fetchGlobal<FooterType>("footer");
 const { navItems, separatorType, isReverse, bottom, enableBackgroundImage } =
     footerData as FooterType;
@@ -28,13 +40,12 @@ const { navItems, separatorType, isReverse, bottom, enableBackgroundImage } =
         <div class="grid grid-rows-[3rem_1fr]">
             <h3 class="justify-self-start">último Post</h3>
             <div>
-                <h4>Post</h4>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. A,
-                    molestiae ratione magni ipsam corrupti soluta inventore
-                    aliquid saepe voluptas repellat. Quibusdam excepturi maxime
-                    odit atque impedit earum ipsa ea accusantium.
-                </p>
+                <h4>Último Post</h4>
+                <PostCard
+                    post={post}
+                    hasCategories={hasCategories!}
+                    hasTags={hasTags!}
+                />
             </div>
         </div>
         <div class="grid grid-rows-[3rem_1fr]">

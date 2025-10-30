@@ -1,6 +1,7 @@
 ---
 import BannerBlock from "@/blocks/BannerBlock/BannerBlock.astro";
 import CallToActionBlock from "@/blocks/CallToActionBlock/CallToActionBlock.astro";
+import FrequentlyQuestionsBlock from "@/blocks/FrequentlyQuestionsBlock/FrequentlyQuestionsBlock.astro";
 import MediaBlock from "@/blocks/MediaBlock/MediaBlock.astro";
 import QuoteBlock from "@/blocks/QuoteBlock/QuoteBlock.astro";
 import SocialMediaBlock from "@/blocks/SocialMediaBlock/SocialMediaBlock.astro";
@@ -15,7 +16,6 @@ const { content, className } = Astro.props;
 
 function RenderBlock(block: any) {
     const { blockType } = block["fields"];
-    console.log(blockType);
 
     switch (blockType) {
         case "banner":
@@ -28,6 +28,8 @@ function RenderBlock(block: any) {
             return QuoteBlock;
         case "social":
             return SocialMediaBlock;
+        case "frequentlyQuestionsBlock":
+            return FrequentlyQuestionsBlock;
         default:
             return null;
     }

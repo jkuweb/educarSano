@@ -1,0 +1,131 @@
+---
+import type { Media } from "@/lib/payloadTypes";
+import type { FrequentlyQuestionsBlock } from "../../lib/payloadTypes";
+import AstroImage from "@/components/image/AstroImage.astro";
+const { questions, enableImage, image } =
+    Astro.props as FrequentlyQuestionsBlock;
+const { url, alt, width, height } = image as Media;
+---
+
+<div
+    class="max-w-4xl mx-auto flex flex-col md:flex-row items-start justify-center gap-8 px-4 md:px-0"
+>
+    {
+        enableImage && (
+            <AstroImage
+                className="max-w-sm w-full rounded-xl h-auto"
+                src={url!}
+                alt={alt!}
+                width={width!}
+                height={height!}
+            />
+        )
+    }
+
+    <div class="w-full">
+        <p class="text-indigo-600 text-sm font-medium">FAQ's</p>
+        <h1 class="text-3xl font-semibold">Looking for answer?</h1>
+        <p class="text-sm text-slate-500 mt-2 pb-4">
+            Ship Beautiful Frontends Without the Overhead — Customizable,
+            Scalable and Developer-Friendly UI Components.
+        </p>
+
+        {
+            questions.map((faq, index) => (
+                <div
+                    class="border-b border-slate-200 py-4 cursor-pointer group"
+                    data-index={index}
+                >
+                    <div class="flex items-center justify-between faq-header">
+                        <h3 class="text-base font-medium">{faq.question}</h3>
+                        <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 18 18"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="faq-icon transition-transform duration-300 ease-in-out"
+                        >
+                            <path
+                                d="m4.5 7.2 3.793 3.793a1 1 0 0 0 1.414 0L13.5 7.2"
+                                stroke="#1D293D"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </div>
+                    <div
+                        class="faq-answer-wrapper overflow-hidden"
+                        style="height: 0;"
+                    >
+                        <p class="faq-answer text-sm text-slate-500 max-w-md pt-3 text-left">
+                            {faq.answer}
+                        </p>
+                    </div>
+                </div>
+            ))
+        }
+    </div>
+</div>
+
+<script>
+    import gsap from "gsap";
+
+    const faqItems = document.querySelectorAll("[data-index]");
+    let openIndex: number | null = null;
+
+    faqItems.forEach((item, index) => {
+        const header = item.querySelector(".faq-header");
+        const answerWrapper = item.querySelector(
+            ".faq-answer-wrapper",
+        ) as HTMLElement;
+        const answer = item.querySelector(".faq-answer") as HTMLElement;
+        const icon = item.querySelector(".faq-icon");
+
+        if (!header || !answerWrapper || !answer || !icon) return;
+
+        header.addEventListener("click", () => {
+            const isOpen = openIndex === index;
+
+            // Cerrar el FAQ previamente abierto
+            if (openIndex !== null && openIndex !== index) {
+                const prevItem = faqItems[openIndex];
+                const prevWrapper = prevItem.querySelector(
+                    ".faq-answer-wrapper",
+                ) as HTMLElement;
+                const prevIcon = prevItem.querySelector(".faq-icon");
+
+                if (prevWrapper && prevIcon) {
+                    gsap.to(prevWrapper, {
+                        height: 0,
+                        duration: 0.4,
+                        ease: "power2.inOut",
+                    });
+                    gsap.to(prevIcon, { rotate: 0, duration: 0.3 });
+                }
+            }
+
+            if (!isOpen) {
+                // Abrir
+                const fullHeight = answer.scrollHeight;
+                gsap.to(answerWrapper, {
+                    height: fullHeight,
+                    duration: 0.4,
+                    ease: "power2.out",
+                });
+                gsap.to(icon, { rotate: 180, duration: 0.3 });
+                openIndex = index;
+            } else {
+                // Cerrar
+                gsap.to(answerWrapper, {
+                    height: 0,
+                    duration: 0.4,
+                    ease: "power2.inOut",
+                });
+                gsap.to(icon, { rotate: 0, duration: 0.3 });
+                openIndex = null;
+            }
+        });
+    });
+</script>

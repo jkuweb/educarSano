@@ -1,0 +1,64 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getCategoryPageData } from "@/lib/getCategoryPageData";
+import { getAllCategories } from "@/lib/getAllCategories";
+import PaginationStatic from "@/components/Pagination/PaginationStatic.astro";
+import PostCard from "@/components/PostCard/PostCard.astro";
+import Post from "@/components/Post/Post.astro";
+import { Link } from "@/components/Link";
+
+export async function getStaticPaths() {
+    const categories = await getAllCategories();
+
+    // Solo generamos la primera página de cada categoría
+    return categories
+        .filter((cat) => cat.slug)
+        .map((cat) => ({
+            params: { slug: cat.slug },
+        }));
+}
+
+const { slug } = Astro.params;
+const currentPage = 1;
+const { posts, totalPages } = await getCategoryPageData(slug!, currentPage);
+---
+
+<Layout title={`Categoría: ${slug}`}>
+    <section
+        class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-slate-900 dark:to-indigo-950"
+    >
+        <div class="text-center mb-8 sm:mb-12">
+            <h1
+                class="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from- via-[#85ccc6] mb-4 text-[#0e3734]"
+            >
+                Categoría: {slug}
+            </h1>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+            {
+                posts.length === 0 ? (
+                    <p class="text-gray-500">No hay posts en esta categoría.</p>
+                ) : (
+                    <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        {posts.map((post, index) => (
+                            <li class=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                                <PostCard
+                                    post={post}
+                                    index={index}
+                                    hasCategories={true}
+                                    hasTags={true}
+                                />
+                            </li>
+                        ))}
+                    </ul>
+                )
+            }
+        </div>
+        <PaginationStatic
+            basePath={`blog/category/${slug}`}
+            currentPage={currentPage}
+            totalPages={totalPages}
+        />
+    </section>
+    <a href="http://localhost:4321/blog"> Atras</a>
+</Layout>

@@ -1,0 +1,137 @@
+---
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  basePath: string;
+}
+
+const { currentPage, totalPages, basePath } = Astro.props;
+
+function buildPageUrl(page: number) {
+  return page === 1 ? `/${basePath}` : `/${basePath}/page/${page}`;
+}
+
+// Generar los items de paginación
+const paginationItems = Array.from({ length: totalPages }, (_, i) => {
+  const page = i + 1;
+  if (
+    page === 1 ||
+    page === totalPages ||
+    (page >= currentPage - 1 && page <= currentPage + 1)
+  ) {
+    return { type: 'page' as const, page };
+  }
+  if (page === currentPage - 2 || page === currentPage + 2) {
+    return { type: 'ellipsis' as const, page };
+  }
+  return null;
+}).filter(Boolean);
+---
+
+{totalPages > 1 && (
+  <div class="mt-12 flex justify-center items-center gap-2">
+    <!-- Botón Anterior -->
+    {currentPage > 1 ? (
+     <a
+        href={buildPageUrl(currentPage - 1)}
+        class="px-4 py-2 rounded-lg font-medium transition-all bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-md hover:shadow-lg"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width={2}
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </a>
+    ) : (
+      <button
+        disabled
+        class="px-4 py-2 rounded-lg font-medium transition-all opacity-40 cursor-not-allowed bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 shadow-md"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width={2}
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </button>
+    )}
+
+    <!-- Números de página -->
+    <div class="flex gap-2">
+      {paginationItems.map((item) => (
+        item.type === 'ellipsis' ? (
+          <span class="w-10 h-10 flex items-center justify-center text-gray-400">
+            ...
+          </span>
+        ) : (
+          <a
+            href={buildPageUrl(item.page)}
+            class={`w-10 h-10 rounded-lg font-medium transition-all shadow-md hover:shadow-lg flex items-center justify-center ${
+              currentPage === item.page
+                ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white scale-110"
+                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+            }`}
+          >
+            {item.page}
+          </a>
+        )
+      ))}
+    </div>
+
+    <!-- Botón Siguiente -->
+    {currentPage < totalPages ? (
+      <a
+        href={buildPageUrl(currentPage + 1)}
+        class="px-4 py-2 rounded-lg font-medium transition-all bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-md hover:shadow-lg"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width={2}
+            d="M9 5l7 7-7 7"
+          />
+        </svg>
+      </a>
+    ) : (
+      <button
+        disabled
+        class="px-4 py-2 rounded-lg font-medium transition-all opacity-40 cursor-not-allowed bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 shadow-md"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width={2}
+            d="M9 5l7 7-7 7"
+          />
+        </svg>
+      </button>
+    )}
+  </div>
+)}

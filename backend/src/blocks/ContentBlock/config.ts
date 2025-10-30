@@ -7,6 +7,7 @@ import {
 } from '@payloadcms/richtext-lexical'
 import { link } from '@/fields/link'
 import { Banner } from '../Banner/config'
+import { FrequentlyQuestionsBlock } from '../FrequentlyQuestionsBlock/config'
 
 export const ContentBlock: Block = {
   slug: 'content',
@@ -63,7 +64,7 @@ export const ContentBlock: Block = {
               !['superscript', 'subscript', 'inlineCode', 'indent'].includes(feature.key),
           ),
           BlocksFeature({
-            blocks: [Banner],
+            blocks: [Banner, FrequentlyQuestionsBlock],
           }),
           FixedToolbarFeature(),
           InlineToolbarFeature(),

@@ -8,6 +8,8 @@ import MediaBlock from "./MediaBlock/MediaBlock.astro";
 import QuoteBlock from "./QuoteBlock/QuoteBlock.astro";
 import SimpleListBlock from "./SimpleListBlock/SimpleListBlock.astro";
 import SocialMediaBlock from "./SocialMediaBlock/SocialMediaBlock.astro";
+import PostCarouselBlock from "./PostCarouselBlock/PostCarouselBlock.astro";
+import FrequentlyQuestionsBlock from "./FrequentlyQuestionsBlock/FrequentlyQuestionsBlock.astro";
 
 interface BlockType {
     blockType: string;
@@ -24,6 +26,8 @@ const blockComponents: { [key: string]: React.FC<any> } = {
     simpleListContent: SimpleListBlock,
     quoteBlock: QuoteBlock,
     boxContent: BoxContent,
+    postCarouselBlock: PostCarouselBlock,
+    frequentlyQuestionsBlock: FrequentlyQuestionsBlock,
 };
 
 const { blocks }: { blocks?: BlockType[] } = Astro.props;

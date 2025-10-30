@@ -7,15 +7,29 @@ import type {
 } from "@/lib/payloadTypes";
 import AstroImage from "@/components/image/AstroImage.astro";
 import { Separator } from "@/components/Separator/Separator";
+import { cn } from "@/utils/ui";
 
-const { richText, media, links, bottom, isReverse } =
-    Astro.props as CallToActionProps;
+const {
+    richText,
+    media,
+    links,
+    bottom,
+    isReverse,
+    enableBackgroundImage,
+    sectionName,
+} = Astro.props as CallToActionProps;
 
 const mediaData = media && typeof media === "object" ? (media as Media) : null;
 const { alt, url, width, height, mimeType } = mediaData || {};
 ---
 
-<section class="pt-40 pb-40 relative">
+<section
+    class={cn(
+        "pt-40 pb-40 relative ",
+        enableBackgroundImage ? "bg-section" : "",
+        sectionName,
+    )}
+>
     <div class={"wrapper m-auto"}>
         <div class="grid grid-rows-2 gap-12 justify-items-center">
             <div>

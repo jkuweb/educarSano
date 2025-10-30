@@ -3,8 +3,9 @@ import Layout from "@/layouts/Layout.astro";
 import RichText from "@/components/RichText.astro";
 import { getAllPosts } from "@/lib/getAllPosts";
 import { getPostBySlug } from "@/lib/getPostBySlug";
+import type { Post } from "@/lib/payloadTypes";
+import PostCard from "@/components/PostCard/PostCard.astro";
 
-// 1️⃣ Generar rutas dinámicas solo con slugs válidos
 export async function getStaticPaths() {
     const posts = await getAllPosts();
 
@@ -23,15 +24,17 @@ export async function getStaticPaths() {
     }));
 }
 
-// 2️⃣ Extraer slug seguro
 const { slug } = Astro.params;
 
 if (!slug || typeof slug !== "string") {
     return Astro.redirect("/404");
 }
 
-// 3️⃣ Obtener contenido del post
 const post = await getPostBySlug(slug, { depth: 2 });
+console.log(post);
+const { title, content, relatedPosts } = post as Post;
+
+const hasRelatedPosts = relatedPosts && relatedPosts.length > 0;
 
 if (!post) {
     return Astro.redirect("/404");
@@ -44,6 +47,23 @@ if (!post) {
 
         <div class="prose">
             <RichText content={post.content} />
+        </div>
+        <div>
+            {
+                hasRelatedPosts
+                    ? relatedPosts.map((relatedPost, index) => {
+                          return (
+            <h2>También te puede interesar:</h2>
+                              <PostCard
+                                  index={index}
+                                  post={relatedPost as Post}
+                                  hasCategories={true}
+                                  hasTags={true}
+                              />
+                          );
+                      })
+                    : null
+            }
         </div>
     </section>
 </Layout>

@@ -1,13 +1,12 @@
 ---
-import RenderBlocks from "@/blocks/RenderBlocks.astro";
 import Layout from "@/layouts/Layout.astro";
-import { getPageBySlug } from "@/lib/getPageBySlug";
+import { getPostBySlug } from "@/lib/getPostBySlug";
 
 const { slug } = Astro.params;
 
-const page = await getPageBySlug(slug!, { depth: 2, draft: true });
+const post = await getPostBySlug(slug!, { depth: 2, draft: true });
 
-if (!page) {
+if (!post) {
     return Astro.redirect("/404");
 }
 
@@ -25,16 +24,15 @@ Astro.response.headers.set("Expires", "0");
     >
         🔍 Modo Preview - Viendo borrador
         <a
-            href={`/${slug}`}
+            href={`/blog/${slug}`}
             style="color: white; margin-left: 1rem; text-decoration: underline; font-weight: bold;"
         >
             Ver publicada
         </a>
     </div>
 
-    <h1>{page.title}</h1>
-
-    <div class="max-w-4xl mx-auto">
-        <RenderBlocks blocks={page.layout} />
-    </div>
+    <article class="max-w-3xl mx-auto px-4 py-12 prose">
+        <h1 class="text-4xl font-bold mb-4">{post.title}</h1>
+        <div set:html={post.content} />
+    </article>
 </Layout>

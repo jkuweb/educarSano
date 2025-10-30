@@ -19,16 +19,21 @@ import { CallToAction } from '@/blocks/CallToAction/config'
 import { SimpleListBlock } from '@/blocks/SimpleListBlock/config'
 import { QuoteBlock } from '@/blocks/QuoteBlock/config'
 import { FormBlock } from '@/blocks/Form/config'
+import { PostCarouselBlock } from '@/blocks/PostCarouselBlock/config'
+import { FrequentlyQuestionsBlock } from '@/blocks/FrequentlyQuestionsBlock/config'
+import { authenticated } from '@/access/authenticated'
+import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { revalidatePage } from './hooks/revalidatePage'
+import { revalidateDelete } from '../Posts/hooks/revalidatePost'
 
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
   access: {
-    create: () => true,
-    delete: () => true,
-    read: () => true,
-    update: () => true,
+    create: authenticated,
+    delete: authenticated,
+    read: authenticatedOrPublished,
+    update: authenticated,
   },
-
   defaultPopulate: {
     title: true,
     slug: true,
@@ -69,6 +74,8 @@ export const Pages: CollectionConfig<'pages'> = {
                 SimpleListBlock,
                 QuoteBlock,
                 BoxContent,
+                PostCarouselBlock,
+                FrequentlyQuestionsBlock,
               ],
               required: true,
               admin: {
@@ -96,10 +103,7 @@ export const Pages: CollectionConfig<'pages'> = {
 
             MetaDescriptionField({}),
             PreviewField({
-              // if the `generateUrl` function is configured
               hasGenerateFn: true,
-
-              // field paths to match the target field for data
               titlePath: 'meta.title',
               descriptionPath: 'meta.description',
             }),
@@ -117,9 +121,9 @@ export const Pages: CollectionConfig<'pages'> = {
     ...slugField(),
   ],
   hooks: {
-    // afterChange: [revalidatePage],
+    afterChange: [revalidatePage],
     beforeChange: [populatePublishedAt],
-    // afterDelete: [revalidateDelete],
+    afterDelete: [revalidateDelete],
   },
   versions: {
     drafts: {

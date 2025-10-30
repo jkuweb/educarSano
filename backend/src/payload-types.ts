@@ -235,6 +235,8 @@ export interface Page {
     | SimpleListBlock
     | QuoteBlock
     | BoxContent
+    | PostCarouselBlock
+    | FrequentlyQuestionsBlock
   )[];
   meta?: {
     title?: string | null;
@@ -310,6 +312,7 @@ export interface CallToActionBlock {
     };
     [k: string]: unknown;
   } | null;
+  enableBackgroundImage?: boolean | null;
   links?:
     | {
         link: {
@@ -750,6 +753,35 @@ export interface BoxContent {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PostCarouselBlock".
+ */
+export interface PostCarouselBlock {
+  isReverse?: boolean | null;
+  bottom?: number | null;
+  separatorType?: ('separatorYellow' | 'separatorWhite' | 'separatorBackground') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'postCarouselBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FrequentlyQuestionsBlock".
+ */
+export interface FrequentlyQuestionsBlock {
+  enableImage?: boolean | null;
+  image?: (number | null) | Media;
+  questions: {
+    question: string;
+    answer: string;
+    id?: string | null;
+  }[];
+  sectionName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'frequentlyQuestionsBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -1113,6 +1145,8 @@ export interface PagesSelect<T extends boolean = true> {
         simpleListContent?: T | SimpleListBlockSelect<T>;
         quoteBlock?: T | QuoteBlockSelect<T>;
         boxContent?: T | BoxContentSelect<T>;
+        postCarouselBlock?: T | PostCarouselBlockSelect<T>;
+        frequentlyQuestionsBlock?: T | FrequentlyQuestionsBlockSelect<T>;
       };
   meta?:
     | T
@@ -1135,6 +1169,7 @@ export interface PagesSelect<T extends boolean = true> {
 export interface CallToActionBlockSelect<T extends boolean = true> {
   media?: T;
   richText?: T;
+  enableBackgroundImage?: T;
   links?:
     | T
     | {
@@ -1321,6 +1356,35 @@ export interface BoxContentSelect<T extends boolean = true> {
         media?: T;
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PostCarouselBlock_select".
+ */
+export interface PostCarouselBlockSelect<T extends boolean = true> {
+  isReverse?: T;
+  bottom?: T;
+  separatorType?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FrequentlyQuestionsBlock_select".
+ */
+export interface FrequentlyQuestionsBlockSelect<T extends boolean = true> {
+  enableImage?: T;
+  image?: T;
+  questions?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  sectionName?: T;
   id?: T;
   blockName?: T;
 }

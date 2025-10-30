@@ -405,6 +405,7 @@ export interface CallToActionBlock {
     };
     [k: string]: unknown;
   } | null;
+  enableBackgroundImage?: boolean | null;
   links?:
     | {
         link: {
@@ -431,6 +432,7 @@ export interface CallToActionBlock {
   blockName?: string | null;
   blockType: "cta";
 }
+
 export interface SimpleListBlock {
   enableTitle?: boolean | null;
   title?: string | null;
@@ -768,4 +770,18 @@ export interface Tag {
   slugLock?: boolean | null;
   updatedAt: string;
   createdAt: string;
+}
+
+export interface FrequentlyQuestionsBlock {
+  enableImage?: boolean | null;
+  image?: (number | null) | Media;
+  questions: {
+    question: string;
+    answer: string;
+    id?: string | null;
+  }[];
+  sectionName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: "frequentlyQuestionsBlock";
 }
