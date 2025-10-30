@@ -147,7 +147,7 @@ export const searchPostsSimple: Endpoint = {
         posts: results.docs.map((doc) => ({
           id: doc.id,
           title: doc.title,
-          status: doc.status,
+          status: doc._status,
         })),
       })
     } catch (error) {
