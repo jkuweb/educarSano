@@ -4,16 +4,14 @@ import {
   FixedToolbarFeature,
   InlineToolbarFeature,
   LinkFeature,
-  UploadFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import { link } from '@/fields/link'
 import { Banner } from '../Banner/config'
 import { FrequentlyQuestionsBlock } from '../FrequentlyQuestionsBlock/config'
-import { isAdmin, isAdminFieldLevel, publicReadField } from '@/access'
-import { PricesBlock } from '../PricesBlock/config'
+import { isAdminFieldLevel, publicReadField } from '@/access'
 import { MediaBlock } from '../MediaBlock/config'
-import { isAdminCondition, isAdminConditionRoles } from '@/utilities/isAdmin'
+import { isAdminConditionRoles } from '@/utilities/isAdmin'
 
 export const ContentBlock: Block = {
   slug: 'content',
@@ -65,24 +63,20 @@ export const ContentBlock: Block = {
           placeholder: 'Escribe tu contenido aquí...',
         },
         features: ({ defaultFeatures }) => {
-          // Filtra los features que no quieres, pero MANTÉN 'upload' y 'relationship'
           const filtered = defaultFeatures.filter(
             (feature) =>
               !['superscript', 'subscript', 'inlineCode', 'indent'].includes(feature.key),
           )
 
-          // Verifica si LinkFeature ya existe en los defaults
           const hasLinkFeature = filtered.some((f) => f.key === 'link')
 
           return [
             ...filtered,
-            // Solo agrega LinkFeature si no existe ya
             ...(hasLinkFeature
               ? []
               : [
                   LinkFeature({
-                    enabledCollections: ['documents'], // 👈 Cambia a 'documents' en lugar de 'media'
-                    // 👇 Filtrar solo PDFs en el selector
+                    enabledCollections: ['documents'],
                     fields: ({ defaultFields }) => [
                       ...defaultFields,
                       {
@@ -99,7 +93,7 @@ export const ContentBlock: Block = {
                   }),
                 ]),
             BlocksFeature({
-              blocks: [Banner, FrequentlyQuestionsBlock, PricesBlock, MediaBlock],
+              blocks: [Banner, FrequentlyQuestionsBlock, MediaBlock],
             }),
             FixedToolbarFeature(),
             InlineToolbarFeature(),

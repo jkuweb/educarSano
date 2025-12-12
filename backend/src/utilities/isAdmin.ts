@@ -5,10 +5,9 @@ export const isAdminCondition = (
   siblingData: any,
   { user }: { user: TypedUser | null },
 ): boolean => {
-  return user?.role === 'admin'
+  return user?.roles?.includes('admin') || false
 }
 
-// O si usas roles como array
 export const isAdminConditionRoles = (
   data: any,
   siblingData: any,

@@ -7,7 +7,6 @@ import {
 import { Block } from 'payload'
 import { SocialMediaBlock } from '@/blocks/SocialMediaBlock/config'
 import { isAdminFieldLevel, publicReadField } from '@/access'
-import { create } from 'domain'
 import { isAdminConditionRoles } from '@/utilities/isAdmin'
 
 export const FormBlock: Block = {

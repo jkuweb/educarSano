@@ -7,7 +7,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 const ContactSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  email: z.string().email('Email inválido'),
+  email: z.string('Email inválido'),
   subject: z.string().min(5, 'El asunto debe tener al menos 5 caracteres').optional(),
   message: z.string().min(10, 'El mensaje debe tener al menos 10 caracteres'),
   recaptchaToken: z.string().optional(),
@@ -82,8 +82,8 @@ export const contactEndpoint: Endpoint = {
       }
 
       const emailRateLimit = checkRateLimit(`contact:email:${parsed.email}`, {
-        windowMs: 24 * 60 * 60 * 1000, // 24 horas
-        maxRequests: 3, // 3 mensajes por día desde el mismo email
+        windowMs: 24 * 60 * 60 * 1000,
+        maxRequests: 3,
       })
 
       if (!emailRateLimit.allowed) {
@@ -96,21 +96,21 @@ export const contactEndpoint: Endpoint = {
         )
       }
 
-      let submission
-      try {
-        submission = await req.payload.create({
-          collection: 'contact-messages',
-          data: {
-            name: parsed.name,
-            email: parsed.email,
-            subject: parsed.subject || 'Sin asunto',
-            message: parsed.message,
-            status: 'nuevo',
-          },
-        })
-      } catch (collectionError) {
-        submission = { id: 'pending' }
-      }
+      // let submission
+      // try {
+      //   submission = await req.payload.create({
+      //     collection: 'contact-messages',
+      //     data: {
+      //       name: parsed.name,
+      //       email: parsed.email,
+      //       subject: parsed.subject || 'Sin asunto',
+      //       message: parsed.message,
+      //       status: 'nuevo',
+      //     },
+      //   })
+      // } catch (collectionError) {
+      //   submission = { id: 'pending' }
+      // }
 
       // Enviar emails (mismo código de antes)
       try {
@@ -125,7 +125,6 @@ export const contactEndpoint: Endpoint = {
               <h2 style="color: #333;">¡Gracias por contactarnos!</h2>
               <p>Hola <strong>${parsed.name}</strong>,</p>
               <p>Hemos recibido tu mensaje correctamente.</p>
-              <p style="color: #999; font-size: 12px;">ID: ${submission.id}</p>
             </div>
           `,
         })
@@ -156,7 +155,6 @@ export const contactEndpoint: Endpoint = {
         {
           success: true,
           message: 'Formulario enviado correctamente',
-          submissionId: submission.id,
         },
         { status: 200 },
       )

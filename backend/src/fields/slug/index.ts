@@ -1,9 +1,23 @@
-import type { CheckboxField, TextField } from 'payload'
-
+import type { CheckboxField, TextField, TextFieldSingleValidation, FieldHook } from 'payload'
 import { formatSlugHook } from './formatSlug'
 
+// Tipado seguro para overrides de TextField, incluyendo hooks
+type SafeTextFieldOverrides = Partial<
+  Pick<
+    TextField,
+    'label' | 'required' | 'defaultValue' | 'index' | 'unique' | 'localized' | 'admin'
+  >
+> & {
+  validate?: TextFieldSingleValidation
+  hooks?: {
+    beforeValidate?: FieldHook[]
+    afterChange?: FieldHook[]
+    [key: string]: FieldHook[] | undefined
+  }
+}
+
 type Overrides = {
-  slugOverrides?: Partial<TextField>
+  slugOverrides?: SafeTextFieldOverrides
   checkboxOverrides?: Partial<CheckboxField>
 }
 
@@ -11,6 +25,7 @@ type Slug = (fieldToUse?: string, overrides?: Overrides) => [TextField, Checkbox
 
 export const slugField: Slug = (fieldToUse = 'title', overrides = {}) => {
   const { slugOverrides, checkboxOverrides } = overrides
+  const safeOverrides = slugOverrides ?? {}
 
   const checkBoxField: CheckboxField = {
     name: 'slugLock',
@@ -28,14 +43,17 @@ export const slugField: Slug = (fieldToUse = 'title', overrides = {}) => {
     type: 'text',
     index: true,
     label: 'Slug',
-    ...(slugOverrides || {}),
+    ...safeOverrides,
     hooks: {
-      beforeValidate: [formatSlugHook(fieldToUse)],
+      // Preservar hooks existentes y añadir el hook de formato de slug
+      ...(safeOverrides.hooks || {}),
+      beforeValidate: [...(safeOverrides.hooks?.beforeValidate || []), formatSlugHook(fieldToUse)],
     },
     admin: {
       position: 'sidebar',
-      ...(slugOverrides?.admin || {}),
+      ...(safeOverrides.admin || {}),
       components: {
+        ...(safeOverrides.admin?.components || {}),
         Field: {
           path: '@/fields/slug/SlugComponent#SlugComponent',
           clientProps: {
