@@ -128,7 +128,9 @@ export const contactEndpoint: Endpoint = {
             </div>
           `,
         })
-      } catch (emailError) {}
+      } catch (emailError) {
+        throw Error('Error al enviar correo electrónico')
+      }
 
       try {
         const adminEmail = process.env.ADMIN_EMAIL || 'asesoriaeducarsano@gmail.com'

@@ -1,6 +1,6 @@
 'use client'
 import React, { useCallback } from 'react'
-import type { TextFieldClientComponent, TextFieldClientProps } from 'payload'
+import type { TextFieldClientProps } from 'payload'
 import { useField, Button, TextInput, FieldLabel, useFormFields, useForm } from '@payloadcms/ui'
 import { formatSlug } from './formatSlug'
 import './index.css'
@@ -20,12 +20,6 @@ export const SlugComponent: React.FC<SlugComponentProps> = (props) => {
   } = props
 
   const { label } = field
-
-  if (!fieldToUse || !checkboxFieldPathFromProps) {
-    console.error('SlugComponent requires fieldToUse and checkboxFieldPath in clientProps')
-    return null
-  }
-
   const fieldPath = path || field.name
   const checkboxFieldPath = fieldPath?.includes('.')
     ? `${fieldPath}.${checkboxFieldPathFromProps}`
@@ -33,10 +27,7 @@ export const SlugComponent: React.FC<SlugComponentProps> = (props) => {
 
   const { value, setValue } = useField<string>({ path: fieldPath })
   const { dispatchFields, getDataByPath } = useForm()
-
-  const isLocked = useFormFields(([fields]) => {
-    return fields[checkboxFieldPath]?.value as boolean
-  })
+  const isLocked = useFormFields(([fields]) => fields[checkboxFieldPath]?.value as boolean)
 
   const handleGenerate = useCallback(
     (e: React.MouseEvent<Element>) => {
@@ -63,6 +54,11 @@ export const SlugComponent: React.FC<SlugComponentProps> = (props) => {
     },
     [isLocked, checkboxFieldPath, dispatchFields],
   )
+
+  if (!fieldToUse || !checkboxFieldPathFromProps) {
+    console.error('SlugComponent requires fieldToUse and checkboxFieldPath in clientProps')
+    return <div style={{ color: 'red' }}>Missing required props</div>
+  }
 
   return (
     <div className="field-type slug-field-component">
