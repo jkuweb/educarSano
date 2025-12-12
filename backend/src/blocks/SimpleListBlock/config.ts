@@ -125,7 +125,7 @@ export const SimpleListBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
@@ -138,7 +138,7 @@ export const SimpleListBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
@@ -165,7 +165,7 @@ export const SimpleListBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
@@ -178,7 +178,7 @@ export const SimpleListBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
@@ -200,7 +200,7 @@ export const SimpleListBlock: Block = {
         },
       ],
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
   ],

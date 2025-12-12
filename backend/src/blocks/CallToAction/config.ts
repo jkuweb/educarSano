@@ -1,4 +1,4 @@
-import type { Block } from 'payload'
+import type { Block, PayloadRequest } from 'payload'
 
 import {
   FixedToolbarFeature,
@@ -56,7 +56,7 @@ export const CallToAction: Block = {
       type: 'checkbox',
       defaultValue: false,
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
       access: {
         read: publicReadField,
@@ -68,7 +68,7 @@ export const CallToAction: Block = {
       name: 'separatorType',
       type: 'select',
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
       access: {
         read: publicReadField,
@@ -100,7 +100,7 @@ export const CallToAction: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
@@ -113,7 +113,7 @@ export const CallToAction: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
@@ -125,7 +125,7 @@ export const CallToAction: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
       options: [
         {

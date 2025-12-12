@@ -70,7 +70,7 @@ export const ServiceBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminCondition,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
@@ -83,14 +83,14 @@ export const ServiceBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminCondition,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
       name: 'separatorType',
       type: 'select',
       admin: {
-        condition: isAdminCondition,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
       options: [
         {
@@ -122,14 +122,14 @@ export const ServiceBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminCondition,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
       name: 'darkMode',
       type: 'select',
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
       access: {
         read: publicReadField,

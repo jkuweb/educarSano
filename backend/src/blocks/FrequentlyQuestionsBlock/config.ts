@@ -70,7 +70,7 @@ export const FrequentlyQuestionsBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
   ],

@@ -129,7 +129,7 @@ export const ContentBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
@@ -142,7 +142,7 @@ export const ContentBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
@@ -168,7 +168,7 @@ export const ContentBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
@@ -181,7 +181,7 @@ export const ContentBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
@@ -193,7 +193,7 @@ export const ContentBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
       options: [
         {

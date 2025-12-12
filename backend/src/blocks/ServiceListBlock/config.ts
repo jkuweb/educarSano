@@ -109,7 +109,7 @@ export const ServiceListBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
@@ -122,7 +122,7 @@ export const ServiceListBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
@@ -148,7 +148,7 @@ export const ServiceListBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
@@ -156,7 +156,7 @@ export const ServiceListBlock: Block = {
       type: 'text',
       required: true,
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
       unique: true,
       access: {
@@ -174,7 +174,7 @@ export const ServiceListBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
       options: [
         {

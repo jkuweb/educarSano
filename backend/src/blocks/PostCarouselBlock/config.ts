@@ -19,7 +19,7 @@ export const PostCarouselBlock: Block = {
       name: 'isReverse',
       type: 'checkbox',
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
       defaultValue: false,
       access: {
@@ -38,7 +38,7 @@ export const PostCarouselBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
     {
@@ -59,7 +59,7 @@ export const PostCarouselBlock: Block = {
         },
       ],
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
       access: {
         read: publicReadField,
@@ -76,7 +76,7 @@ export const PostCarouselBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
       options: [
         {
