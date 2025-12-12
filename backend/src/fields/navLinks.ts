@@ -7,7 +7,7 @@ type NavLinksType = (options?: {
   overrides?: Partial<ArrayField>
 }) => Field
 
-export const NavLinks: NavLinksType = ({ appearances, overrides = {} } = {}) => {
+export const NavLinks: NavLinksType = ({ overrides = {} } = {}) => {
   const generatedNavLinks: Field = {
     name: 'navLinks',
     label: 'Enlace del menú',

@@ -1,5 +1,5 @@
 import { isAdminFieldLevel, publicReadField } from '@/access'
-import { isAdminCondition, isAdminConditionRoles } from '@/utilities/isAdmin'
+import { isAdminConditionRoles } from '@/utilities/isAdmin'
 import type { Block } from 'payload'
 
 export const PostCarouselBlock: Block = {

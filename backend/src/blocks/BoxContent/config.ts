@@ -1,4 +1,3 @@
-import { publicAccess, isAdmin, isAdminOrUser } from '@/access'
 import type { Block } from 'payload'
 
 export const BoxContent: Block = {

@@ -1,55 +1,7 @@
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { Plugin } from 'payload'
-import { GenerateTitle, GenerateURL } from 'node_modules/@payloadcms/plugin-seo/dist/types'
-import { Page, Post } from '@/payload-types'
-import { getServerSideURL } from '@/utilities/getURL'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { s3Storage } from '@payloadcms/storage-s3'
-import path from 'path'
-const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
-  return doc?.title ? `${doc.title} | Educar Sano` : 'Educar Sano'
-}
-
-const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
-  const url = getServerSideURL()
-
-  return doc?.slug ? `${url}/${doc.slug}` : url
-}
-
-// Helper para detectar MIME type por extensión
-const getMimeTypeFromFilename = (filename: string): string => {
-  const ext = path.extname(filename).toLowerCase()
-
-  const mimeTypes: Record<string, string> = {
-    // Imágenes
-    '.svg': 'image/svg+xml',
-    '.jpg': 'image/jpeg',
-    '.jpeg': 'image/jpeg',
-    '.png': 'image/png',
-    '.webp': 'image/webp',
-    '.gif': 'image/gif',
-    '.avif': 'image/avif',
-
-    // Videos
-    '.mp4': 'video/mp4',
-    '.webm': 'video/webm',
-    '.mov': 'video/quicktime',
-    '.avi': 'video/x-msvideo',
-
-    // Documentos
-    '.pdf': 'application/pdf',
-    '.doc': 'application/msword',
-    '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    '.xls': 'application/vnd.ms-excel',
-    '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    '.ppt': 'application/vnd.ms-powerpoint',
-    '.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    '.txt': 'text/plain',
-    '.csv': 'text/csv',
-  }
-
-  return mimeTypes[ext] || 'application/octet-stream'
-}
 
 export const plugins: Plugin[] = [
   seoPlugin({

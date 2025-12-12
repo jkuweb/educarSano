@@ -5,13 +5,8 @@ import {
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
-import {
-  isAdminFieldLevel,
-  isAdminOrOwnerFieldLevel,
-  isAdminOrSelf,
-  publicReadField,
-} from '@/access'
-import { isAdminCondition, isAdminConditionRoles } from '@/utilities/isAdmin'
+import { isAdminFieldLevel, isAdminOrOwnerFieldLevel, publicReadField } from '@/access'
+import { isAdminConditionRoles } from '@/utilities/isAdmin'
 const columnFields: Field[] = [
   {
     name: 'enableIcon',
