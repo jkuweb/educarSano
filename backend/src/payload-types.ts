@@ -2276,66 +2276,6 @@ export interface BannerBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "PricesBlock".
- */
-export interface PricesBlock {
-  enableTitle?: boolean | null;
-  title?: string | null;
-  enableText?: boolean | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  prices?:
-    | {
-        price: number;
-        link: {
-          type?: ('reference' | 'custom' | 'calendly') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null);
-          url?: string | null;
-          label: string;
-          /**
-           * Elija cómo debe representarse el enlace
-           */
-          appearance?: ('default' | 'outline') | null;
-        };
-        isFeatured?: boolean | null;
-        features?:
-          | {
-              feature: string;
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  sectionName?: string | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'pricesBlock';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth".
  */
 export interface Auth {
