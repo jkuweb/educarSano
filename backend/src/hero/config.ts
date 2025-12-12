@@ -8,7 +8,6 @@ import {
 
 import { linkGroup } from '@/fields/linkGroup'
 import { isAdminFieldLevel, publicReadField } from '@/access'
-import { isAdminConditionRoles } from '@/utilities/isAdmin'
 
 export const hero: Field = {
   name: 'hero',
@@ -56,7 +55,7 @@ export const hero: Field = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: (_, { enableCompanionText }) => Boolean(enableCompanionText),
       },
     },
     {
@@ -69,7 +68,7 @@ export const hero: Field = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: (_, { enableCompanionText }) => Boolean(enableCompanionText),
       },
     },
     {
@@ -95,7 +94,7 @@ export const hero: Field = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: (_, { enableCompanionText }) => Boolean(enableCompanionText),
       },
     },
     {
@@ -107,7 +106,7 @@ export const hero: Field = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: (_, { enableCompanionText }) => Boolean(enableCompanionText),
       },
       options: [
         {
