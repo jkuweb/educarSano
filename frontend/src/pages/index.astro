@@ -1,0 +1,21 @@
+---
+export const prerender = true;
+import Layout from "@/layouts/Layout.astro";
+import RenderBlocks from "@/blocks/RenderBlocks.astro";
+import Hero from "@/globals/Hero.astro";
+
+const PAYLOAD_API = import.meta.env.PAYLOAD_API_URL || "http://localhost:3000";
+
+const response = await fetch(`${PAYLOAD_API}/api/pages/1?depth=2`);
+
+if (!response.ok) {
+    return Astro.redirect("/404");
+}
+
+const home = await response.json();
+---
+
+<Layout meta={home.meta} isHome={true}>
+    <Hero {...home.hero} />
+    <RenderBlocks blocks={home.layout} />
+</Layout>

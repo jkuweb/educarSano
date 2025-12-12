@@ -22,17 +22,12 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from '@/fields/slug'
-import { authenticated } from '@/access/authenticated'
-import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { assignCreatedBy } from '@/hooks'
+import { isAdminOrUser, publicAccess } from '@/access'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
-  access: {
-    create: authenticated,
-    delete: authenticated,
-    read: authenticatedOrPublished,
-    update: authenticated,
-  },
+  labels: { singular: 'Post', plural: 'Posts' },
   defaultPopulate: {
     title: true,
     slug: true,
@@ -42,6 +37,12 @@ export const Posts: CollectionConfig<'posts'> = {
       description: true,
     },
   },
+  access: {
+    read: publicAccess,
+    create: isAdminOrUser,
+    update: isAdminOrUser,
+    delete: isAdminOrUser,
+  },
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt'],
     preview: (doc) => {
@@ -50,6 +51,8 @@ export const Posts: CollectionConfig<'posts'> = {
       return `${frontendUrl}/preview/post/${doc.slug}?secret=${process.env.PREVIEW_SECRET}`
     },
     useAsTitle: 'title',
+    group: 'Blog',
+    groupBy: true,
   },
   fields: [
     {
@@ -176,15 +179,16 @@ export const Posts: CollectionConfig<'posts'> = {
     {
       name: 'authors',
       type: 'relationship',
+      required: true,
+      hooks: {
+        beforeChange: [assignCreatedBy],
+      },
       admin: {
         position: 'sidebar',
       },
       hasMany: true,
       relationTo: 'users',
     },
-    // This field is only used to populate the user data via the `populateAuthors` hook
-    // This is because the `user` collection has access control locked to protect user privacy
-    // GraphQL will also not return mutated user data that differs from the underlying schema
     {
       name: 'populatedAuthors',
       type: 'array',

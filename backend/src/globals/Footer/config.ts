@@ -2,9 +2,11 @@ import type { GlobalConfig } from 'payload'
 
 import { link } from '@/fields/link'
 import { revalidateFooter } from './hooks/revalidateFooter'
+import { isAdminFieldLevel, publicReadField } from '@/access'
 
 export const Footer: GlobalConfig = {
   slug: 'footer',
+  label: 'Pie de página',
   access: {
     read: () => true,
   },
@@ -55,6 +57,25 @@ export const Footer: GlobalConfig = {
         {
           label: 'Background',
           value: 'separatorBackground',
+        },
+      ],
+    },
+    {
+      name: 'darkMode',
+      type: 'select',
+      access: {
+        read: publicReadField,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
+      },
+      options: [
+        {
+          label: 'Blue',
+          value: 'blue',
+        },
+        {
+          label: 'Dark',
+          value: 'dark',
         },
       ],
     },

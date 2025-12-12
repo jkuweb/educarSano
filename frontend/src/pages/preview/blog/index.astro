@@ -1,0 +1,33 @@
+---
+export const prerender = true;
+
+import Layout from "@/layouts/Layout.astro";
+import { getAllPosts } from "@/lib/getAllPosts";
+import SearchAndFilter from "@/components/SearchAndFilter/SearchAndFilter";
+import { getAllCategories } from "@/lib/getAllCategories";
+import { getAllTags } from "@/lib/getAllTags";
+
+const [posts, categories, tags] = await Promise.all([
+    getAllPosts(),
+    getAllCategories(),
+    getAllTags(),
+]);
+console.log(posts);
+Astro.response.headers.set(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate",
+);
+Astro.response.headers.set("Pragma", "no-cache");
+Astro.response.headers.set("Expires", "0");
+---
+
+<Layout title="posts">
+    <section>
+        <SearchAndFilter
+            client:load
+            posts={posts}
+            categories={categories}
+            tags={tags}
+        />
+    </section>
+</Layout>

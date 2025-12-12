@@ -7,6 +7,8 @@ import {
 } from '@payloadcms/richtext-lexical'
 
 import { linkGroup } from '../../fields/linkGroup'
+import { isAdminFieldLevel, publicReadField } from '@/access'
+import { isAdminConditionRoles } from '@/utilities/isAdmin'
 
 export const CallToAction: Block = {
   slug: 'cta',
@@ -53,20 +55,92 @@ export const CallToAction: Block = {
       name: 'isReverse',
       type: 'checkbox',
       defaultValue: false,
+      admin: {
+        condition: isAdminConditionRoles,
+      },
+      access: {
+        read: publicReadField,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
+      },
+    },
+    {
+      name: 'separatorType',
+      type: 'select',
+      admin: {
+        condition: isAdminConditionRoles,
+      },
+      access: {
+        read: publicReadField,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
+      },
+      options: [
+        {
+          label: 'Yellow',
+          value: 'separatorYellow',
+        },
+        {
+          label: 'White',
+          value: 'separatorWhite',
+        },
+        {
+          label: 'Background',
+          value: 'separatorBackground',
+        },
+      ],
     },
     {
       name: 'bottom',
       type: 'number',
       defaultValue: 100,
+      access: {
+        read: publicReadField,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
+      },
+      admin: {
+        condition: isAdminConditionRoles,
+      },
     },
     {
       name: 'sectionName',
       type: 'text',
       required: true,
+      access: {
+        read: publicReadField,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
+      },
+      admin: {
+        condition: isAdminConditionRoles,
+      },
+    },
+    {
+      name: 'darkMode',
+      type: 'select',
+      access: {
+        read: publicReadField,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
+      },
+      admin: {
+        condition: isAdminConditionRoles,
+      },
+      options: [
+        {
+          label: 'Blue',
+          value: 'blue',
+        },
+        {
+          label: 'Dark',
+          value: 'dark',
+        },
+      ],
     },
   ],
   labels: {
-    plural: 'Calls to Action',
-    singular: 'Call to Action',
+    plural: 'Llamadas a la acción',
+    singular: 'Llamada a la acción',
   },
 }

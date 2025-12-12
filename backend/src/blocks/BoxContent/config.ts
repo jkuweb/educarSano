@@ -1,9 +1,5 @@
+import { publicAccess, isAdmin, isAdminOrUser } from '@/access'
 import type { Block } from 'payload'
-import {
-  FixedToolbarFeature,
-  InlineToolbarFeature,
-  lexicalEditor,
-} from '@payloadcms/richtext-lexical'
 
 export const BoxContent: Block = {
   slug: 'boxContent',
@@ -12,11 +8,20 @@ export const BoxContent: Block = {
     {
       name: 'boxes',
       type: 'array',
+      maxRows: 3,
       fields: [
+        {
+          name: 'enableTitle',
+          label: '¿Quieres añadir un título?',
+          type: 'checkbox',
+        },
         {
           name: 'title',
           label: 'Título',
           type: 'text',
+          admin: {
+            condition: (_, siblingData) => siblingData?.enableTitle,
+          },
         },
         {
           name: 'richText',

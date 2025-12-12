@@ -1,0 +1,116 @@
+---
+import type { Media } from "@/lib/payloadTypes";
+
+interface PayloadMeta {
+    title?: string | null;
+    description?: string | null;
+    image?: Media | number | null;
+}
+
+interface Props {
+    meta?: PayloadMeta | null;
+    title?: string;
+    description?: string;
+    image?: string;
+    canonical?: string;
+    type?: "website" | "article";
+    article?: {
+        publishedTime?: string;
+        modifiedTime?: string;
+        author?: string;
+        tags?: string[];
+    };
+    isHome?: boolean;
+}
+
+const {
+    meta,
+    title,
+    description,
+    image,
+    canonical,
+    type = "website",
+    article,
+    isHome = false, // 👈 Por defecto false
+} = Astro.props;
+
+const getImageUrl = (img: Media | number | null | undefined): string => {
+    if (!img) return "/default-og-image.jpg";
+    if (typeof img === "object" && img.unpicUrl) return img.unpicUrl;
+    return "/default-og-image.jpg";
+};
+
+const getImageAlt = (
+    img: Media | number | null | undefined,
+    fallback: string,
+): string => {
+    if (typeof img === "object" && img?.alt) return img.alt;
+    return fallback;
+};
+
+const finalTitle = meta?.title || title || "Educar Sano";
+const finalDescription =
+    meta?.description ||
+    description ||
+    "Descubre recursos, guías y consejos sobre educación y crianza consciente para tu familia";
+const finalImage = getImageUrl(meta?.image) || image || "/default-og-image.jpg";
+const imageAlt = getImageAlt(meta?.image, finalTitle);
+
+const canonicalURL = canonical || new URL(Astro.url.pathname, Astro.site);
+const imageURL = new URL(finalImage, Astro.site);
+const siteName = "Educar Sano";
+
+const fullTitle = (() => {
+    if (finalTitle.includes("|")) return finalTitle;
+
+    if (isHome) return finalTitle;
+
+    return `${finalTitle}`;
+})();
+---
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{fullTitle}</title>
+<meta name="description" content={finalDescription} />
+<link rel="canonical" href={canonicalURL} />
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={finalDescription} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:image" content={imageURL} />
+<meta property="og:image:alt" content={imageAlt} />
+<meta property="og:locale" content="es_ES" />
+
+{
+    type === "article" && article && (
+        <>
+            {article.publishedTime && (
+                <meta
+                    property="article:published_time"
+                    content={article.publishedTime}
+                />
+            )}
+            {article.modifiedTime && (
+                <meta
+                    property="article:modified_time"
+                    content={article.modifiedTime}
+                />
+            )}
+            {article.author && (
+                <meta property="article:author" content={article.author} />
+            )}
+            {article.tags?.map((tag) => (
+                <meta property="article:tag" content={tag} />
+            ))}
+        </>
+    )
+}
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={finalDescription} />
+<meta name="twitter:image" content={imageURL} />
+<meta name="twitter:image:alt" content={imageAlt} />

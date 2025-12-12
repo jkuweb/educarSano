@@ -76,14 +76,15 @@ export interface User {
 
 export interface Media {
   id: number;
+  /**
+   * Ayuda a lectores de pantalla a describir la imagen. (No usar en imágenes decorativas)
+   */
   alt?: string | null;
-  cloudinaryPublicId?: string | null;
-  cloudinaryUrl?: string | null;
-  cloudinaryResourceType?: string | null;
-  cloudinaryFormat?: string | null;
-  cloudinaryVersion?: number | null;
-  originalUrl?: string | null;
-  transformedUrl?: string | null;
+  /**
+   * URL automáticamente compatible con Unpic.
+   */
+  unpicUrl?: string | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -95,6 +96,32 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+  sizes?: {
+    large?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    medium?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    small?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
 }
 
 export interface PayloadResponse<T> {
@@ -130,6 +157,7 @@ export interface ContentBlock {
     [k: string]: unknown;
   } | null;
   enableLink?: boolean | null;
+  darkMode?: ("blue" | "dark") | null;
   link?: {
     type?: ("reference" | "custom" | "calendly") | null;
     newTab?: boolean | null;
@@ -227,6 +255,7 @@ export interface Page {
   hero: {
     title: string;
     media: number | Media;
+    removeSvg?: boolean | null;
     richText?: {
       root: {
         type: string;
@@ -298,7 +327,6 @@ export interface ListContentBlock {
     };
     [k: string]: unknown;
   } | null;
-  enableBackgroundImage?: boolean | null;
   enableImage?: boolean | null;
   fieldImage?: (number | null) | Media;
   blocks?:
@@ -330,16 +358,43 @@ export interface ListContentBlock {
           };
           [k: string]: unknown;
         } | null;
+        enableLink?: boolean | null;
+        link?: {
+          type?: ("reference" | "custom" | "calendly") | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: "pages";
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: "posts";
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ("default" | "outline") | null;
+        };
         color?: ("transparent" | "green" | "yellow" | "red") | null;
         id?: string | null;
       }[]
     | null;
+  enableBackgroundImage?: boolean | null;
   isReverse?: boolean | null;
   bottom?: number | null;
   separatorType?:
-    | ("separatorYellow" | "separatorWhite" | "separatorBackground")
+    | (
+        | "separatorYellow"
+        | "separatorWhite"
+        | "separatorBackground"
+        | "separatorDark"
+      )
     | null;
   sectionName: string;
+  darkMode?: ("blue" | "dark") | null;
   id?: string | null;
   blockName?: string | null;
   blockType: "listContent";
@@ -426,16 +481,21 @@ export interface CallToActionBlock {
       }[]
     | null;
   isReverse?: boolean | null;
+  separatorType?:
+    | ("separatorYellow" | "separatorWhite" | "separatorBackground")
+    | null;
   bottom?: number | null;
   sectionName: string;
   id?: string | null;
   blockName?: string | null;
+  darkMode?: ("blue" | "dark") | null;
   blockType: "cta";
 }
 
 export interface SimpleListBlock {
   enableTitle?: boolean | null;
   title?: string | null;
+  image: (number | null) | Media;
   enableBackgroundImage?: boolean | null;
   enableImage?: boolean | null;
   fieldImage?: (number | null) | Media;
@@ -471,6 +531,7 @@ export interface SimpleListBlock {
       }[]
     | null;
   isReverse?: boolean | null;
+  darkMode?: ("blue" | "dark") | null;
   bottom?: number | null;
   separatorType?:
     | ("separatorYellow" | "separatorWhite" | "separatorBackground")
@@ -553,6 +614,7 @@ export interface FormBlock {
   enableHeaderText: boolean;
   headerText: [Object];
   enableCompanionText: boolean;
+  enableBackgroundImage?: boolean | null;
   companionText: {
     root: {
       type: string;
@@ -569,6 +631,10 @@ export interface FormBlock {
     [k: string]: unknown;
   };
   form: Form;
+  separatorType?:
+    | ("separatorYellow" | "separatorWhite" | "separatorBackground")
+    | null;
+  darkMode?: ("blue" | "dark") | null;
   isReverse: boolean;
   bottom: number;
   blockName: string;
@@ -577,6 +643,13 @@ export interface FormBlock {
 export interface Hero {
   title: string;
   media: number | Media;
+  removeSvg?: boolean | null;
+  isReverse?: boolean | null;
+  bottom?: number | null;
+  separatorType?:
+    | ("separatorYellow" | "separatorWhite" | "separatorBackground")
+    | null;
+  darkMode?: ("blue" | "dark") | null;
   richText?: {
     root: {
       type: string;
@@ -771,8 +844,25 @@ export interface Tag {
   updatedAt: string;
   createdAt: string;
 }
-
 export interface FrequentlyQuestionsBlock {
+  enableTitle?: boolean | null;
+  title?: string | null;
+  enableText?: boolean | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ("ltr" | "rtl") | null;
+      format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   enableImage?: boolean | null;
   image?: (number | null) | Media;
   questions: {
@@ -784,4 +874,189 @@ export interface FrequentlyQuestionsBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: "frequentlyQuestionsBlock";
+}
+
+export interface PricesBlock {
+  enableTitle?: boolean | null;
+  title?: string | null;
+  enableText?: boolean | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ("ltr" | "rtl") | null;
+      format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  prices?:
+    | {
+        price: number;
+        link: {
+          type?: ("reference" | "custom" | "calendly") | null;
+          newTab?: boolean | null;
+          reference?: {
+            relationTo: "pages";
+            value: number | Page;
+          } | null;
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ("default" | "outline") | null;
+        };
+        isFeatured?: boolean | null;
+        features?:
+          | {
+              feature: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: "pricesBlock";
+}
+
+export interface ServiceListBlock {
+  enableTitle?: boolean | null;
+  title?: string | null;
+  enableBackgroundImage?: boolean | null;
+  blocks?:
+    | {
+        enableFiledTitle?: boolean | null;
+        fieldTitle?: string | null;
+        enableIcon?: boolean | null;
+        media?: (number | null) | Media;
+        enableRichText?: boolean | null;
+        richText?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ("ltr" | "rtl") | null;
+            format:
+              | "left"
+              | "start"
+              | "center"
+              | "right"
+              | "end"
+              | "justify"
+              | "";
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        link: {
+          type?: ("reference" | "custom" | "calendly") | null;
+          newTab?: boolean | null;
+          reference?: {
+            relationTo: "pages";
+            value: number | Page;
+          } | null;
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ("default" | "outline") | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  isReverse?: boolean | null;
+  bottom?: number | null;
+  darkMode?: ("blue" | "dark") | null;
+  separatorType?:
+    | ("separatorYellow" | "separatorWhite" | "separatorBackground")
+    | null;
+  sectionName: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: "serviceListBlock";
+}
+
+export interface ServiceBlock {
+  slug: string;
+  title?: string | null;
+  richText: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ("ltr" | "rtl") | null;
+      format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  accordions?:
+    | {
+        title?: string | null;
+        content?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ("ltr" | "rtl") | null;
+            format:
+              | "left"
+              | "start"
+              | "center"
+              | "right"
+              | "end"
+              | "justify"
+              | "";
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  enableBackgroundImage?: boolean | null;
+  bottom?: number | null;
+  isReverse?: boolean | null;
+  darkMode?: ("blue" | "dark") | null;
+  separatorType?:
+    | ("separatorYellow" | "separatorWhite" | "separatorBackground")
+    | null;
+  sectionName: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: "service";
+}
+
+export interface PostCarouselBlock {
+  enableBackgroundImage?: boolean | null;
+  isReverse?: boolean | null;
+  bottom?: number | null;
+  separatorType?:
+    | ("separatorYellow" | "separatorWhite" | "separatorBackground")
+    | null;
+  id?: string | null;
+  darkMode?: ("blue" | "dark") | null;
+  blockName?: string | null;
+  blockType: "postCarouselBlock";
 }

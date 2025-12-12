@@ -1,6 +1,6 @@
-import type { Page, PayloadResponse, Post } from "@/lib/payloadTypes"
+import type { Page, PayloadResponse, Post } from "@/lib/payloadTypes";
 // import { getCacheKey, getFromCache, setCache } from "../utils/cache"
-import { payloadFetch } from "../utils/payloadFetch"
+import { payloadFetch } from "../utils/payloadFetch";
 
 // export async function getPageBySlug(
 // 	slug: string,
@@ -40,23 +40,23 @@ import { payloadFetch } from "../utils/payloadFetch"
 
 // lib/getPageBySlug.ts
 interface GetPageOptions {
-	depth?: number
-	draft?: boolean
+  depth?: number;
+  draft?: boolean;
 }
 
 export async function getPageBySlug(
-	slug: string,
-	options: GetPageOptions = {}
+  slug: string,
+  options: GetPageOptions = {},
 ): Promise<Page | null> {
-	const { depth = 1, draft = false } = options
+  const { depth = 1, draft = false } = options;
 
-	try {
-		// IMPORTANTE: El parámetro draft debe estar en la URL
-		const endpoint = `/pages?where[slug][equals]=${slug}&depth=${depth}&draft=${draft}&limit=1`
-		const data = await payloadFetch<{ docs: Page[] }>(endpoint, { draft })
+  try {
+    // IMPORTANTE: El parámetro draft debe estar en la URL
+    const endpoint = `/pages?where[slug][equals]=${slug}&depth=${depth}&draft=${draft}&limit=1`;
+    const data = await payloadFetch<{ docs: Page[] }>(endpoint, { draft });
 
-		return data.docs[0] || null
-	} catch (error) {
-		return null
-	}
+    return data.docs[0] || null;
+  } catch (error) {
+    return null;
+  }
 }

@@ -12,13 +12,14 @@ import { Posts } from './collections/Posts/Posts'
 import { Pages } from './collections/Pages/Pages'
 import { Header } from './globals/Header/config'
 import { Footer } from './globals/Footer/config'
-import { ContactMessages } from './collections/ContactMessages/ContactMessages'
 import { plugins } from './plugins'
 import { contactEndpoint } from '@/api/contact'
 import { Categories } from './collections/Categories'
 import { searchPosts } from './api/search'
 import { searchPostsEndpoint, searchPostsSimple } from './api/searchPosts'
 import { Tags } from './collections/Tags'
+import { Documents } from './collections/Documents/Documents'
+import { Videos } from './collections/Videos/Videos'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -30,11 +31,22 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      graphics: {
+        Logo: path.resolve(dirname, '/components/admin/ui/Logo'),
+        Icon: path.resolve(dirname, '/components/admin/ui/Icon'),
+      },
+    },
+  },
+  upload: {
+    limits: {
+      fileSize: 1024 * 1024 * 5,
+    },
   },
   i18n: {
     supportedLanguages: { es },
   },
-  collections: [Pages, Users, Media, Categories, Posts, ContactMessages, Tags],
+  collections: [Pages, Users, Media, Categories, Posts, Tags, Documents, Videos],
   globals: [Header, Footer],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
@@ -53,7 +65,18 @@ export default buildConfig({
   }),
   sharp,
   plugins: [...plugins],
-  cors: [process.env.FRONTEND_URL || 'http://localhost:4321'].filter(Boolean),
-
-  csrf: [process.env.FRONTEND_URL || 'http://localhost:4321'].filter(Boolean),
+  cors: [
+    process.env.FRONTEND_URL || 'http://localhost:4321', // Puerto por defecto de Astro
+    process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000', // Backend
+    // Si estás en producción, añade tus dominios
+    // 'https://tu-frontend.com',
+    // 'https://tu-backend.com',
+  ].filter(Boolean),
+  csrf: [
+    process.env.FRONTEND_URL || 'http://localhost:4321', // Puerto por defecto de Astro
+    process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000', // Backend
+    // Si estás en producción, añade tus dominios
+    // 'https://tu-frontend.com',
+    // 'https://tu-backend.com',
+  ].filter(Boolean),
 })

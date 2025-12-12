@@ -2,11 +2,11 @@
 import RenderBlocks from "@/blocks/RenderBlocks.astro";
 import Layout from "@/layouts/Layout.astro";
 import { getPageBySlug } from "@/lib/getPageBySlug";
+import Hero from "@/globals/Hero.astro";
 
 const { slug } = Astro.params;
 
 const page = await getPageBySlug(slug!, { depth: 2, draft: true });
-
 if (!page) {
     return Astro.redirect("/404");
 }
@@ -28,13 +28,10 @@ Astro.response.headers.set("Expires", "0");
             href={`/${slug}`}
             style="color: white; margin-left: 1rem; text-decoration: underline; font-weight: bold;"
         >
-            Ver publicada
+            Ver página actual publicada
         </a>
     </div>
 
-    <h1>{page.title}</h1>
-
-    <div class="max-w-4xl mx-auto">
-        <RenderBlocks blocks={page.layout} />
-    </div>
+    <Hero {...page.hero} />
+    <RenderBlocks blocks={page.layout} />
 </Layout>

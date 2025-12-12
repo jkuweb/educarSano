@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { Image } from "@unpic/react";
+
+type UnpicLayout = "fullWidth" | "fixed" | "constrained";
 
 interface MediaImageProps {
   src: string;
@@ -8,6 +11,9 @@ interface MediaImageProps {
   className?: string;
   loading?: "lazy" | "eager";
   mimeType?: string;
+  layout?: UnpicLayout;
+  priority?: boolean;
+  background?: string;
 }
 
 export const MediaImage: React.FC<MediaImageProps> = ({
@@ -15,11 +21,16 @@ export const MediaImage: React.FC<MediaImageProps> = ({
   alt = "",
   width,
   height,
-  className = "",
-  loading = "lazy",
+  className,
   mimeType = "",
+  loading = "lazy",
+  layout = "constrained",
+  priority = false,
+  background = "",
+  ...rest
 }) => {
   const [svgContent, setSvgContent] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
 
   const isSvgFile =
@@ -27,8 +38,10 @@ export const MediaImage: React.FC<MediaImageProps> = ({
     src?.endsWith(".svg") ||
     src?.includes(".svg?");
 
+  // Fetch inline SVG
   useEffect(() => {
     if (isSvgFile && src) {
+      setIsLoading(true);
       setError(false);
       setSvgContent("");
 
@@ -39,34 +52,99 @@ export const MediaImage: React.FC<MediaImageProps> = ({
         })
         .then((content) => {
           setSvgContent(content);
+          setIsLoading(false);
         })
         .catch((err) => {
-          console.error("Error loading SVG:", err);
           setError(true);
+          setIsLoading(false);
         });
     }
   }, [src, isSvgFile]);
 
-  if (isSvgFile && svgContent && !error) {
+  // Render inline SVG if available
+  if (isSvgFile) {
+    if (isLoading) {
+      return (
+        <div
+          className={className}
+          style={{
+            width,
+            height,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          Loading SVG...
+        </div>
+      );
+    }
+
+    if (svgContent && !error) {
+      return (
+        <div
+          className={className}
+          style={{ width, height }}
+          dangerouslySetInnerHTML={{ __html: svgContent }}
+        />
+      );
+    }
+
+    if (error) {
+      console.warn("Falling back to img tag for SVG:", src);
+    }
+  }
+
+  if (layout === "fullWidth") {
     return (
-      <div
+      <Image
+        src={src}
+        alt={alt}
+        layout="fullWidth"
         className={className}
-        style={{ width, height }}
-        dangerouslySetInnerHTML={{ __html: svgContent }}
+        loading={loading}
+        priority={priority}
+        background={background}
+        {...rest}
       />
     );
   }
 
-  return (
-    <img
-      src={src}
-      alt={alt}
-      width={width}
-      height={height}
-      className={className}
-      loading={loading}
-    />
-  );
+  if (layout === "fixed" && width && height) {
+    return (
+      <Image
+        src={src}
+        alt={alt}
+        layout="fixed"
+        width={width}
+        height={height}
+        className={className}
+        loading={loading}
+        priority={priority}
+        background={background}
+        {...rest}
+      />
+    );
+  }
+
+  if (width && height) {
+    return (
+      <Image
+        src={src}
+        alt={alt}
+        layout="constrained"
+        width={width}
+        height={height}
+        className={className}
+        loading={loading}
+        priority={priority}
+        background={background}
+        {...rest}
+      />
+    );
+  }
+
+  return <img src={src} alt={alt} className={className} />;
 };
 
 export default MediaImage;

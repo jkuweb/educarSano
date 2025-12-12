@@ -1,0 +1,146 @@
+---
+import AsteriskIcon from "@/components/AsteriskIcon/AsteriskIcon.astro";
+import AstroImage from "@/components/image/AstroImage.astro";
+import PostCard from "@/components/PostCard/PostCard.astro";
+import RichText from "@/components/RichText.astro";
+import Layout from "@/layouts/Layout.astro";
+import { getPostBySlug } from "@/lib/getPostBySlug";
+import type { Media, Post } from "@/lib/payloadTypes";
+import { formatAuthors } from "@/utils/formatAuthors";
+import { formatDateTime } from "@/utils/formatDateTime";
+
+const { slug } = Astro.params;
+
+if (!slug || typeof slug !== "string") {
+    return Astro.redirect("/404");
+}
+const post = await getPostBySlug(slug!, { depth: 2, draft: true });
+const {
+    title,
+    content,
+    relatedPosts,
+    populatedAuthors,
+    publishedAt,
+    heroImage,
+} = post as Post;
+const { unpicUrl, width, height } = heroImage as Media;
+
+const hasRelatedPosts = relatedPosts && relatedPosts.length > 0;
+
+if (!post) {
+    return Astro.redirect("/404");
+}
+const hasPopularAuthors =
+    populatedAuthors &&
+    Array.isArray(populatedAuthors) &&
+    populatedAuthors.length > 0;
+
+Astro.response.headers.set(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate",
+);
+Astro.response.headers.set("Pragma", "no-cache");
+Astro.response.headers.set("Expires", "0");
+---
+
+<Layout title={post.title}>
+    <div
+        style="background: #ff6b35; color: white; padding: 1rem; text-align: center; position: sticky; top: 0; z-index: 9999;"
+    >
+        🔍 Modo Preview - Viendo borrador
+        <a
+            href={`/blog/${slug}`}
+            style="color: white; margin-left: 1rem; text-decoration: underline; font-weight: bold;"
+        >
+            Ver publicada
+        </a>
+    </div>
+    <section class="wrapper">
+        <div class="mt-24 pb-12 px-4 max-w-4xl mx-auto bg-[#fffcf0] relative">
+            <AsteriskIcon className="absolute left-[-58px] top-[-44px]" />
+            <div
+                class="px-6 pt-16 pb-16 space-y-4 grid grid-rows-[auto_4rem_6rem_1fr]"
+            >
+                <div class="">
+                    <AstroImage
+                        src={unpicUrl!}
+                        alt={post.title}
+                        width={width!}
+                        height={height!}
+                        className="w-full h-full object-cover"
+                    />
+                </div>
+
+                <div
+                    class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-8"
+                >
+                    {
+                        hasPopularAuthors && (
+                            <div class="flex items-center gap-1.5">
+                                <svg
+                                    class="w-4 h-4"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                >
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                        clip-rule="evenodd"
+                                    />
+                                </svg>
+                                <span class="font-medium">
+                                    {formatAuthors(populatedAuthors)}
+                                </span>
+                            </div>
+                        )
+                    }
+                    {
+                        publishedAt && (
+                            <div class="flex items-center gap-1.5">
+                                <svg
+                                    class="w-4 h-4"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                >
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                        clip-rule="evenodd"
+                                    />
+                                </svg>
+                                <time date-time={publishedAt.toString()}>
+                                    {formatDateTime(publishedAt)}
+                                </time>
+                            </div>
+                        )
+                    }
+                </div>
+                <h1 class="text-3xl font-bold mb-6">{title}</h1>
+                <div class="prose">
+                    <RichText content={content} />
+                </div>
+            </div>
+        </div>
+        <div class="mt-52 mb-52">
+            <h2 class="!mb-12">También te puede interesar:</h2>
+            <div
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+            >
+                {
+                    hasRelatedPosts
+                        ? relatedPosts.map((relatedPost, index) => {
+                              return (
+                                  <PostCard
+                                      index={index}
+                                      post={relatedPost as Post}
+                                      hasCategories={true}
+                                      hasTags={true}
+                                  />
+                              );
+                          })
+                        : null
+                }
+            </div>
+        </div>
+    </section>
+</Layout>

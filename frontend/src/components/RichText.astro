@@ -5,6 +5,7 @@ import FrequentlyQuestionsBlock from "@/blocks/FrequentlyQuestionsBlock/Frequent
 import MediaBlock from "@/blocks/MediaBlock/MediaBlock.astro";
 import QuoteBlock from "@/blocks/QuoteBlock/QuoteBlock.astro";
 import SocialMediaBlock from "@/blocks/SocialMediaBlock/SocialMediaBlock.astro";
+import PricesBlock from "@/blocks/PricesBlock/PricesBlock.astro";
 import "@/styles/richtext.css";
 
 interface Props {
@@ -30,6 +31,8 @@ function RenderBlock(block: any) {
             return SocialMediaBlock;
         case "frequentlyQuestionsBlock":
             return FrequentlyQuestionsBlock;
+        case "pricesBlock":
+            return PricesBlock;
         default:
             return null;
     }
@@ -58,12 +61,40 @@ function lexicalToHTML(nodes: any[]): string {
                     return text;
                 }
                 case "link": {
-                    const url = node.fields?.url || node.url || "#";
-                    const rel = node.fields?.newTab
-                        ? "noopener noreferrer"
-                        : "";
+                    let url = "#";
+                    let download = false;
+
+                    if (
+                        node.fields?.linkType === "internal" &&
+                        node.fields?.doc?.value
+                    ) {
+                        // La URL ya viene correcta del plugin de cloud storage
+                        url = node.fields.doc.value.url || "#";
+
+                        // Forzar descarga si es PDF
+                        if (
+                            node.fields.doc.value.mimeType === "application/pdf"
+                        ) {
+                            download = true;
+                        }
+                    } else if (
+                        node.fields?.linkType === "custom" &&
+                        node.fields?.url
+                    ) {
+                        url = node.fields.url;
+                    } else if (node.fields?.url) {
+                        url = node.fields.url;
+                    } else if (node.url) {
+                        url = node.url;
+                    }
+
+                    const rel =
+                        node.fields?.rel?.join(" ") ||
+                        (node.fields?.newTab ? "noopener noreferrer" : "");
                     const target = node.fields?.newTab ? "_blank" : "";
-                    return `<a href="${url}" ${target ? `target="${target}"` : ""} ${rel ? `rel="${rel}"` : ""}>${lexicalToHTML(node.children)}</a>`;
+                    const downloadAttr = download ? "download" : "";
+
+                    return `<a href="${url}" ${target ? `target="${target}"` : ""} ${rel ? `rel="${rel}"` : ""} ${downloadAttr}>${lexicalToHTML(node.children)}</a>`;
                 }
                 case "list": {
                     const listTag = node.tag === "ol" ? "ol" : "ul";

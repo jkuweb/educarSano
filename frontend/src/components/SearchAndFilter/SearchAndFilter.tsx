@@ -150,7 +150,7 @@ export default function SearchAndFilter({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="text-center mb-8 sm:mb-12">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from- via-[#85ccc6]  mb-4 text-[#0e3734]">
-            Descubre Contenido
+            Blog
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-lg">
             Explora nuestra colección de artículos
@@ -179,7 +179,7 @@ export default function SearchAndFilter({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Buscar artículos, categorías, tags..."
-              className="w-full pl-14 pr-4 py-5 text-lg bg-white dark:bg-gray-800 border-2 border-transparent rounded-2xl shadow-xl focus:outline-none focus:ring-4 focus:ring-[#a8dad8] dark:focus:ring-[#aadbd9] focus:border-[#aadbd9] transition-all duration-300 placeholder-gray-400 dark:text-white"
+              className="w-full pl-14 pr-4 py-5 text-lg bg-white dark:bg-gray-800 border-1 border-transparent rounded-lg shadow-xl focus:outline-none focus:ring-1 focus:ring-[#a8dad8] dark:focus:ring-[#aadbd9] focus:border-[#aadbd9] transition-all duration-300 placeholder-gray-400 dark:text-white"
             />
             {query && (
               <button
@@ -204,8 +204,8 @@ export default function SearchAndFilter({
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto mb-8 space-y-4">
-          <div className="flex flex-wrap gap-3 items-center justify-center">
+        <div className="max-w-4xl mx-auto mb-12 space-y-4">
+          <div className="flex flex-wrap gap-3 items-center justify-center mb-8">
             <select
               value=""
               onChange={(e) => addCategory(e.target.value)}
@@ -226,7 +226,7 @@ export default function SearchAndFilter({
               onChange={(e) => addTag(e.target.value)}
               className="select-wrapper px-6 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-[#85ccc6] focus:border-[#85ccc6] focus:ring-4 focus:ring-emerald-200 dark:focus:ring-emerald-900 transition-all cursor-pointer shadow-sm outline-none"
             >
-              <option value="">+ Tag</option>
+              <option value="">+ Etiqueta</option>
               {tags
                 .filter((tag) => !selectedTags.includes(tag.title))
                 .map((tag) => (
@@ -251,7 +251,7 @@ export default function SearchAndFilter({
               {selectedCategories.map((category) => (
                 <span
                   key={category}
-                  className="group inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                  className="group inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-primary text-[#003531] rounded-full text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 >
                   <svg
                     className="w-4 h-4"
@@ -286,7 +286,7 @@ export default function SearchAndFilter({
               {selectedTags.map((tag) => (
                 <span
                   key={tag}
-                  className="group inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                  className="group inline-flex items-center gap-2 px-4 py-2 bg-yellow-neutral text-[#513c0e] rounded-full text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 >
                   <svg
                     className="w-4 h-4"
@@ -324,7 +324,7 @@ export default function SearchAndFilter({
             </div>
           )}
 
-          <div className="text-center">
+          <div className="text-center mt-16">
             <p className="text-sm text-[#0e3734] dark:text-[#99a1af]">
               <span className="font-semibold text-[#0e3734] dark:text-[#99a1af]">
                 {filteredPosts.length}

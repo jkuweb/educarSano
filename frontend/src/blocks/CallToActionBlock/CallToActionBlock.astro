@@ -17,45 +17,34 @@ const {
     isReverse,
     enableBackgroundImage,
     sectionName,
+    separatorType,
+    darkMode,
 } = Astro.props as CallToActionProps;
-
 const mediaData = media && typeof media === "object" ? (media as Media) : null;
-const { alt, url, width, height, mimeType } = mediaData || {};
+const { alt, unpicUrl, mimeType } = mediaData || {};
 ---
 
 <section
     class={cn(
-        "pt-40 pb-40 relative ",
+        "relative dark:bg-blue-900 dark:!bg-none py-40",
         enableBackgroundImage ? "bg-section" : "",
         sectionName,
     )}
 >
-    <div class={"wrapper m-auto"}>
-        <div class="grid grid-rows-2 gap-12 justify-items-center">
-            <div>
+    <div class="wrapper grid lg:grid-cols-2 place-items-center m-auto lg:px-4">
+        <div class="p-8 md:p-12 lg:px-16 lg:py-24">
+            <div
+                class="mx-auto max-w-xl text-center ltr:sm:text-left rtl:sm:text-right"
+            >
                 {
-                    media && (
-                        <AstroImage
-                            src={url!}
-                            width={width!}
-                            height={height!}
-                            alt={alt!}
-                            mimeType={mimeType!}
+                    richText && (
+                        <RichText
+                            className="cta-rich-text cta-info"
+                            content={richText}
                         />
                     )
                 }
-            </div>
-            <div class="">
-                <div class="flex items-center my-12">
-                    {
-                        richText && (
-                            <RichText
-                                className="cta-rich-text"
-                                content={richText}
-                            />
-                        )
-                    }
-                </div>
+
                 <div
                     class="grid [grid-template-columns:repeat(auto-fit,minmax(15rem,15rem))] gap-2 items-center justify-center mt-12"
                 >
@@ -69,10 +58,34 @@ const { alt, url, width, height, mimeType } = mediaData || {};
                 </div>
             </div>
         </div>
+        <div>
+            {
+                media && (
+                    <AstroImage
+                        src={unpicUrl!}
+                        width={600}
+                        height={370}
+                        alt={alt!}
+                        mimeType={mimeType!}
+                        className={cn(
+                            "h-full w-full object-cover sm:h-[calc(100%_-_2rem)] sm:self-end sm:rounded-ss-[30px] md:h-[calc(100%_-_4rem)] md:rounded-ss-[60px]",
+                            `${sectionName}-image`,
+                        )}
+                    />
+                )
+            }
+        </div>
     </div>
+
     <Separator
-        type={"separatorWhite"}
+        type={separatorType || "separatorWhite"}
         reverse={isReverse}
+        className={cn(
+            "absolute dark:[&>path]:fill-section-color-blue",
+            darkMode === "dark"
+                ? "dark:[&>path]:fill-section-color"
+                : "dark:[&>path]:fill-section-color-blue",
+        )}
         style={{ bottom: `${bottom}px` }}
     />
 </section>

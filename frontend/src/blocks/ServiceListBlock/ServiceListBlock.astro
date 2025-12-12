@@ -1,0 +1,147 @@
+---
+import { cn } from "@/utils/ui";
+import type {
+    ServiceListBlock as ServiceListBlockProps,
+    Media,
+} from "@/lib/payloadTypes";
+import RichText from "@/components/RichText.astro";
+import AstroImage from "@/components/image/AstroImage.astro";
+import { Separator } from "@/components/Separator/Separator";
+import { Link } from "@/components/Link";
+
+const {
+    enableBackgroundImage,
+    enableTitle,
+    separatorType,
+    sectionName,
+    title,
+    blocks,
+    isReverse,
+    bottom,
+    darkMode,
+} = Astro.props as ServiceListBlockProps;
+---
+
+<section
+    class={cn(
+        "relative pb-40 pt-40 ",
+        enableBackgroundImage ? "bg-section" : "",
+    )}
+>
+    <div class="wrapper m-auto relative">
+        <div>
+            {enableTitle && title ? <h2>{title}</h2> : ""}
+        </div>
+        <div>
+            <div>
+                <article class="bg-gray-2 pb-10 pt-20 lg:pb-20 lg:pt-[120px]">
+                    <div class="container mx-auto">
+                        <div class="mx-4 flex flex-wrap justify-center">
+                            <div
+                                class="grid gap-8 grid-cols-[repeat(auto-fill,minmax(450px,1fr))] px-4"
+                            >
+                                {
+                                    blocks &&
+                                        blocks.length > 0 &&
+                                        blocks.map((block) => {
+                                            const {
+                                                richText,
+                                                enableRichText,
+                                                enableFiledTitle,
+                                                enableIcon,
+                                                media,
+                                                fieldTitle,
+                                                link,
+                                            } = block;
+                                            const mediaData =
+                                                media &&
+                                                typeof media === "object"
+                                                    ? (media as Media)
+                                                    : null;
+                                            const {
+                                                alt,
+                                                url,
+                                                width,
+                                                height,
+                                                mimeType,
+                                                unpicUrl,
+                                            } = mediaData || {};
+
+                                            return (
+                                                <div class="flex">
+                                                    <div class="mb-10 overflow-hidden rounded-lg bg-white dark:bg-card-color shadow-1 duration-300 hover:shadow-3 dark:bg-dark-2 dark:shadow-none dark:hover:shadow-3 grid grid-rows-[306px_1fr] shadow-[0px_7px_29px_0px_rgba(100,100,111,0.2)]">
+                                                        <div class="overflow-hidden">
+                                                            {enableIcon &&
+                                                            media ? (
+                                                                <AstroImage
+                                                                    src={
+                                                                        unpicUrl!
+                                                                    }
+                                                                    width={
+                                                                        width!
+                                                                    }
+                                                                    height={
+                                                                        height!
+                                                                    }
+                                                                    alt={alt!}
+                                                                    mimeType={
+                                                                        mimeType!
+                                                                    }
+                                                                    className="!bg-none m-auto"
+                                                                />
+                                                            ) : (
+                                                                ""
+                                                            )}
+                                                        </div>
+
+                                                        <div class="p-8 text-center sm:p-9 md:p-7 xl:p-9 flex flex-col grow">
+                                                            {enableFiledTitle &&
+                                                            fieldTitle ? (
+                                                                <h3 class="mb-4 block text-xl text-[#003531] sm:text-[22px] md:text-xl lg:text-[22px] xl:text-xl 2xl:text-[22px] dark:text-white uppercase font-bold p-4 bg-[#85ccc652] tracking-[0.18rem] ">
+                                                                    {fieldTitle}
+                                                                </h3>
+                                                            ) : (
+                                                                ""
+                                                            )}
+
+                                                            {richText &&
+                                                            enableRichText ? (
+                                                                <RichText
+                                                                    content={
+                                                                        richText
+                                                                    }
+                                                                    className="grow mb-4"
+                                                                />
+                                                            ) : (
+                                                                ""
+                                                            )}
+
+                                                            <Link
+                                                                className="self-center inline-block  border border-yellow-300 font-bold  px-7 py-2 text-base text-body-color transition hover:border-yellow-950 hover:bg-hover-color hover:text-paragraph-color dark:border-dark-3 dark:text-paragraph-color"
+                                                                {...link}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+    <Separator
+        type={separatorType || "separatorWhite"}
+        reverse={isReverse}
+        className={cn(
+            "absolute dark:[&>path]:fill-section-color-blue",
+            darkMode === "dark"
+                ? "dark:[&>path]:fill-section-color"
+                : "dark:[&>path]:fill-section-color-blue",
+        )}
+        style={{ bottom: `${bottom}px` }}
+    />
+</section>

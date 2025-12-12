@@ -1,18 +1,16 @@
 import type { Endpoint } from 'payload'
 import { z } from 'zod'
 import { Resend } from 'resend'
-import { getClientEmailTemplate } from '@/EmailTemplates/clientEmailTemplate'
+import { checkRateLimit } from '@/utilities/rateLimit'
 
-// Inicializar Resend
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-// Schema de validación
 const ContactSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  email: z.string('Email inválido'),
+  email: z.string().email('Email inválido'),
   subject: z.string().min(5, 'El asunto debe tener al menos 5 caracteres').optional(),
   message: z.string().min(10, 'El mensaje debe tener al menos 10 caracteres'),
-  consent: z.boolean().optional(),
+  recaptchaToken: z.string().optional(),
 })
 
 export const contactEndpoint: Endpoint = {
@@ -20,9 +18,34 @@ export const contactEndpoint: Endpoint = {
   method: 'post',
   handler: async (req) => {
     try {
-      console.log('🔵 [CONTACT ENDPOINT] Request recibida')
+      const ip =
+        req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+        req.headers.get('x-real-ip') ||
+        'unknown'
 
-      // Obtener el body
+      const rateLimit = checkRateLimit(`contact:${ip}`, {
+        windowMs: 60 * 60 * 1000,
+        maxRequests: 5,
+      })
+
+      if (!rateLimit.allowed) {
+        const resetDate = new Date(rateLimit.resetTime)
+
+        return Response.json(
+          {
+            success: false,
+            message: 'Has enviado demasiados mensajes. Por favor, espera un momento.',
+            retryAfter: resetDate.toISOString(),
+          },
+          {
+            status: 429,
+            headers: {
+              'Retry-After': String(Math.ceil((rateLimit.resetTime - Date.now()) / 1000)),
+            },
+          },
+        )
+      }
+
       let body
       if (req.data) {
         body = req.data
@@ -34,10 +57,44 @@ export const contactEndpoint: Endpoint = {
         throw new Error('No se pudo obtener el body de la request')
       }
 
-      console.log('✅ Body parseado:', body)
-
       const parsed = ContactSchema.parse(body)
-      console.log('✅ Datos validados:', parsed)
+
+      if (parsed.recaptchaToken && process.env.RECAPTCHA_SECRET_KEY) {
+        const recaptchaResponse = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${parsed.recaptchaToken}`,
+        })
+
+        const recaptchaData = await recaptchaResponse.json()
+
+        if (!recaptchaData.success || recaptchaData.score < 0.5) {
+          console.log('⛔ reCAPTCHA validation failed:', recaptchaData)
+          return Response.json(
+            {
+              success: false,
+              error: 'recaptcha_validation_failed',
+              message: 'Validación de seguridad fallida',
+            },
+            { status: 400 },
+          )
+        }
+      }
+
+      const emailRateLimit = checkRateLimit(`contact:email:${parsed.email}`, {
+        windowMs: 24 * 60 * 60 * 1000, // 24 horas
+        maxRequests: 3, // 3 mensajes por día desde el mismo email
+      })
+
+      if (!emailRateLimit.allowed) {
+        return Response.json(
+          {
+            success: false,
+            message: 'Has enviado demasiados mensajes desde este email.',
+          },
+          { status: 429 },
+        )
+      }
 
       let submission
       try {
@@ -51,60 +108,49 @@ export const contactEndpoint: Endpoint = {
             status: 'nuevo',
           },
         })
-      } catch (_collectionError) {
-        // Renombrado con _ para indicar que no se usa
+      } catch (collectionError) {
         submission = { id: 'pending' }
       }
 
+      // Enviar emails (mismo código de antes)
       try {
-        const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
+        const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@educarsano.com'
 
         await resend.emails.send({
           from: fromEmail,
           to: parsed.email,
           subject: `Confirmación: Hemos recibido tu mensaje`,
-          html: getClientEmailTemplate(),
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #333;">¡Gracias por contactarnos!</h2>
+              <p>Hola <strong>${parsed.name}</strong>,</p>
+              <p>Hemos recibido tu mensaje correctamente.</p>
+              <p style="color: #999; font-size: 12px;">ID: ${submission.id}</p>
+            </div>
+          `,
         })
-      } catch (_emailError) {
-        // Renombrado con _ para indicar que no se usa
-      }
+      } catch (emailError) {}
 
       try {
-        const adminEmail = process.env.ADMIN_EMAIL
-        const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
+        const adminEmail = process.env.ADMIN_EMAIL || 'asesoriaeducarsano@gmail.com'
+        const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@educarsano.com'
 
         if (adminEmail) {
           await resend.emails.send({
             from: fromEmail,
             to: adminEmail,
-            replyTo: process.env.ADMIN_EMAIL,
-            subject: `🔔 Nuevo mensaje de contacto: ${parsed.subject || parsed.name}`,
+            replyTo: parsed.email,
+            subject: `🔔 Nuevo mensaje: ${parsed.subject || parsed.name}`,
             html: `
-              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #0066cc;">Nuevo mensaje de contacto</h2>
-
-                <div style="background: #f0f7ff; padding: 15px; border-left: 4px solid #0066cc; border-radius: 3px; margin: 20px 0;">
-                  <p><strong>Nombre:</strong> ${parsed.name}</p>
-                  <p><strong>Email:</strong> <a href="mailto:${parsed.email}">${parsed.email}</a></p>
-                  ${parsed.subject ? `<p><strong>Asunto:</strong> ${parsed.subject}</p>` : ''}
-                  <p><strong>Enviado:</strong> ${new Date().toLocaleString('es-ES')}</p>
-                </div>
-
-                <h3 style="color: #333;">Mensaje:</h3>
-                <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; border: 1px solid #ddd;">
-                  <p style="white-space: pre-wrap; margin: 0;">${parsed.message}</p>
-                </div>
-
-                <div style="margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 5px;">
-                  <p style="margin: 0;"><strong>ID:</strong> ${submission.id}</p>
-                </div>
-              </div>
+              <h2>Nuevo mensaje de contacto</h2>
+              <p><strong>Nombre:</strong> ${parsed.name}</p>
+              <p><strong>Email:</strong> ${parsed.email}</p>
+              <p><strong>Mensaje:</strong></p>
+              <p>${parsed.message}</p>
             `,
           })
         }
-      } catch (_emailError) {
-        // Renombrado con _ para indicar que no se usa
-      }
+      } catch (emailError) {}
 
       return Response.json(
         {
@@ -120,7 +166,6 @@ export const contactEndpoint: Endpoint = {
           {
             success: false,
             message: 'Errores de validación',
-            // ✅ CAMBIO CRÍTICO: err.errors → err.issues
             errors: err.issues.map((e) => ({
               field: e.path[0],
               message: e.message,
@@ -136,7 +181,6 @@ export const contactEndpoint: Endpoint = {
         {
           success: false,
           message: errorMessage,
-          error: process.env.NODE_ENV === 'development' ? String(err) : undefined,
         },
         { status: 500 },
       )

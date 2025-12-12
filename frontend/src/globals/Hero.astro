@@ -4,65 +4,58 @@ import RichText from "@/components/RichText.astro";
 import type { Hero as HeroProps, Media } from "@/lib/payloadTypes";
 import { Separator } from "@/components/Separator/Separator";
 import { cn } from "@/utils/ui";
-import { Image } from "@unpic/astro";
 import AstroImage from "@/components/image/AstroImage.astro";
-
-const { title, richText, links, media } = Astro.props as HeroProps;
-
+import AsteriskIcon from "@/components/AsteriskIcon/AsteriskIcon.astro";
+const {
+    title,
+    richText,
+    links,
+    media,
+    removeSvg,
+    isReverse,
+    bottom,
+    separatorType,
+    darkMode,
+} = Astro.props as HeroProps;
 const mediaData = media && typeof media === "object" ? (media as Media) : null;
-const { alt, url, width, height, mimeType } = mediaData || {};
+const { alt, url, width, height, mimeType, unpicUrl } = mediaData || {};
 ---
 
 <section
-    class="relative h-auto bg-hero px-4 pt-24 min-[430px]:pb-32 md:pb-0 lg:pb-52 dark:bg-[#262626] data-[theme=dark]:background-image-none dark:bg-none bg-cover bg-center"
+    class="hero-section relative h-auto bg-hero px-4 pt-12 pb-32 md:pb-0 lg:pt-40 lg:pb-20 dark:bg-blue-900 data-[theme=dark]:background-image-none dark:bg-none bg-cover bg-center"
 >
     <div
-        class="wrapper relative z-10 m-auto grid grid-cols-1 grid-rows-2 place-items-center gap-y-12 lg:grid lg:grid-cols-[60%_40%] lg:grid-rows-1 lg:gap-y-0 lg:pb-44"
+        class="wrapper relative z-10 m-auto grid grid-cols-1 grid-rows-2 place-items-center md:mb-16 gap-y-0 sm:gap-y-12 lg:grid lg:grid-cols-[60%_40%] lg:grid-rows-1 lg:gap-y-0 lg:pb-44"
     >
         <div
-            class={"flex flex-col items-center gap-24 md:gap-0 " +
+            class={"hero-content flex flex-col items-center gap-16 sm:gap-24 md:gap-0 " +
                 "md:items-start"}
         >
-            <svg
-                width="90"
-                height="89"
-                viewBox="0 0 90 89"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                class="absolute top-[-37px] left-[-23px] z-[-2] w-[74px] transition-all duration-300
-                       [&>path]:fill-[#FDD172]
-                       dark:[&>path]:fill-none
-                       dark:[&>path]:stroke-[#FDD172]
-                       dark:[&>path]:stroke-[2px] dark:opacity-50"
-            >
-                <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M18.1798 44.3077L0 33.7799L13.3996 10.5279L31.59 21.0375L31.6003 0H58.3997L58.41 21.0375L76.6003 10.5279L90 33.7799L71.82 44.3077L90 54.8355L76.6003 78.0876L58.41 67.5779L58.3997 88.6154H31.6003L31.59 67.5779L13.3996 78.0876L0 54.8355L18.1798 44.3077Z"
-                    fill="#FDD172"></path>
-            </svg>
             {
                 title && (
-                    <h1 class="md:mb-[80px] md:w-2/3 lg:w-4/5 text-heading-color  dark:text-paragraph-color-dark">
+                    <h1 class="relative hero-title md:mb-[80px] md:w-2/3 lg:w-4/5 text-heading-color  dark:text-paragraph-color-dark">
+                        <AsteriskIcon className="hero-asterisk absolute top-[-30px] left-[-24px] z-[-2] w-[74px] transition-all duration-300" />
                         {title}
                     </h1>
                 )
             }
-            <div class={"flex grow flex-col justify-end"}>
+            <div class={"hero-text-content flex grow flex-col justify-end"}>
                 {
                     richText && (
-                        <RichText
-                            className="text-paragraph-color dark:text-paragraph-color-dark"
-                            content={richText}
-                        />
+                        <div class="hero-richtext md:mt-24 md:mb-8">
+                            <RichText
+                                className="text-paragraph-color dark:text-paragraph-color-dark [&>p]:!mb-0 md:[&>p:not(:last-child)]:!mb-4"
+                                content={richText}
+                            />
+                        </div>
                     )
                 }
                 {
                     Array.isArray(links) && links.length > 0 && (
-                        <ul class="mt-4 flex gap-4 md:justify-center">
+                        <ul class="hero-links mt-4 flex gap-4 justify-center md:justify-start">
                             {links.map(({ link }, i) => {
                                 return (
-                                    <li>
+                                    <li class="hero-link-item">
                                         <Link {...link} client:only="react" />
                                     </li>
                                 );
@@ -73,24 +66,128 @@ const { alt, url, width, height, mimeType } = mediaData || {};
             </div>
         </div>
         <div
-            class={cn(
-                "relative w-[80%] max-w-96",
-                "md:absolute bg-contain bg-center bg-svg-light  md:right-0 md:w-full lg:relative lg:self-end  data-[theme=dark]:bg-svg-dark",
-            )}
+            class:list={[
+                "relative w-full h-full self-end md:row-2 lg:row-1 lg:col-2 md:flex md:justify-center bg-contain bg-center md:right-0 md:w-full lg:relative lg:self-end ",
+                removeSvg ? "" : "bg-svg-light data-[theme=dark]:bg-svg-dark",
+            ]}
         >
             {
                 mediaData && url && (
                     <AstroImage
-                        src={url}
+                        src={unpicUrl!}
                         width={width!}
                         height={height!}
                         alt={alt || ""}
-                        className="relative top-[-2px] h-full min-[1070px]:top-[50px] min-[1188px]:top-[10px] lg:top-[0px] !bg-none"
+                        className="lg:absolute  relative w-full top-[23px] left-[45px] h-full  !bg-none"
                         mimeType={mimeType!}
                     />
                 )
             }
         </div>
     </div>
-    {(<Separator type={"separatorWhite"} style={{ bottom: "-80px" }} />)}
+    {
+        (
+            <Separator
+                type={separatorType || "separatorWhite"}
+                reverse={isReverse}
+                className={cn(
+                    "absolute dark:[&>path]:fill-section-color-blue",
+                    darkMode === "dark"
+                        ? "dark:[&>path]:fill-section-color"
+                        : "dark:[&>path]:fill-section-color-blue",
+                )}
+                style={{ bottom: `${bottom}px` }}
+            />
+        )
+    }
 </section>
+
+<script>
+    import gsap from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    function initHeroAnimations() {
+        const reduceMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)",
+        ).matches;
+
+        const title = document.querySelector<HTMLElement>(".hero-title");
+        const richtext = document.querySelector<HTMLElement>(".hero-richtext");
+        const image = document.querySelector<HTMLElement>(".hero-image");
+        const asterisk = document.querySelector<HTMLElement>(".hero-asterisk");
+        const linkItems =
+            document.querySelectorAll<HTMLElement>(".hero-link-item");
+
+        if (reduceMotion) {
+            title && (title.style.opacity = "1");
+            richtext && (richtext.style.opacity = "1");
+            image && (image.style.opacity = "1");
+            asterisk && (asterisk.style.opacity = "1");
+            linkItems.forEach((item) => (item.style.opacity = "1"));
+            return;
+        }
+
+        const tl = gsap.timeline();
+
+        if (title) {
+            tl.fromTo(
+                title,
+                { y: -30, opacity: 0 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    duration: 1.2,
+                    ease: "power1.out",
+                    delay: 0.2,
+                },
+            );
+        }
+
+        if (richtext) {
+            tl.fromTo(
+                richtext,
+                { y: 20, opacity: 0 },
+                { y: 0, opacity: 1, duration: 1.2, ease: "power1.out" },
+                "-=0.6",
+            );
+        }
+
+        linkItems.forEach((item, index) => {
+            tl.fromTo(
+                item,
+                { y: 20, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.8, ease: "power1.out" },
+                "-=0.6" + index * 0.1,
+            );
+        });
+
+        if (image) {
+            tl.fromTo(
+                image,
+                { x: 50, opacity: 0 },
+                { x: 0, opacity: 1, duration: 1.4, ease: "power1.out" },
+                "-=0.8",
+            );
+
+            gsap.to(image, {
+                y: 30,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: ".hero-section",
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: 1,
+                },
+            });
+        }
+
+        if (asterisk) {
+            tl.fromTo(asterisk, { opacity: 0 }, { opacity: 1, duration: 0.6 });
+            tl.to(asterisk, { "--r": 360, duration: 3, ease: "power4.out" });
+        }
+    }
+
+    document.addEventListener("astro:page-load", initHeroAnimations);
+</script>

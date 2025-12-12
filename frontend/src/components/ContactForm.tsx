@@ -32,7 +32,7 @@ const FormField: React.FC<FormFieldProps> = ({
   onFocus,
 }) => {
   const baseInputClass =
-    "w-full h-12 bg-white text-paragraph-color p-2 border border-yellow-dark rounded placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-dark focus:border-transparent transition-all duration-200";
+    "w-full bg-yellow-neutral dark:bg-section-color/50 text-paragraph-color p-2 border border-yellow-dark  dark:border-white/50 rounded placeholder:text-[#714e04f7]  dark:placeholder:text-text/50 placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-yellow-dark  dark:focus:ring-[#f0f0f0]  focus:border-transparent transition-all duration-200";
 
   switch (field.blockType) {
     case "textarea":
@@ -40,8 +40,8 @@ const FormField: React.FC<FormFieldProps> = ({
         <textarea
           id={field.name}
           name={field.name}
-          rows={4}
           required={!!field.required}
+          rows={10}
           placeholder={field.label ?? ""}
           className={`${baseInputClass} ${className}`}
           onFocus={onFocus}
@@ -53,7 +53,7 @@ const FormField: React.FC<FormFieldProps> = ({
           id={field.name}
           name={field.name}
           required={!!field.required}
-          className={`${baseInputClass} ${className}`}
+          className={`${baseInputClass} ${className} text-base h-[47px]`}
           onFocus={onFocus}
         >
           <option value="">Selecciona una opción</option>
@@ -71,44 +71,49 @@ const FormField: React.FC<FormFieldProps> = ({
           id={field.name}
           name={field.name}
           required={!!field.required}
-          className={`h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 ${className}`}
+          className={`h-4 w-4 rounded border-gray-300 dark:border-white/50  text-primary-600 focus:ring-primary-500 ${className}`}
           onFocus={onFocus}
         />
       );
     case "radio":
       return (
-        <div className="space-y-2">
-          <legend>Seleccione una opción</legend>
-          <div className="flex">
+        <div className="mt-6">
+          <legend className="text-yellow-dark dark:text-text mb-2 mt-12 text-center">
+            Seleccione una opción
+            <span className="text-red-500 dark:text-red-800 ml-1">*</span>
+          </legend>
+          <div className="flex mb-8 justify-center">
             {field.options?.map((option) => {
               const { label, value, id, image } = option;
               const mediaData =
                 image && typeof image === "object" ? (image as Media) : null;
-              const { alt, url, width, height, mimeType } = mediaData || {};
+              const { alt, unpicUrl, width, height, mimeType, ...rest } =
+                mediaData || {};
               return (
-                <label htmlFor={id!} className="w-[130px] h-10">
+                <label key={id} htmlFor={id!}>
                   <input
                     type="radio"
                     id={id!}
                     name={field.blockName!}
                     value={value}
                     required={!!field.required}
-                    className="peer hidden"
+                    className="peer absolute opacity-0 pointer-events-none"
                     onFocus={onFocus}
                   />
-                  <div className="cursor-pointer items-center p-2 border-2 border-white transition-colors peer-checked:border-yellow-dark peer-checked:bg-yellow-dark hover:border-yellow-dark peer-focus:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-pink-500 text-gray-700 peer-checked:text-white peer-checked:[&>div_svg_g_path]:stroke-white peer-checked:[&>div_svg_path]:stroke-white">
-                    <div className="flex items-center gap-2">
+                  <div className="w-[130px] h-[50px] cursor-pointer items-center p-2 border-2 border-white transition-colors peer-checked:border-yellow-dark dark:peer-checked:border-yellow-neutral  peer-checked:bg-yellow-dark  dark:peer-checked:bg-[#1c2129] hover:border-yellow-dark dark:hover:border-yellow-neutral dark:border-white/50 peer-focus:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-primary text-gray-700 peer-checked:text-white peer-checked:[&>div_svg_g_path]:stroke-white peer-checked:[&>div_svg_path]:stroke-white">
+                    <div className="flex justify-center items-center h-full gap-2">
                       {image && (
                         <AstroImage
-                          src={url ?? ""}
+                          src={unpicUrl ?? ""}
                           alt={alt ?? ""}
                           width={width ?? 40}
                           height={height ?? 40}
-                          className="w-12 h-12 object-cover rounded-md border-2 border-transparent transition-all"
+                          className="w-12 h-12 object-cover rounded-md border-2 border-transparent transition-all  dark:[&>svg>g>path]:stroke-[#f0f0f0] dark:[&>svg>path]:stroke-[#f0f0f0] dark:[&>svg>path]:fill-[#f0f0f0]"
                           mimeType={mimeType!}
+                          {...rest}
                         />
                       )}
-                      <span className="text-sm">{label}</span>
+                      <span className="text-sm dark:text-text">{label}</span>
                     </div>
                   </div>
                 </label>
@@ -161,7 +166,6 @@ export const ContactForm: React.FC<Props> = ({ form }) => {
   const payloadUrl = import.meta.env.PAYLOAD_API_URL || "http://localhost:3000";
   const recaptchaLoadedRef = useRef(false);
 
-  // Marcar hidratación
   useEffect(() => setIsHydrated(true), []);
 
   const loadRecaptchaScript = (): Promise<void> => {
@@ -240,7 +244,6 @@ export const ContactForm: React.FC<Props> = ({ form }) => {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        credentials: "include",
         body: JSON.stringify(dataWithRecaptcha),
       });
 
@@ -285,12 +288,6 @@ export const ContactForm: React.FC<Props> = ({ form }) => {
       <div className="bg-green-50 border border-green-200 p-6 rounded-lg">
         <h3 className="text-green-800 font-semibold">¡Mensaje enviado!</h3>
         <p className="text-green-700 mt-1">Gracias por contactarnos.</p>
-        {/*<button
-          onClick={() => setSuccess(false)}
-          className="mt-3 text-sm text-green-600 hover:text-green-800 underline"
-        >
-          Enviar otro mensaje
-        </button>*/}
       </div>
     );
   }
@@ -299,11 +296,13 @@ export const ContactForm: React.FC<Props> = ({ form }) => {
     <form
       onSubmit={handleSubmit}
       onFocusCapture={handleUserFocus}
-      className="bg-yellow-neutral px-12 py-8 rounded-sm space-y-4"
+      className="bg-yellow-neutral dark:bg-section-color-blue rounded-sm space-y-4"
     >
       {errors._general && (
         <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
-          <p className="text-red-700 text-sm">{errors._general}</p>
+          <p className="text-red-700 dark:text-red-800 text-sm">
+            {errors._general}
+          </p>
         </div>
       )}
 
@@ -314,26 +313,34 @@ export const ContactForm: React.FC<Props> = ({ form }) => {
         )
         .map((field) => (
           <div key={field.name} className="form-field">
-            <label htmlFor={field.name} className="mb-2 block text-yellow-dark">
-              {field.label}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
-            </label>
-
+            {field.blockType !== "radio" && (
+              <label
+                htmlFor={field.name}
+                className="mb-2 block text-yellow-dark dark:text-text"
+              >
+                {field.label}
+                {field.required && (
+                  <span className="text-red-500 dark:text-red-800 ml-1">*</span>
+                )}
+              </label>
+            )}
             <FormField field={field} onFocus={handleUserFocus} />
 
             {errors[field.name] && (
-              <p className="mt-1 text-sm text-red-600">{errors[field.name]}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-800">
+                {errors[field.name]}
+              </p>
             )}
           </div>
         ))}
 
-      <div className="pt-4">
+      <div className="pt-4 flex justify-center">
         <button
           type="submit"
           disabled={isSubmitting || !recaptchaReady}
-          className="w-full sm:w-auto inline-flex justify-center items-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full sm:w-auto inline-flex justify-center items-center py-3 px-6 border border-transparent shadow-sm text-base uppercase font-bold tracking-widest  text-white bg-yellow-dark hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {isSubmitting ? "Enviando..." : "Enviar mensaje"}
+          {isSubmitting ? "Enviando..." : "Enviar"}
         </button>
       </div>
     </form>

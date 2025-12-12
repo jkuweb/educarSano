@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { hero } from '@/heros/config'
+import { hero } from '@/hero/config'
 import { slugField } from '@/fields/slug'
 import { populatePublishedAt } from '@/hooks/populatePublishedAt'
 import { ContentBlock } from '@/blocks/ContentBlock/config'
@@ -21,18 +21,20 @@ import { QuoteBlock } from '@/blocks/QuoteBlock/config'
 import { FormBlock } from '@/blocks/Form/config'
 import { PostCarouselBlock } from '@/blocks/PostCarouselBlock/config'
 import { FrequentlyQuestionsBlock } from '@/blocks/FrequentlyQuestionsBlock/config'
-import { authenticated } from '@/access/authenticated'
-import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { revalidatePage } from './hooks/revalidatePage'
 import { revalidateDelete } from '../Posts/hooks/revalidatePost'
+import { isAdmin, isAdminOrUser, publicAccess } from '@/access'
+import { ServiceListBlock } from '@/blocks/ServiceListBlock/config'
+import { ServiceBlock } from '@/blocks/ServiceBlock/config'
 
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
+  labels: { singular: 'Página', plural: ' Lista de Páginas' },
   access: {
-    create: authenticated,
-    delete: authenticated,
-    read: authenticatedOrPublished,
-    update: authenticated,
+    read: publicAccess,
+    create: isAdmin,
+    update: isAdminOrUser,
+    delete: isAdmin,
   },
   defaultPopulate: {
     title: true,
@@ -45,6 +47,7 @@ export const Pages: CollectionConfig<'pages'> = {
       return `${frontendUrl}/api/preview?slug=${doc.slug}&secret=${process.env.PREVIEW_SECRET}`
     },
     useAsTitle: 'title',
+    group: 'Páginas',
   },
   fields: [
     {
@@ -76,6 +79,8 @@ export const Pages: CollectionConfig<'pages'> = {
                 BoxContent,
                 PostCarouselBlock,
                 FrequentlyQuestionsBlock,
+                ServiceListBlock,
+                ServiceBlock,
               ],
               required: true,
               admin: {

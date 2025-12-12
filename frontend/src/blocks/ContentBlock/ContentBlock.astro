@@ -23,39 +23,30 @@ const {
     separatorType,
     isReverse,
     bottom,
+    darkMode,
 } = Astro.props as ContentBlockProps;
-
 const mediaData = image && typeof image === "object" ? (image as Media) : null;
-const { alt, url, width, height, mimeType } = mediaData || {};
+const { alt, width, height, mimeType, unpicUrl } = mediaData || {};
+
+const hasBackgroundColor = sectionName === "homeAbout";
 ---
 
 <section
     id={`${sectionName}`}
     class={cn(
-        "relative min-h-[900px] pb-40",
+        "relative sm:pb-40 pt-40 mx-auto data-[theme=dark]:bg-section",
+        hasBackgroundColor ? "dark:bg-section-color-blue" : "",
         enableBackgroundImage ? "bg-section" : "",
         sectionName,
     )}
 >
-    <div class={"wrapper m-auto px-4 text-center lg:p-28"}>
-        {
-            title && enableTitle ? (
-                // <h2 class={cn('', NunitoBold.class)}>{title}</h2>
-                <h2>{title}</h2>
-            ) : (
-                ""
-            )
-        }
-        <div
-            class={cn(
-                "relative flex flex-col items-center",
-                `${sectionName}-box`,
-            )}
-        >
+    <div class={"wrapper m-auto px-4"}>
+        {title && enableTitle ? <h2 class="text-center">{title}</h2> : ""}
+        <div class={cn("relative", `${sectionName}-box`)}>
             {
                 image && enableImage ? (
                     <AstroImage
-                        src={url!}
+                        src={unpicUrl!}
                         width={width!}
                         height={height!}
                         alt={alt!}
@@ -66,37 +57,159 @@ const { alt, url, width, height, mimeType } = mediaData || {};
                     ""
                 )
             }
-
-            {
-                richText && enableRichText ? (
-                    <RichText
-                        content={richText}
-                        className={`${sectionName}-richtext`}
-                    />
-                ) : (
-                    ""
-                )
-            }
-            {
-                enableLink && link ? (
-                    <Link
-                        {...link}
-                        className={cn("link", `${sectionName}-link`)}
-                        client:only="react"
-                    />
-                ) : (
-                    ""
-                )
-            }
+            <div>
+                {
+                    richText && enableRichText ? (
+                        <RichText
+                            content={richText}
+                            className={`${sectionName}-richtext  ${sectionName}-richtext-blur-effect`}
+                        />
+                    ) : (
+                        ""
+                    )
+                }
+                {
+                    enableLink && link ? (
+                        <Link
+                            {...link}
+                            className={cn("link", `${sectionName}-link`)}
+                            client:only="react"
+                        />
+                    ) : (
+                        ""
+                    )
+                }
+            </div>
         </div>
-        {
-            (
-                <Separator
-                    type={separatorType || "separatorWhite"}
-                    reverse={isReverse}
-                    style={{ bottom: `${bottom}px` }}
-                />
-            )
-        }
     </div>
+    {
+        (
+            <Separator
+                type={separatorType || "separatorWhite"}
+                reverse={isReverse}
+                className={cn(
+                    "absolute dark:[&>path]:fill-section-color-blue",
+                    darkMode === "dark"
+                        ? "dark:[&>path]:fill-section-color"
+                        : "dark:[&>path]:fill-section-color-blue",
+                )}
+                style={{ bottom: `${bottom}px` }}
+            />
+        )
+    }
 </section>
+
+<script>
+    import SplitType from "split-type";
+    import gsap from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    function initHomeQuestions(): void {
+        const section = document.getElementById("homeQuestions");
+        if (!section) return;
+
+        const reduceMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)",
+        ).matches;
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+        class BlurScrollEffect3 {
+            textElement!: HTMLElement;
+            splitInstance: SplitType | null = null;
+
+            constructor(textElement: HTMLElement) {
+                if (!textElement) return;
+
+                this.textElement = textElement;
+
+                if (reduceMotion || isMobile) {
+                    this.textElement.style.filter = "none";
+                    this.textElement.style.transform = "none";
+                    return;
+                }
+
+                this.initializeEffect();
+            }
+
+            initializeEffect() {
+                this.splitInstance = new SplitType(this.textElement, {
+                    types: "words, chars",
+                });
+
+                this.scroll();
+
+                let resizeTimer: number;
+                window.addEventListener("resize", () => {
+                    clearTimeout(resizeTimer);
+
+                    resizeTimer = window.setTimeout(() => {
+                        if (this.splitInstance) {
+                            this.splitInstance.revert();
+                        }
+
+                        if (
+                            window.matchMedia(
+                                "(prefers-reduced-motion: reduce)",
+                            ).matches ||
+                            window.matchMedia("(max-width: 768px)").matches
+                        ) {
+                            this.textElement.style.filter = "none";
+                            this.textElement.style.transform = "none";
+                            return;
+                        }
+
+                        this.splitInstance = new SplitType(this.textElement, {
+                            types: "words, chars",
+                        });
+
+                        this.scroll();
+                    }, 250);
+                });
+            }
+
+            scroll() {
+                const chars: HTMLElement[] = (this.splitInstance?.chars ??
+                    []) as HTMLElement[];
+
+                if (!chars.length) return;
+
+                gsap.fromTo(
+                    chars,
+                    {
+                        scaleY: 0.1,
+                        scaleX: 1.8,
+                        filter: "blur(10px) brightness(50%)",
+                        willChange: "filter, transform",
+                    },
+                    {
+                        ease: "none",
+                        scaleY: 1,
+                        scaleX: 1,
+                        filter: "blur(0px) brightness(100%)",
+                        stagger: 0.05,
+                        scrollTrigger: {
+                            trigger: this.textElement,
+                            start: "top bottom-=25%",
+                            end: "bottom center+=15%",
+                            scrub: true,
+                        },
+                    },
+                );
+            }
+        }
+
+        section.querySelectorAll("[data-effect-3]").forEach((el) => {
+            new BlurScrollEffect3(el as HTMLElement);
+        });
+
+        section
+            .querySelectorAll(".homeQuestions-richtext-blur-effect > p")
+            .forEach((el) => {
+                new BlurScrollEffect3(el as HTMLElement);
+            });
+    }
+
+    document.addEventListener("astro:page-load", initHomeQuestions);
+</script>

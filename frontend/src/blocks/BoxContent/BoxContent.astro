@@ -1,12 +1,11 @@
 ---
 import AstroImage from "@/components/image/AstroImage.astro";
 import type { BoxContent as BoxContentProps, Media } from "@/lib/payloadTypes";
-
 const { boxes } = Astro.props as BoxContentProps;
 ---
 
 <div
-    class={"relative top-[-50px] z-[100] mx-auto flex max-w-[435px] flex-col justify-center gap-4 px-4 md:top-[-95px] lg:max-w-full lg:flex-row"}
+    class={"max-w-[76%] relative top-[-50px] z-[100] mx-auto grid grid-cols-[repeat(auto-fit,minmax(350px,1fr)))] justify-center gap-4 px-4 md:top-[-95px]"}
 >
     {
         boxes &&
@@ -16,18 +15,18 @@ const { boxes } = Astro.props as BoxContentProps;
                     media && typeof media === "object"
                         ? (media as Media)
                         : null;
-                const { alt, url, width, height, mimeType } = mediaData || {};
-
+                const { alt, width, height, mimeType, unpicUrl } =
+                    mediaData || {};
                 return (
-                    <div class="relative">
+                    <div class="box-item relative">
                         <div class="absolute bottom-0">
                             <h2 class="!text-left">{title}</h2>
-                            <p class=" w-[70%] bg-gray-100 p-4 italic text-center">
+                            <p class=" w-[70%] bg-gray-100 p-4 italic text-center text-text dark:!text-[#222]">
                                 {richText}
                             </p>
                         </div>
                         <AstroImage
-                            src={url!}
+                            src={unpicUrl!}
                             width={width!}
                             height={height!}
                             alt={alt!}
@@ -38,3 +37,62 @@ const { boxes } = Astro.props as BoxContentProps;
             })
     }
 </div>
+
+<script>
+    import gsap from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    function initBoxAnimation() {
+        const reduceMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)",
+        ).matches;
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+        const boxItems = document.querySelectorAll<HTMLElement>(".box-item");
+        if (!boxItems.length) return;
+
+        if (reduceMotion || isMobile) {
+            boxItems.forEach((box) => {
+                box.style.opacity = "1";
+                box.style.transform = "none";
+            });
+            return;
+        }
+
+        boxItems.forEach((box, index) => {
+            gsap.fromTo(
+                box,
+                { x: 200, opacity: 0 },
+                {
+                    x: 0,
+                    opacity: 1,
+                    duration: 0.8,
+                    ease: "power2.out",
+                    delay: index * 0.2,
+                    scrollTrigger: {
+                        trigger: box,
+                        start: "top 80%",
+                        end: "top 50%",
+                        toggleActions: "play none none none",
+                    },
+                },
+            );
+        });
+    }
+
+    document.addEventListener("astro:page-load", initBoxAnimation);
+</script>
+
+<style>
+    .box-item {
+        opacity: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .box-item {
+            transition: none !important;
+            animation: none !important;
+        }
+    }
+</style>

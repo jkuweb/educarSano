@@ -3,11 +3,17 @@ import {
   BlocksFeature,
   FixedToolbarFeature,
   InlineToolbarFeature,
+  LinkFeature,
+  UploadFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import { link } from '@/fields/link'
 import { Banner } from '../Banner/config'
 import { FrequentlyQuestionsBlock } from '../FrequentlyQuestionsBlock/config'
+import { isAdmin, isAdminFieldLevel, publicReadField } from '@/access'
+import { PricesBlock } from '../PricesBlock/config'
+import { MediaBlock } from '../MediaBlock/config'
+import { isAdminCondition, isAdminConditionRoles } from '@/utilities/isAdmin'
 
 export const ContentBlock: Block = {
   slug: 'content',
@@ -56,19 +62,49 @@ export const ContentBlock: Block = {
         admin: {
           hideGutter: true,
           hideInsertParagraphAtEnd: true,
-          placeholder: 'Excribe tu contenido aquí...',
+          placeholder: 'Escribe tu contenido aquí...',
         },
-        features: ({ defaultFeatures }) => [
-          ...defaultFeatures.filter(
+        features: ({ defaultFeatures }) => {
+          // Filtra los features que no quieres, pero MANTÉN 'upload' y 'relationship'
+          const filtered = defaultFeatures.filter(
             (feature) =>
               !['superscript', 'subscript', 'inlineCode', 'indent'].includes(feature.key),
-          ),
-          BlocksFeature({
-            blocks: [Banner, FrequentlyQuestionsBlock],
-          }),
-          FixedToolbarFeature(),
-          InlineToolbarFeature(),
-        ],
+          )
+
+          // Verifica si LinkFeature ya existe en los defaults
+          const hasLinkFeature = filtered.some((f) => f.key === 'link')
+
+          return [
+            ...filtered,
+            // Solo agrega LinkFeature si no existe ya
+            ...(hasLinkFeature
+              ? []
+              : [
+                  LinkFeature({
+                    enabledCollections: ['documents'], // 👈 Cambia a 'documents' en lugar de 'media'
+                    // 👇 Filtrar solo PDFs en el selector
+                    fields: ({ defaultFields }) => [
+                      ...defaultFields,
+                      {
+                        name: 'relationTo',
+                        type: 'text',
+                        admin: {
+                          hidden: true,
+                        },
+                        hooks: {
+                          beforeChange: [() => 'media'],
+                        },
+                      },
+                    ],
+                  }),
+                ]),
+            BlocksFeature({
+              blocks: [Banner, FrequentlyQuestionsBlock, PricesBlock, MediaBlock],
+            }),
+            FixedToolbarFeature(),
+            InlineToolbarFeature(),
+          ]
+        },
       }),
       admin: {
         condition: (_, siblingData) => siblingData?.enableRichText,
@@ -93,11 +129,27 @@ export const ContentBlock: Block = {
       name: 'isReverse',
       type: 'checkbox',
       defaultValue: false,
+      access: {
+        read: publicReadField,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
+      },
+      admin: {
+        condition: isAdminConditionRoles,
+      },
     },
     {
       name: 'bottom',
       type: 'number',
       defaultValue: 100,
+      access: {
+        read: publicReadField,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
+      },
+      admin: {
+        condition: isAdminConditionRoles,
+      },
     },
     {
       name: 'separatorType',
@@ -116,11 +168,49 @@ export const ContentBlock: Block = {
           value: 'separatorBackground',
         },
       ],
+      access: {
+        read: publicReadField,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
+      },
+      admin: {
+        condition: isAdminConditionRoles,
+      },
     },
     {
       name: 'sectionName',
       type: 'text',
       unique: true,
+      access: {
+        read: publicReadField,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
+      },
+      admin: {
+        condition: isAdminConditionRoles,
+      },
+    },
+    {
+      name: 'darkMode',
+      type: 'select',
+      access: {
+        read: publicReadField,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
+      },
+      admin: {
+        condition: isAdminConditionRoles,
+      },
+      options: [
+        {
+          label: 'Blue',
+          value: 'blue',
+        },
+        {
+          label: 'Dark',
+          value: 'dark',
+        },
+      ],
     },
   ],
 }

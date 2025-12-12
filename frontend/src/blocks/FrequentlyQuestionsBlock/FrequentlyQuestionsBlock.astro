@@ -2,9 +2,19 @@
 import type { Media } from "@/lib/payloadTypes";
 import type { FrequentlyQuestionsBlock } from "../../lib/payloadTypes";
 import AstroImage from "@/components/image/AstroImage.astro";
-const { questions, enableImage, image } =
-    Astro.props as FrequentlyQuestionsBlock;
-const { url, alt, width, height } = image as Media;
+import RichText from "@/components/RichText.astro";
+const {
+    questions,
+    enableImage,
+    image,
+    enableTitle,
+    enableText,
+    title,
+    content,
+} = Astro.props as FrequentlyQuestionsBlock;
+
+const mediaData = image && typeof image === "object" ? (image as Media) : null;
+const { alt, url, width, height, mimeType } = mediaData || {};
 ---
 
 <div
@@ -24,11 +34,15 @@ const { url, alt, width, height } = image as Media;
 
     <div class="w-full">
         <p class="text-indigo-600 text-sm font-medium">FAQ's</p>
-        <h1 class="text-3xl font-semibold">Looking for answer?</h1>
-        <p class="text-sm text-slate-500 mt-2 pb-4">
-            Ship Beautiful Frontends Without the Overhead — Customizable,
-            Scalable and Developer-Friendly UI Components.
-        </p>
+        {enableTitle && <h3 class="text-3xl font-semibold">{title}</h3>}
+        {
+            enableText && (
+                <RichText
+                    content={content}
+                    className="text-sm text-slate-500 mt-2 pb-4"
+                />
+            )
+        }
 
         {
             questions.map((faq, index) => (

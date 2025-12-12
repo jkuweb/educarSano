@@ -3,8 +3,7 @@ import type { Page } from "@/lib/payloadTypes";
 import { cn } from "@/utils/ui";
 import React from "react";
 import CalendlyButton from "./CalendlyButton/CalendlyButton";
-
-// import { CalendlyButton } from '@/components/CalendlyButton/CalendlyButton';
+import { generatePageUrl } from "@/utils/generatePageUrl";
 
 type CMSLinkType = {
   appearance?: "inline" | ButtonProps["variant"];
@@ -35,14 +34,7 @@ export const Link: React.FC<CMSLinkType> = (props) => {
   } = props;
 
   const href =
-    type === "reference" &&
-    typeof reference?.value === "object" &&
-    reference.value.slug
-      ? `${reference?.relationTo !== "pages" ? `/${reference?.relationTo}` : ""}/${
-          reference.value.slug
-        }`
-      : url;
-
+    type === "reference" && reference ? generatePageUrl(reference) : url;
   if (!href) return null;
 
   const size = appearance === "link" ? "clear" : sizeFromProps;
@@ -52,12 +44,12 @@ export const Link: React.FC<CMSLinkType> = (props) => {
 
   if (appearance === "inline") {
     return (
-      <a className={cn(className)} href={href || url || ""} {...newTabProps}>
-        {label && label}
-        {children && children}
+      <a className={cn(className)} href={href} {...newTabProps}>
+        {label || children}
       </a>
     );
   }
+
   if (type === "calendly") {
     return (
       <CalendlyButton
@@ -69,6 +61,7 @@ export const Link: React.FC<CMSLinkType> = (props) => {
       />
     );
   }
+
   return (
     <Button asChild className={className} size={size} variant={appearance}>
       <a className={cn(className)} href={href || url || ""} {...newTabProps}>

@@ -72,10 +72,12 @@ export interface Config {
     media: Media;
     categories: Category;
     posts: Post;
-    'contact-messages': ContactMessage;
     tags: Tag;
+    documents: Document;
+    videos: Video;
     forms: Form;
     'form-submissions': FormSubmission;
+    'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -88,10 +90,12 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
-    'contact-messages': ContactMessagesSelect<false> | ContactMessagesSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
+    documents: DocumentsSelect<false> | DocumentsSelect<true>;
+    videos: VideosSelect<false> | VideosSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
+    'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -100,6 +104,7 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
+  fallbackLocale: null;
   globals: {
     header: Header;
     footer: Footer;
@@ -151,6 +156,7 @@ export interface Page {
   hero: {
     title: string;
     media: number | Media;
+    removeSvg?: boolean | null;
     richText?: {
       root: {
         type: string;
@@ -166,19 +172,28 @@ export interface Page {
       };
       [k: string]: unknown;
     } | null;
+    isReverse?: boolean | null;
+    bottom?: number | null;
+    separatorType?: ('separatorYellow' | 'separatorWhite' | 'separatorBackground') | null;
+    darkMode?: ('blue' | 'dark') | null;
     links?:
       | {
           link: {
             type?: ('reference' | 'custom' | 'calendly') | null;
             newTab?: boolean | null;
-            reference?: {
-              relationTo: 'pages';
-              value: number | Page;
-            } | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
             url?: string | null;
             label: string;
             /**
-             * Choose how the link should be rendered.
+             * Elija cómo debe representarse el enlace
              */
             appearance?: ('default' | 'outline') | null;
           };
@@ -226,7 +241,10 @@ export interface Page {
         } | null;
         form: number | Form;
         isReverse?: boolean | null;
+        enableBackgroundImage?: boolean | null;
         bottom?: number | null;
+        darkMode?: ('blue' | 'dark') | null;
+        separatorType?: ('separatorYellow' | 'separatorWhite' | 'separatorBackground') | null;
         id?: string | null;
         blockName?: string | null;
         blockType: 'formBlock';
@@ -237,6 +255,8 @@ export interface Page {
     | BoxContent
     | PostCarouselBlock
     | FrequentlyQuestionsBlock
+    | ServiceListBlock
+    | ServiceBlock
   )[];
   meta?: {
     title?: string | null;
@@ -260,36 +280,124 @@ export interface Page {
 export interface Media {
   id: number;
   /**
-   * Ayuda a los lectores de pantalla a describir la imagen (NO lo utilices en imágenes decorativas)
+   * Ayuda a lectores de pantalla a describir la imagen. (No usar en imágenes decorativas)
    */
   alt?: string | null;
-  cloudinaryPublicId?: string | null;
-  cloudinaryUrl?: string | null;
-  cloudinaryResourceType?: string | null;
-  cloudinaryFormat?: string | null;
-  cloudinaryVersion?: number | null;
   /**
-   * Direct URL to the original file without transformations
+   * URL automáticamente compatible con Unpic.
    */
-  originalUrl?: string | null;
-  /**
-   * URL with applied transformations
-   */
-  transformedUrl?: string | null;
+  unpicUrl?: string | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
   thumbnailURL?: string | null;
   filename?: string | null;
   mimeType?: string | null;
-  /**
-   * File size in bytes
-   */
   filesize?: number | null;
   width?: number | null;
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: number;
+  title: string;
+  heroImage?: (number | null) | Media;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  relatedPosts?: (number | Post)[] | null;
+  categories?: (number | Category)[] | null;
+  tags?: (number | Tag)[] | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  publishedAt?: string | null;
+  authors: (number | User)[];
+  populatedAuthors?:
+    | {
+        id?: string | null;
+        name?: string | null;
+      }[]
+    | null;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  title: string;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: number;
+  title: string;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  name: string;
+  avatar?: (number | null) | Media;
+  roles: ('admin' | 'user' | 'guest')[];
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -318,14 +426,19 @@ export interface CallToActionBlock {
         link: {
           type?: ('reference' | 'custom' | 'calendly') | null;
           newTab?: boolean | null;
-          reference?: {
-            relationTo: 'pages';
-            value: number | Page;
-          } | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
           url?: string | null;
           label: string;
           /**
-           * Choose how the link should be rendered.
+           * Elija cómo debe representarse el enlace
            */
           appearance?: ('default' | 'outline') | null;
         };
@@ -333,8 +446,10 @@ export interface CallToActionBlock {
       }[]
     | null;
   isReverse?: boolean | null;
+  separatorType?: ('separatorYellow' | 'separatorWhite' | 'separatorBackground') | null;
   bottom?: number | null;
-  sectionName: string;
+  sectionName?: string | null;
+  darkMode?: ('blue' | 'dark') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'cta';
@@ -369,14 +484,19 @@ export interface ContentBlock {
   link?: {
     type?: ('reference' | 'custom' | 'calendly') | null;
     newTab?: boolean | null;
-    reference?: {
-      relationTo: 'pages';
-      value: number | Page;
-    } | null;
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null);
     url?: string | null;
     label: string;
     /**
-     * Choose how the link should be rendered.
+     * Elija cómo debe representarse el enlace
      */
     appearance?: ('default' | 'outline') | null;
   };
@@ -384,6 +504,7 @@ export interface ContentBlock {
   bottom?: number | null;
   separatorType?: ('separatorYellow' | 'separatorWhite' | 'separatorBackground') | null;
   sectionName?: string | null;
+  darkMode?: ('blue' | 'dark') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'content';
@@ -394,7 +515,7 @@ export interface ContentBlock {
  */
 export interface MediaBlock {
   media: number | Media;
-  sectionName: string;
+  sectionName?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'mediaBlock';
@@ -422,7 +543,6 @@ export interface ListContentBlock {
     };
     [k: string]: unknown;
   } | null;
-  enableBackgroundImage?: boolean | null;
   enableImage?: boolean | null;
   fieldImage?: (number | null) | Media;
   blocks?:
@@ -447,14 +567,36 @@ export interface ListContentBlock {
           };
           [k: string]: unknown;
         } | null;
+        enableLink?: boolean | null;
+        link?: {
+          type?: ('reference' | 'custom' | 'calendly') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Elija cómo debe representarse el enlace
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
         color?: ('transparent' | 'green' | 'yellow' | 'red') | null;
         id?: string | null;
       }[]
     | null;
+  enableBackgroundImage?: boolean | null;
   isReverse?: boolean | null;
   bottom?: number | null;
-  separatorType?: ('separatorYellow' | 'separatorWhite' | 'separatorBackground') | null;
-  sectionName: string;
+  separatorType?: ('separatorYellow' | 'separatorWhite' | 'separatorBackground' | 'separatorDark') | null;
+  sectionName?: string | null;
+  darkMode?: ('blue' | 'dark') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'listContent';
@@ -628,10 +770,15 @@ export interface SocialMediaBlock {
         link: {
           type?: ('reference' | 'custom' | 'calendly') | null;
           newTab?: boolean | null;
-          reference?: {
-            relationTo: 'pages';
-            value: number | Page;
-          } | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
           url?: string | null;
           label: string;
         };
@@ -650,9 +797,7 @@ export interface SocialMediaBlock {
 export interface SimpleListBlock {
   enableTitle?: boolean | null;
   title?: string | null;
-  enableBackgroundImage?: boolean | null;
-  enableImage?: boolean | null;
-  fieldImage?: (number | null) | Media;
+  image: number | Media;
   blocks?:
     | {
         enableIcon?: boolean | null;
@@ -677,10 +822,12 @@ export interface SimpleListBlock {
         id?: string | null;
       }[]
     | null;
+  enableBackgroundImage?: boolean | null;
   isReverse?: boolean | null;
   bottom?: number | null;
   separatorType?: ('separatorYellow' | 'separatorWhite' | 'separatorBackground') | null;
-  sectionName: string;
+  sectionName?: string | null;
+  darkMode?: ('blue' | 'dark') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'simpleListContent';
@@ -712,14 +859,19 @@ export interface QuoteBlock {
         link: {
           type?: ('reference' | 'custom' | 'calendly') | null;
           newTab?: boolean | null;
-          reference?: {
-            relationTo: 'pages';
-            value: number | Page;
-          } | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
           url?: string | null;
           label: string;
           /**
-           * Choose how the link should be rendered.
+           * Elija cómo debe representarse el enlace
            */
           appearance?: ('default' | 'outline') | null;
         };
@@ -741,6 +893,7 @@ export interface QuoteBlock {
 export interface BoxContent {
   boxes?:
     | {
+        enableTitle?: boolean | null;
         title?: string | null;
         richText?: string | null;
         media: number | Media;
@@ -756,9 +909,11 @@ export interface BoxContent {
  * via the `definition` "PostCarouselBlock".
  */
 export interface PostCarouselBlock {
+  enableBackgroundImage?: boolean | null;
   isReverse?: boolean | null;
   bottom?: number | null;
   separatorType?: ('separatorYellow' | 'separatorWhite' | 'separatorBackground') | null;
+  darkMode?: ('blue' | 'dark') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'postCarouselBlock';
@@ -768,6 +923,24 @@ export interface PostCarouselBlock {
  * via the `definition` "FrequentlyQuestionsBlock".
  */
 export interface FrequentlyQuestionsBlock {
+  enableTitle?: boolean | null;
+  title?: string | null;
+  enableText?: boolean | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   enableImage?: boolean | null;
   image?: (number | null) | Media;
   questions: {
@@ -782,50 +955,72 @@ export interface FrequentlyQuestionsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "ServiceListBlock".
  */
-export interface User {
-  id: number;
-  name?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
+export interface ServiceListBlock {
+  enableTitle?: boolean | null;
+  title?: string | null;
+  enableBackgroundImage?: boolean | null;
+  blocks?:
     | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
+        enableFiledTitle?: boolean | null;
+        fieldTitle?: string | null;
+        enableIcon?: boolean | null;
+        media?: (number | null) | Media;
+        enableRichText?: boolean | null;
+        richText?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        link: {
+          type?: ('reference' | 'custom' | 'calendly') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Elija cómo debe representarse el enlace
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
       }[]
     | null;
-  password?: string | null;
+  isReverse?: boolean | null;
+  bottom?: number | null;
+  separatorType?: ('separatorYellow' | 'separatorWhite' | 'separatorBackground') | null;
+  sectionName?: string | null;
+  darkMode?: ('blue' | 'dark') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'serviceListBlock';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories".
+ * via the `definition` "ServiceBlock".
  */
-export interface Category {
-  id: number;
-  title: string;
-  slug?: string | null;
-  slugLock?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posts".
- */
-export interface Post {
-  id: number;
-  title: string;
-  heroImage?: (number | null) | Media;
-  content: {
+export interface ServiceBlock {
+  title?: string | null;
+  richText: {
     root: {
       type: string;
       children: {
@@ -840,60 +1035,82 @@ export interface Post {
     };
     [k: string]: unknown;
   };
-  relatedPosts?: (number | Post)[] | null;
-  categories?: (number | Category)[] | null;
-  tags?: (number | Tag)[] | null;
-  meta?: {
-    title?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-    description?: string | null;
-  };
-  publishedAt?: string | null;
-  authors?: (number | User)[] | null;
-  populatedAuthors?:
+  accordions?:
     | {
+        title?: string | null;
+        content?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
         id?: string | null;
-        name?: string | null;
       }[]
     | null;
-  slug?: string | null;
-  slugLock?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
+  enableBackgroundImage?: boolean | null;
+  bottom?: number | null;
+  isReverse?: boolean | null;
+  separatorType?: ('separatorYellow' | 'separatorWhite' | 'separatorBackground') | null;
+  sectionName?: string | null;
+  darkMode?: ('blue' | 'dark') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'service';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tags".
+ * via the `definition` "documents".
  */
-export interface Tag {
+export interface Document {
   id: number;
   title: string;
-  slug?: string | null;
-  slugLock?: boolean | null;
+  description?: string | null;
+  docUrl?: string | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "contact-messages".
+ * via the `definition` "videos".
  */
-export interface ContactMessage {
+export interface Video {
   id: number;
-  name: string;
-  email: string;
-  subject?: string | null;
-  message: string;
-  status: 'nuevo' | 'leido' | 'respondido';
+  title: string;
   /**
-   * Usa este campo para dejar notas sobre el mensaje
+   * Duración en segundos
    */
-  notes?: string | null;
+  duration?: number | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -911,6 +1128,23 @@ export interface FormSubmission {
     | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv".
+ */
+export interface PayloadKv {
+  id: number;
+  key: string;
+  data:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1032,12 +1266,16 @@ export interface PayloadLockedDocument {
         value: number | Post;
       } | null)
     | ({
-        relationTo: 'contact-messages';
-        value: number | ContactMessage;
-      } | null)
-    | ({
         relationTo: 'tags';
         value: number | Tag;
+      } | null)
+    | ({
+        relationTo: 'documents';
+        value: number | Document;
+      } | null)
+    | ({
+        relationTo: 'videos';
+        value: number | Video;
       } | null)
     | ({
         relationTo: 'forms';
@@ -1046,10 +1284,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'form-submissions';
         value: number | FormSubmission;
-      } | null)
-    | ({
-        relationTo: 'payload-jobs';
-        value: number | PayloadJob;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1104,7 +1338,12 @@ export interface PagesSelect<T extends boolean = true> {
     | {
         title?: T;
         media?: T;
+        removeSvg?: T;
         richText?: T;
+        isReverse?: T;
+        bottom?: T;
+        separatorType?: T;
+        darkMode?: T;
         links?:
           | T
           | {
@@ -1137,7 +1376,10 @@ export interface PagesSelect<T extends boolean = true> {
               companionText?: T;
               form?: T;
               isReverse?: T;
+              enableBackgroundImage?: T;
               bottom?: T;
+              darkMode?: T;
+              separatorType?: T;
               id?: T;
               blockName?: T;
             };
@@ -1147,6 +1389,8 @@ export interface PagesSelect<T extends boolean = true> {
         boxContent?: T | BoxContentSelect<T>;
         postCarouselBlock?: T | PostCarouselBlockSelect<T>;
         frequentlyQuestionsBlock?: T | FrequentlyQuestionsBlockSelect<T>;
+        serviceListBlock?: T | ServiceListBlockSelect<T>;
+        service?: T | ServiceBlockSelect<T>;
       };
   meta?:
     | T
@@ -1186,8 +1430,10 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
         id?: T;
       };
   isReverse?: T;
+  separatorType?: T;
   bottom?: T;
   sectionName?: T;
+  darkMode?: T;
   id?: T;
   blockName?: T;
 }
@@ -1218,6 +1464,7 @@ export interface ContentBlockSelect<T extends boolean = true> {
   bottom?: T;
   separatorType?: T;
   sectionName?: T;
+  darkMode?: T;
   id?: T;
   blockName?: T;
 }
@@ -1240,7 +1487,6 @@ export interface ListContentBlockSelect<T extends boolean = true> {
   title?: T;
   enableSubTitle?: T;
   subTitle?: T;
-  enableBackgroundImage?: T;
   enableImage?: T;
   fieldImage?: T;
   blocks?:
@@ -1252,13 +1498,26 @@ export interface ListContentBlockSelect<T extends boolean = true> {
         media?: T;
         enableRichText?: T;
         richText?: T;
+        enableLink?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
         color?: T;
         id?: T;
       };
+  enableBackgroundImage?: T;
   isReverse?: T;
   bottom?: T;
   separatorType?: T;
   sectionName?: T;
+  darkMode?: T;
   id?: T;
   blockName?: T;
 }
@@ -1293,9 +1552,7 @@ export interface SocialMediaBlockSelect<T extends boolean = true> {
 export interface SimpleListBlockSelect<T extends boolean = true> {
   enableTitle?: T;
   title?: T;
-  enableBackgroundImage?: T;
-  enableImage?: T;
-  fieldImage?: T;
+  image?: T;
   blocks?:
     | T
     | {
@@ -1306,10 +1563,12 @@ export interface SimpleListBlockSelect<T extends boolean = true> {
         color?: T;
         id?: T;
       };
+  enableBackgroundImage?: T;
   isReverse?: T;
   bottom?: T;
   separatorType?: T;
   sectionName?: T;
+  darkMode?: T;
   id?: T;
   blockName?: T;
 }
@@ -1351,6 +1610,7 @@ export interface BoxContentSelect<T extends boolean = true> {
   boxes?:
     | T
     | {
+        enableTitle?: T;
         title?: T;
         richText?: T;
         media?: T;
@@ -1364,9 +1624,11 @@ export interface BoxContentSelect<T extends boolean = true> {
  * via the `definition` "PostCarouselBlock_select".
  */
 export interface PostCarouselBlockSelect<T extends boolean = true> {
+  enableBackgroundImage?: T;
   isReverse?: T;
   bottom?: T;
   separatorType?: T;
+  darkMode?: T;
   id?: T;
   blockName?: T;
 }
@@ -1375,6 +1637,10 @@ export interface PostCarouselBlockSelect<T extends boolean = true> {
  * via the `definition` "FrequentlyQuestionsBlock_select".
  */
 export interface FrequentlyQuestionsBlockSelect<T extends boolean = true> {
+  enableTitle?: T;
+  title?: T;
+  enableText?: T;
+  content?: T;
   enableImage?: T;
   image?: T;
   questions?:
@@ -1390,10 +1656,72 @@ export interface FrequentlyQuestionsBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ServiceListBlock_select".
+ */
+export interface ServiceListBlockSelect<T extends boolean = true> {
+  enableTitle?: T;
+  title?: T;
+  enableBackgroundImage?: T;
+  blocks?:
+    | T
+    | {
+        enableFiledTitle?: T;
+        fieldTitle?: T;
+        enableIcon?: T;
+        media?: T;
+        enableRichText?: T;
+        richText?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  isReverse?: T;
+  bottom?: T;
+  separatorType?: T;
+  sectionName?: T;
+  darkMode?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ServiceBlock_select".
+ */
+export interface ServiceBlockSelect<T extends boolean = true> {
+  title?: T;
+  richText?: T;
+  accordions?:
+    | T
+    | {
+        title?: T;
+        content?: T;
+        id?: T;
+      };
+  enableBackgroundImage?: T;
+  bottom?: T;
+  isReverse?: T;
+  separatorType?: T;
+  sectionName?: T;
+  darkMode?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  avatar?: T;
+  roles?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1417,13 +1745,8 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
-  cloudinaryPublicId?: T;
-  cloudinaryUrl?: T;
-  cloudinaryResourceType?: T;
-  cloudinaryFormat?: T;
-  cloudinaryVersion?: T;
-  originalUrl?: T;
-  transformedUrl?: T;
+  unpicUrl?: T;
+  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1481,20 +1804,6 @@ export interface PostsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "contact-messages_select".
- */
-export interface ContactMessagesSelect<T extends boolean = true> {
-  name?: T;
-  email?: T;
-  subject?: T;
-  message?: T;
-  status?: T;
-  notes?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tags_select".
  */
 export interface TagsSelect<T extends boolean = true> {
@@ -1503,6 +1812,47 @@ export interface TagsSelect<T extends boolean = true> {
   slugLock?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents_select".
+ */
+export interface DocumentsSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  docUrl?: T;
+  prefix?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "videos_select".
+ */
+export interface VideosSelect<T extends boolean = true> {
+  title?: T;
+  duration?: T;
+  prefix?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1639,6 +1989,14 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv_select".
+ */
+export interface PayloadKvSelect<T extends boolean = true> {
+  key?: T;
+  data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-jobs_select".
  */
 export interface PayloadJobsSelect<T extends boolean = true> {
@@ -1716,25 +2074,35 @@ export interface Header {
                     link?: {
                       type?: ('reference' | 'custom' | 'calendly') | null;
                       newTab?: boolean | null;
-                      reference?: {
-                        relationTo: 'pages';
-                        value: number | Page;
-                      } | null;
+                      reference?:
+                        | ({
+                            relationTo: 'pages';
+                            value: number | Page;
+                          } | null)
+                        | ({
+                            relationTo: 'posts';
+                            value: number | Post;
+                          } | null);
                       url?: string | null;
                     };
                     subItems?:
                       | {
                           title: string;
-                          description?: string | null;
+                          description: string;
                           enableImage?: boolean | null;
                           image?: (number | null) | Media;
                           link?: {
                             type?: ('reference' | 'custom' | 'calendly') | null;
                             newTab?: boolean | null;
-                            reference?: {
-                              relationTo: 'pages';
-                              value: number | Page;
-                            } | null;
+                            reference?:
+                              | ({
+                                  relationTo: 'pages';
+                                  value: number | Page;
+                                } | null)
+                              | ({
+                                  relationTo: 'posts';
+                                  value: number | Post;
+                                } | null);
                             url?: string | null;
                           };
                           id?: string | null;
@@ -1763,10 +2131,15 @@ export interface Footer {
         link: {
           type?: ('reference' | 'custom' | 'calendly') | null;
           newTab?: boolean | null;
-          reference?: {
-            relationTo: 'pages';
-            value: number | Page;
-          } | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
           url?: string | null;
           label: string;
         };
@@ -1777,6 +2150,7 @@ export interface Footer {
   isReverse?: boolean | null;
   bottom?: number | null;
   separatorType?: ('separatorYellow' | 'separatorWhite' | 'separatorBackground') | null;
+  darkMode?: ('blue' | 'dark') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1853,6 +2227,7 @@ export interface FooterSelect<T extends boolean = true> {
   isReverse?: T;
   bottom?: T;
   separatorType?: T;
+  darkMode?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1898,6 +2273,66 @@ export interface BannerBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'banner';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PricesBlock".
+ */
+export interface PricesBlock {
+  enableTitle?: boolean | null;
+  title?: string | null;
+  enableText?: boolean | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  prices?:
+    | {
+        price: number;
+        link: {
+          type?: ('reference' | 'custom' | 'calendly') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Elija cómo debe representarse el enlace
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        isFeatured?: boolean | null;
+        features?:
+          | {
+              feature: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  sectionName?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'pricesBlock';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

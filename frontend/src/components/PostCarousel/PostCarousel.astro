@@ -1,4 +1,4 @@
----
+<!-- ---
 import type { Post } from "@/lib/payloadTypes";
 
 interface Props {
@@ -8,10 +8,10 @@ interface Props {
 const { posts } = Astro.props;
 ---
 
-<section class="relative w-full overflow-hidden py-10 bg-white">
+<section
+    class="relative w-full overflow-hidden py-10 bg-white dark:bg-section-color"
+>
     <h2 class="text-2xl font-bold mb-6 text-center">🌀 Últimos Posts</h2>
-
-    <!-- Carrusel -->
     <div id="carousel" class="flex gap-6 overflow-hidden px-4 relative">
         {
             posts.map((post) => (
@@ -38,61 +38,61 @@ const { posts } = Astro.props;
     </div>
 
     <!-- Botones -->
-    <button
-        id="prevBtn"
-        class="absolute left-4 top-1/2 -translate-y-1/2 bg-white shadow rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-100"
-    >
-        ‹
-    </button>
-    <button
-        id="nextBtn"
-        class="absolute right-4 top-1/2 -translate-y-1/2 bg-white shadow rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-100"
-    >
-        ›
-    </button>
+<button
+    id="prevBtn"
+    class="absolute left-4 top-1/2 -translate-y-1/2 bg-white shadow rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-100"
+>
+    ‹
+</button>
+<button
+    id="nextBtn"
+    class="absolute right-4 top-1/2 -translate-y-1/2 bg-white shadow rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-100"
+>
+    ›
+</button>
 
-    <!-- GSAP script -->
-    <script>
-        import gsap from "gsap";
+<!-- GSAP script -->
+<script>
+    import gsap from "gsap";
 
-        const carousel = document.querySelector("#carousel");
-        const slides = Array.from(carousel.children);
-        const prev = document.querySelector("#prevBtn");
-        const next = document.querySelector("#nextBtn");
+    const carousel = document.querySelector("#carousel");
+    const slides = Array.from(carousel.children);
+    const prev = document.querySelector("#prevBtn");
+    const next = document.querySelector("#nextBtn");
 
-        let index = 0;
-        const visibleCards = 3; // Número visible en escritorio
-        const total = slides.length;
-        const slideWidth = slides[0].offsetWidth + 24; // card width + gap
-        let isAnimating = false;
+    let index = 0;
+    const visibleCards = 3; // Número visible en escritorio
+    const total = slides.length;
+    const slideWidth = slides[0].offsetWidth + 24; // card width + gap
+    let isAnimating = false;
 
-        function goToSlide(newIndex) {
-            if (isAnimating) return;
-            isAnimating = true;
-            index = (newIndex + total) % total;
+    function goToSlide(newIndex) {
+        if (isAnimating) return;
+        isAnimating = true;
+        index = (newIndex + total) % total;
 
-            gsap.to(carousel, {
-                x: -index * slideWidth,
-                duration: 0.8,
-                ease: "power2.out",
-                onComplete: () => (isAnimating = false),
-            });
-        }
-
-        prev.addEventListener("click", () => goToSlide(index - 1));
-        next.addEventListener("click", () => goToSlide(index + 1));
-
-        // Autoplay
-        let autoplay = setInterval(() => goToSlide(index + 1), 4000);
-
-        carousel.addEventListener("mouseenter", () => clearInterval(autoplay));
-        carousel.addEventListener("mouseleave", () => {
-            autoplay = setInterval(() => goToSlide(index + 1), 4000);
+        gsap.to(carousel, {
+            x: -index * slideWidth,
+            duration: 0.8,
+            ease: "power2.out",
+            onComplete: () => (isAnimating = false),
         });
+    }
 
-        // Reset posición al cambiar de tamaño
-        window.addEventListener("resize", () => {
-            gsap.set(carousel, { x: -index * (slides[0].offsetWidth + 24) });
-        });
-    </script>
-</section>
+    prev.addEventListener("click", () => goToSlide(index - 1));
+    next.addEventListener("click", () => goToSlide(index + 1));
+
+    // Autoplay
+    let autoplay = setInterval(() => goToSlide(index + 1), 4000);
+
+    carousel.addEventListener("mouseenter", () => clearInterval(autoplay));
+    carousel.addEventListener("mouseleave", () => {
+        autoplay = setInterval(() => goToSlide(index + 1), 4000);
+    });
+
+    // Reset posición al cambiar de tamaño
+    window.addEventListener("resize", () => {
+        gsap.set(carousel, { x: -index * (slides[0].offsetWidth + 24) });
+    });
+</script>
+-->

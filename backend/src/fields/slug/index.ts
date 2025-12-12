@@ -23,7 +23,6 @@ export const slugField: Slug = (fieldToUse = 'title', overrides = {}) => {
     ...checkboxOverrides,
   }
 
-  // @ts-expect-error - ts mismatch Partial<TextField> with TextField
   const slugField: TextField = {
     name: 'slug',
     type: 'text',
@@ -31,7 +30,6 @@ export const slugField: Slug = (fieldToUse = 'title', overrides = {}) => {
     label: 'Slug',
     ...(slugOverrides || {}),
     hooks: {
-      // Kept this in for hook or API based updates
       beforeValidate: [formatSlugHook(fieldToUse)],
     },
     admin: {

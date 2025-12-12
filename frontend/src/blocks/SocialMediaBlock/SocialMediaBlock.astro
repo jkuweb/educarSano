@@ -5,36 +5,33 @@ import type {
     Media,
     SocialMediaBlock as SocialMediaProps,
 } from "@/lib/payloadTypes";
-import { Image } from "@unpic/astro";
 
 const { rrss } = Astro.props as SocialMediaProps;
 ---
 
 {
     rrss && (
-        <ul class="grid md:grid-cols-2 md:grid-rows-1 grid-rows-2 grid-cols-1 gap-12">
+        <ul class="grid 2xl:grid-cols-2 2xl:grid-rows-1 md:place-items-center md:w-11/12 md:mx-auto grid-rows-2 grid-cols-1 my-12 gap-4 ">
             {rrss.map((social) => {
-                const { link, title, icon } = social;
+                const { link, icon } = social;
                 const mediaData =
                     icon && typeof icon === "object" ? (icon as Media) : null;
-                const { alt, url, width, height, mimeType } = mediaData || {};
-
+                const { alt, unpicUrl, width, height, mimeType } =
+                    mediaData || {};
                 return (
-                    <li class="grid grid-cols-1 grid-rows-2  ">
-                        <span class="self-center">{title}</span>
+                    <li class="grid grid-cols-[48px_1fr] place-items-center [&>span]:justify-self-start">
                         <Link
                             {...link}
-                            className="flex flex-row-reverse items-center justify-end "
-                        >
-                            <AstroImage
-                                src={url!}
-                                width={width!}
-                                height={height!}
-                                alt={alt!}
-                                className="w-9 h-9 relative left-[-4px]"
-                                mimeType={mimeType!}
-                            />
-                        </Link>
+                            className="grid justify-self-start font-bold"
+                        />
+                        <AstroImage
+                            src={unpicUrl!}
+                            width={width!}
+                            height={height!}
+                            alt={alt!}
+                            className="row-1 justify-self-start  dark:[&>svg>path]:fill-[#f0f0f0] w-full [&>svg]:w-full "
+                            mimeType={mimeType!}
+                        />
                     </li>
                 );
             })}

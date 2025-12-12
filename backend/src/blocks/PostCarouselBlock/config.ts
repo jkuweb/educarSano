@@ -1,3 +1,5 @@
+import { isAdminFieldLevel, publicReadField } from '@/access'
+import { isAdminCondition, isAdminConditionRoles } from '@/utilities/isAdmin'
 import type { Block } from 'payload'
 
 export const PostCarouselBlock: Block = {
@@ -9,14 +11,35 @@ export const PostCarouselBlock: Block = {
   },
   fields: [
     {
+      name: 'enableBackgroundImage',
+      label: 'Añadir imagen de fondo',
+      type: 'checkbox',
+    },
+    {
       name: 'isReverse',
       type: 'checkbox',
+      admin: {
+        condition: isAdminConditionRoles,
+      },
       defaultValue: false,
+      access: {
+        read: publicReadField,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
+      },
     },
     {
       name: 'bottom',
       type: 'number',
       defaultValue: 100,
+      access: {
+        read: publicReadField,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
+      },
+      admin: {
+        condition: isAdminConditionRoles,
+      },
     },
     {
       name: 'separatorType',
@@ -33,6 +56,36 @@ export const PostCarouselBlock: Block = {
         {
           label: 'Background',
           value: 'separatorBackground',
+        },
+      ],
+      admin: {
+        condition: isAdminConditionRoles,
+      },
+      access: {
+        read: publicReadField,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
+      },
+    },
+    {
+      name: 'darkMode',
+      type: 'select',
+      access: {
+        read: publicReadField,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
+      },
+      admin: {
+        condition: isAdminConditionRoles,
+      },
+      options: [
+        {
+          label: 'Blue',
+          value: 'blue',
+        },
+        {
+          label: 'Dark',
+          value: 'dark',
         },
       ],
     },

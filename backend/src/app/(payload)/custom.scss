@@ -1,0 +1,125 @@
+#field-image,
+#field-hero__media,
+.upload {
+  .upload-field-card {
+    background-color: #ffffff;
+    .upload-relationship-details__details {
+      display: none;
+    }
+  }
+  .thumbnail--size-small {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .upload-field-card {
+    position: relative;
+    padding: 0;
+    width: 250px;
+    height: 200px;
+    overflow: hidden;
+    border: 0;
+    padding: 1rem 0;
+    background-color: #000;
+  }
+  .upload--has-many__draggable-rows {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .upload-relationship-details {
+    height: 100%;
+  }
+  .upload-relationship-details__actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .upload--has-many__drag {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-bottom-right-radius: 0.5rem;
+    svg {
+      width: 24px;
+      height: 24px;
+      color: #000;
+    }
+  }
+
+  .upload-relationship-details {
+    align-items: start;
+    position: relative;
+  }
+  .upload-relationship-details__imageAndDetails {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+#field-photos
+  .upload-field-card
+  .thumbnail.thumbnail--size-small.upload-relationship-details__thumbnail {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+
+html[data-theme='dark'] .nav-group__toggle {
+  color: #85ccc6;
+}
+.nav-group__toggle {
+  font-size: 1.3rem;
+}
+.nav__link-label {
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+  margin-left: 0.5rem;
+  margin-bottom: 1rem;
+}
+.cell-filename {
+  height: 160px;
+
+  & > a {
+    height: inherit;
+  }
+  & > a > .file {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: inherit;
+    & > div {
+    }
+  }
+}
+.file__filename {
+  margin-left: 0;
+  align-self: start;
+}
+.file__thumbnail {
+  height: min-content;
+  width: 150px;
+  max-width: 150px;
+  display: flex;
+}
+.default-cell__first-cell {
+  height: inherit;
+  width: 100%;
+  & > .file {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: inherit;
+  }
+}
+.upload-relationship-details__thumbnail {
+  & > img {
+    object-fit: contain;
+  }
+}

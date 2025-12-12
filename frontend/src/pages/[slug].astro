@@ -16,13 +16,12 @@ export async function getStaticPaths() {
 }
 const { slug } = Astro.params;
 const page = await getPageBySlug(slug!, { depth: 2 });
-
 if (!page) {
     return Astro.redirect("/404");
 }
 ---
 
-<Layout>
+<Layout meta={page.meta}>
     <Hero {...page.hero} />
-    <RenderBlocks blocks={page.layout} />
+    <RenderBlocks blocks={page.layout} slug={slug} />
 </Layout>

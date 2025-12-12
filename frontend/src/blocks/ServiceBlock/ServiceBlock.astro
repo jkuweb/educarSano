@@ -1,0 +1,191 @@
+---
+import RichText from "@/components/RichText.astro";
+import type { ServiceBlock as ServiceBlockProps } from "@/lib/payloadTypes";
+import { Separator } from "@/components/Separator/Separator";
+import { cn } from "@/utils/ui";
+
+const {
+    enableBackgroundImage,
+    accordions,
+    bottom,
+    separatorType,
+    isReverse,
+    title,
+    richText,
+    slug,
+    darkMode,
+    sectionName,
+} = Astro.props as ServiceBlockProps;
+const hasAccordions = accordions && accordions.length > 0;
+---
+
+<section
+    id={slug}
+    class={cn(
+        "relative pb-40 pt-40",
+        enableBackgroundImage ? "bg-section" : "",
+    )}
+>
+    <div class="wrapper grid grid-cols-2 gap-16 m-auto">
+        <div>
+            {
+                title && (
+                    <h2 class="text-3xl font-bold text-secondary-900">
+                        {title}
+                    </h2>
+                )
+            }
+            {richText && <RichText content={richText} />}
+        </div>
+        <div class="mx-auto w-full">
+            <div class="space-y-2">
+                {
+                    hasAccordions &&
+                        accordions.map((accordion) => (
+                            <details class="group rounded-xl bg-yellow-neutral dark:bg-blue-900 shadow-[0_10px_100px_10px_rgba(0,0,0,0.05)]">
+                                <summary class="flex cursor-pointer list-none items-center justify-between p-6 text-lg font-medium text-secondary-900 text-[#222]">
+                                    {accordion.title}
+                                    <div class="text-secondary-500">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="1.5"
+                                            stroke="currentColor"
+                                            class="accordion-icon block h-5 w-5"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                                            />
+                                        </svg>
+                                    </div>
+                                </summary>
+                                <div class="accordion-panel overflow-hidden px-6 pb-6 pt-4 bg-[#ffebc0]">
+                                    <div class="accordion-inner">
+                                        <RichText
+                                            content={accordion.content}
+                                            className={`${slug}-richtext`}
+                                        />
+                                    </div>
+                                </div>
+                            </details>
+                        ))
+                }
+            </div>
+        </div>
+    </div>
+    <Separator
+        type={separatorType || "separatorWhite"}
+        reverse={isReverse}
+        className={cn(
+            "absolute dark:[&>path]:fill-section-color-blue",
+            darkMode === "dark"
+                ? "dark:[&>path]:fill-section-color"
+                : "dark:[&>path]:fill-section-color-blue",
+        )}
+        style={{ bottom: `${bottom}px` }}
+    />
+</section>
+<script>
+    import gsap from "gsap";
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const accordions = document.querySelectorAll("details");
+
+        accordions.forEach((acc) => {
+            const summary = acc.querySelector("summary");
+            const panel = acc.querySelector(".accordion-panel");
+            const inner = acc.querySelector(".accordion-inner");
+            const icon = acc.querySelector(".accordion-icon");
+
+            let animating = false;
+
+            gsap.set(panel, { height: 0, opacity: 0 });
+            gsap.set(inner, { y: 10 }); // contenido ligeramente desplazado
+
+            function animateIcon(opening) {
+                gsap.to(icon, {
+                    rotate: opening ? -90 : 0,
+                    duration: 0.35,
+                    ease: "power2.inOut",
+                });
+            }
+
+            function toggle(e) {
+                e.preventDefault();
+                if (animating) return;
+                animating = true;
+
+                const isOpen = acc.hasAttribute("open");
+
+                if (isOpen) {
+                    // Cerrar
+                    gsap.to(panel, {
+                        height: 0,
+                        opacity: 0,
+                        duration: 0.45,
+                        ease: "power2.inOut",
+                    });
+                    gsap.to(inner, {
+                        y: 10,
+                        duration: 0.45,
+                        ease: "power2.inOut",
+                    });
+
+                    gsap.to(icon, {
+                        rotate: 0,
+                        duration: 0.35,
+                        ease: "power2.inOut",
+                    });
+
+                    setTimeout(() => {
+                        acc.removeAttribute("open");
+                        animating = false;
+                    }, 450);
+                } else {
+                    // Abrir
+                    acc.setAttribute("open", "");
+                    requestAnimationFrame(() => {
+                        const fullHeight = inner.offsetHeight;
+                        gsap.fromTo(
+                            panel,
+                            { height: 0, opacity: 0 },
+                            {
+                                height: fullHeight,
+                                opacity: 1,
+                                duration: 0.55,
+                                ease: "power2.out",
+                                onComplete: () => {
+                                    panel.style.height = "auto";
+                                    animating = false;
+                                },
+                            },
+                        );
+                        gsap.fromTo(
+                            inner,
+                            { y: 10, opacity: 0 },
+                            {
+                                y: 0,
+                                opacity: 1,
+                                duration: 0.55,
+                                ease: "power2.out",
+                            },
+                        );
+
+                        animateIcon(true);
+                    });
+                }
+            }
+
+            summary.addEventListener("click", toggle);
+            summary.addEventListener("keydown", (ev) => {
+                if (ev.key === " " || ev.key === "Enter") {
+                    ev.preventDefault();
+                    summary.click();
+                }
+            });
+        });
+    });
+</script>

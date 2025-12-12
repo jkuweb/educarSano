@@ -1,8 +1,10 @@
 ---
 import { ContactForm } from "@/components/ContactForm";
 import RichText from "@/components/RichText.astro";
+import { Separator } from "@/components/Separator/Separator";
 import { getFormBySlug } from "@/lib/getFormBySlug";
 import type { FormBlock } from "@/lib/payloadTypes";
+import { cn } from "@/utils/ui";
 
 interface Props {
     title?: string;
@@ -21,45 +23,62 @@ const {
     companionText,
     id,
     bottom,
+    separatorType,
+    darkMode,
+    enableBackgroundImage,
 } = Astro.props as FormBlock;
 const contactForm = await getFormBySlug(form["slug"]);
 
 if (!contactForm) {
     throw new Error(`Formulario no encontrado`);
 }
-
-const bgColors = {
-    white: "bg-white",
-    gray: "bg-gray-50",
-    primary: "bg-primary-50",
-};
 ---
 
-<section class={`bg-yellow-light relative pt-40 pb-40`}>
+<section
+    class={cn(
+        `bg-[#FFF9ED] dark:bg-section-color relative pt-40 pb-40`,
+        enableBackgroundImage ? "bg-section" : "",
+        darkMode === "blue"
+            ? "dark:bg-section-color-blue"
+            : "dark:bg-section-color",
+    )}
+>
     <div
-        class="wrapper m-auto py-8 px-4 grid grid-cols-1 grid-row-2 md:grid-cols-2 md:grid-rows-1"
+        class="wrapper lg:grid-cols-2 lg:grid-rows-1 m-auto py-8 px-4 md:px-20 grid grid-cols-1 grid-row-2 md:gap-16"
     >
         <div>
             {
                 headerText && enableHeaderText && (
-                    <div class="mt-8 prose prose-lg mx-auto">
-                        <RichText content={headerText} />
+                    <div class="text-left">
+                        <RichText
+                            content={headerText}
+                            className="md:[&>p]:!text-center"
+                        />
                     </div>
                 )
             }
         </div>
-        <div class="bg-yellow-neutral px-12 py-8 rounded-sm">
+        <div class="bg-yellow-neutral dark:bg-section-color-blue px-12 py-8">
             {
                 companionText && enableCompanionText && (
-                    <p class="mt-4 text-xl text-center text-gray-600">
-                        <RichText
-                            content={companionText}
-                            className="form-header mb-8 text-left md:text-start"
-                        />
-                    </p>
+                    <RichText
+                        content={companionText}
+                        className="[&>h3]:text-center [&>h3]:mb-4 [&>p]:!text-center"
+                    />
                 )
             }
             <ContactForm client:load form={contactForm} />
         </div>
     </div>
+    <Separator
+        type={separatorType || "separatorWhite"}
+        reverse={isReverse}
+        className={cn(
+            "absolute dark:[&>path]:fill-section-color-blue",
+            darkMode === "dark"
+                ? "dark:[&>path]:fill-section-color"
+                : "dark:[&>path]:fill-section-color-blue",
+        )}
+        style={{ bottom: `${bottom}px` }}
+    />
 </section>

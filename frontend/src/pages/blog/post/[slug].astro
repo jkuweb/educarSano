@@ -1,10 +1,10 @@
 ---
+export const prerender = true;
 import Layout from "@/layouts/Layout.astro";
-import RichText from "@/components/RichText.astro";
 import { getAllPosts } from "@/lib/getAllPosts";
 import { getPostBySlug } from "@/lib/getPostBySlug";
-import type { Post } from "@/lib/payloadTypes";
-import PostCard from "@/components/PostCard/PostCard.astro";
+import type { Media, Post as PostType } from "@/lib/payloadTypes";
+import Post from "@/components/Post/Post.astro";
 
 export async function getStaticPaths() {
     const posts = await getAllPosts();
@@ -31,10 +31,6 @@ if (!slug || typeof slug !== "string") {
 }
 
 const post = await getPostBySlug(slug, { depth: 2 });
-console.log(post);
-const { title, content, relatedPosts } = post as Post;
-
-const hasRelatedPosts = relatedPosts && relatedPosts.length > 0;
 
 if (!post) {
     return Astro.redirect("/404");
@@ -42,28 +38,7 @@ if (!post) {
 ---
 
 <Layout title={post.title}>
-    <section class="pt-24 pb-12 px-4 max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold mb-6">{post.title}</h1>
-
-        <div class="prose">
-            <RichText content={post.content} />
-        </div>
-        <div>
-            {
-                hasRelatedPosts
-                    ? relatedPosts.map((relatedPost, index) => {
-                          return (
-            <h2>También te puede interesar:</h2>
-                              <PostCard
-                                  index={index}
-                                  post={relatedPost as Post}
-                                  hasCategories={true}
-                                  hasTags={true}
-                              />
-                          );
-                      })
-                    : null
-            }
-        </div>
+    <section class="wrapper m-auto">
+        <Post {...post} />
     </section>
 </Layout>

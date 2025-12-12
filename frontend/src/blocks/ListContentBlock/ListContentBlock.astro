@@ -7,6 +7,7 @@ import type {
 import RichText from "@/components/RichText.astro";
 import AstroImage from "@/components/image/AstroImage.astro";
 import { Separator } from "@/components/Separator/Separator";
+import { Link } from "@/components/Link";
 
 const {
     enableBackgroundImage,
@@ -21,133 +22,250 @@ const {
     blocks,
     isReverse,
     bottom,
+    darkMode,
 } = Astro.props as ListContentBlockProps;
 
 const mediaData =
     fieldImage && typeof fieldImage === "object" ? (fieldImage as Media) : null;
-const { alt, url, width, height, mimeType } = mediaData || {};
+const { unpicUrl } = mediaData || {};
 ---
 
 <section
+    id="list-section"
     class={cn(
-        "relative pb-40 pt-40",
+        "relative pb-40 pt-40 bg-cover bg-center",
         enableBackgroundImage ? "bg-section" : "",
         `${sectionName}`,
     )}
+    style={enableImage
+        ? `background-image: url('${unpicUrl}'); background-size: cover; background-repeat: no-repeat;`
+        : null}
 >
-    <div class={"wrapper m-auto"}>
-        {enableTitle && title ? <h2 class={cn("text-center")}>{title}</h2> : ""}
+    <div class="absolute inset-0 bg-black/30"></div>
+
+    <div class="wrapper m-auto relative">
+        {
+            enableTitle && title ? (
+                <h2
+                    class={cn(
+                        "text-center",
+                        enableImage ? "text-white" : "text-text",
+                    )}
+                >
+                    {title}
+                </h2>
+            ) : (
+                ""
+            )
+        }
+
         {
             enableSubTitle && subTitle ? (
                 <RichText
                     content={subTitle}
-                    className="max-w-[60ch] pb-8 pt-4 text-center"
+                    className="max-w-[60ch] pb-8 pt-4 text-center m-auto"
                 />
             ) : (
                 ""
             )
         }
-        <div
-            class={`${sectionName}-box mt-[-7rem] gap-8 md:my-0 md:grid md:grid-cols-[5rem_15rem_1fr] md:grid-rows-[1fr] md:gap-0 md:pb-36`}
-        >
-            {
-                enableImage && fieldImage ? (
-                    <AstroImage
-                        src={url!}
-                        width={width!}
-                        height={height!}
-                        alt={alt!}
-                        mimeType={mimeType!}
-                        className={`${sectionName}-image md:border-primary md:relative md:col-[1/3] md:row-[1/1]  md:self-center md:rounded-xl md:border-4 md:bg-white block !w-1/2 `}
-                    />
-                ) : (
-                    ""
-                )
-            }
-            <div
-                class={`${sectionName}-list-box p-4 md:col-[2/-1] md:row-[1/1] md:rounded-xl`}
-            >
+
+        <div class={`${sectionName}-box mt-24`}>
+            <div class={`${sectionName}-list-box md:rounded-xl`}>
                 <ul
-                    class={`${sectionName}-list grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] grid-rows-[repeat(7,13rem)] gap-4 md:grid-rows-[1fr]`}
+                    class={`${sectionName}-list py-8 px-4 grid gap-16 sm:grid-cols-[repeat(auto-fill,minmax(30rem,35rem))] sm:auto-rows-[1fr] justify-evenly sm:p-[4rem]`}
                 >
                     {
-                        blocks &&
-                            blocks.length > 0 &&
-                            blocks.map((block) => {
-                                const {
-                                    richText,
-                                    enableRichText,
-                                    enableFiledTitle,
-                                    enableIcon,
-                                    media,
-                                    fieldTitle,
-                                    color,
-                                } = block;
-                                const mediaData =
-                                    media && typeof media === "object"
-                                        ? (media as Media)
-                                        : null;
-                                const { alt, url, width, height, mimeType } =
-                                    mediaData || {};
+                        blocks?.map((block) => {
+                            const {
+                                richText,
+                                enableRichText,
+                                enableFiledTitle,
+                                enableIcon,
+                                media,
+                                fieldTitle,
+                                color,
+                                enableLink,
+                                link,
+                            } = block;
 
-                                const bgColor =
-                                    color === "green"
-                                        ? "bg-primary"
-                                        : color === "red"
-                                          ? "bg-red-light"
-                                          : color === "yellow"
-                                            ? "bg-yellow-neutral"
-                                            : "bg-transparent";
+                            const mediaData =
+                                media && typeof media === "object"
+                                    ? (media as Media)
+                                    : null;
 
-                                return (
-                                    <li
-                                        class={cn(
-                                            bgColor,
-                                            "grid grid-cols-[auto_1fr] rounded-sm" +
-                                                ` ${enableFiledTitle ? "grid-rows-[auto_auto]" : ""} items-center gap-4 p-4`,
-                                        )}
+                            const { alt, width, height, mimeType, unpicUrl } =
+                                mediaData || {};
+
+                            const bgColor =
+                                color === "green"
+                                    ? "bg-primary"
+                                    : color === "red"
+                                      ? "bg-red-light"
+                                      : color === "yellow"
+                                        ? "bg-yellow-neutral"
+                                        : "bg-transparent";
+
+                            return (
+                                <li
+                                    class={cn(
+                                        bgColor,
+                                        "grid place-items-center sm:grid-cols-[3rem_1fr] rounded-sm border-[3px] border-solid border-primary dark:border-[#a4c9ff] bg-white dark:bg-[#1e2939] sm:items-center gap-4 py-[1.7rem] px-4",
+                                        ` ${enableIcon ? "sm:grid-rows-[6rem_1fr]" : "flex"} `,
+                                    )}
+                                >
+                                    {enableIcon && media ? (
+                                        <AstroImage
+                                            src={unpicUrl!}
+                                            width={width!}
+                                            height={height!}
+                                            alt={alt!}
+                                            className="icon-container heart-image"
+                                            mimeType={mimeType!}
+                                        />
+                                    ) : (
+                                        ""
+                                    )}
+
+                                    {enableFiledTitle && fieldTitle ? (
+                                        <h3 class="field-title bg-primary dark:bg-[#a4c9ff] dark:!text-[#1e2939] text-center !text-text w-full font-bold uppercase tracking-wider !mb-0">
+                                            {enableLink && link ? (
+                                                <Link
+                                                    url={`/${link.reference?.value.slug}/#${link.reference?.value.slug}`}
+                                                    label={fieldTitle}
+                                                    appearance={"inline"}
+                                                    className="p-4 inline-block"
+                                                />
+                                            ) : (
+                                                <span class="p-4 inline-block">
+                                                    {fieldTitle}
+                                                </span>
+                                            )}
+                                        </h3>
+                                    ) : (
+                                        ""
+                                    )}
+
+                                    <div
+                                        class={`${enableFiledTitle ? "col-[2/-1] self-start" : ""} self-center`}
                                     >
-                                        {enableIcon && media ? (
-                                            <AstroImage
-                                                src={url!}
-                                                width={width!}
-                                                height={height!}
-                                                alt={alt!}
-                                                className="w-[40px]"
-                                                mimeType={mimeType!}
+                                        {richText && enableRichText ? (
+                                            <RichText
+                                                content={richText}
+                                                className={`${sectionName}-text [&>p]:!mb-0 [&>p]:!text-center sm:[&>p]:!text-left italic dark:[&>p]:!text-[#a4c9ff]`}
                                             />
                                         ) : (
                                             ""
                                         )}
-
-                                        {enableFiledTitle && fieldTitle ? (
-                                            <p class="bg-[#f5f5f5] p-2 text-center font-bold">
-                                                {fieldTitle}
-                                            </p>
-                                        ) : (
-                                            ""
-                                        )}
-
-                                        <div
-                                            class={`${enableFiledTitle ? "col-span-full" : ""} `}
-                                        >
-                                            {richText && enableRichText ? (
-                                                <RichText content={richText} />
-                                            ) : (
-                                                ""
-                                            )}
-                                        </div>
-                                    </li>
-                                );
-                            })
+                                    </div>
+                                </li>
+                            );
+                        })
                     }
                 </ul>
             </div>
         </div>
     </div>
+
     <Separator
         type={separatorType || "separatorWhite"}
         reverse={isReverse}
+        className={cn(
+            "absolute",
+            darkMode === "dark"
+                ? "dark:[&>path]:fill-section-color"
+                : "dark:[&>path]:fill-section-color-blue",
+        )}
         style={{ bottom: `${bottom}px` }}
     />
+
+    <script>
+        import gsap from "gsap";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const reduceMotion = window.matchMedia(
+                "(prefers-reduced-motion: reduce)",
+            ).matches;
+            const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+            if (reduceMotion || isMobile) {
+                document.querySelectorAll(".heart-image").forEach((heart) => {
+                    heart.style.transform = "scale(1)";
+                });
+                return;
+            }
+
+            const section = document.getElementById("list-section");
+            if (!section) return;
+
+            const items = section.querySelectorAll("li");
+
+            items.forEach((item) => {
+                const heart = item.querySelector(".heart-image");
+                if (!heart) return;
+
+                gsap.set(heart, { transformOrigin: "50% 50%" });
+
+                const tl = gsap.timeline({ paused: true });
+
+                tl.to(heart, {
+                    scale: 1.22,
+                    duration: 0.35,
+                    ease: "power1.inOut",
+                })
+                    .to(heart, {
+                        scale: 1,
+                        duration: 0.35,
+                        ease: "power1.inOut",
+                    })
+                    .to(heart, {
+                        scale: 1.22,
+                        duration: 0.35,
+                        ease: "power1.inOut",
+                    })
+                    .to(heart, {
+                        scale: 1,
+                        duration: 0.35,
+                        ease: "power1.inOut",
+                    });
+
+                let isPlaying = false;
+
+                item.addEventListener("mouseenter", () => {
+                    if (!isPlaying) {
+                        isPlaying = true;
+                        tl.restart();
+                    }
+                });
+
+                item.addEventListener("mouseleave", () => {
+                    isPlaying = false;
+                    tl.pause();
+                    gsap.to(heart, {
+                        scale: 1,
+                        duration: 0.25,
+                        ease: "power1.out",
+                    });
+                });
+            });
+        });
+    </script>
+
+    <style>
+        .heart-image {
+            display: inline-block;
+            transform-origin: 50% 50%;
+            will-change: transform;
+        }
+        .heart-image > svg {
+            width: 50px !important;
+            height: auto;
+            display: block;
+        }
+        .heart-image > img {
+            width: 50px !important;
+            height: auto;
+            display: block;
+        }
+    </style>
 </section>

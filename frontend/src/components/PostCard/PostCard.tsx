@@ -1,6 +1,7 @@
 import type { Media, Post, User } from "@/lib/payloadTypes";
 import { formatDateTime } from "@/utils/formatDateTime";
 import { Link } from "@/components/Link";
+import { formatAuthors } from "@/utils/formatAuthors";
 export type PosPropst = {
   post: Post;
   index: number;
@@ -21,18 +22,21 @@ export const PostCard: React.FC<PosPropst> = ({
     tags: postTags,
     title: postTitle,
     publishedAt,
-    authors,
+    populatedAuthors,
   } = post;
-  const { title, description, image: metaImage } = meta;
-  const { url } = metaImage as Media;
+  const { description, image: metaImage } = meta;
+  const { unpicUrl } = metaImage as Media;
 
-  const hasAuthors = authors && Array.isArray(authors) && authors.length > 0;
+  const hasPopularAuthors =
+    populatedAuthors &&
+    Array.isArray(populatedAuthors) &&
+    populatedAuthors.length > 0;
   const href = `/blog/post/${slug}`;
 
   return (
     <article
       key={slug}
-      className="group relative bg-white dark:bg-gray-800 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer transform hover:-translate-y-2 flex flex-col"
+      className="group relative bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer transform hover:-translate-y-2 flex flex-col"
       onClick={(e) => {
         if (!(e.target as HTMLElement).closest("a")) {
           window.location.href = href;
@@ -50,7 +54,7 @@ export const PostCard: React.FC<PosPropst> = ({
           style={{
             backgroundImage:
               metaImage && typeof metaImage !== "string"
-                ? `url(${url})`
+                ? `url(${unpicUrl})`
                 : "none",
             backgroundColor: !metaImage ? "#e5e7eb" : undefined,
           }}
@@ -76,9 +80,9 @@ export const PostCard: React.FC<PosPropst> = ({
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </div>
 
-      <div className="p-6 space-y-4 flex flex-col flex-grow">
-        <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-          {hasAuthors && authors[0] && (
+      <div className="px-6 pt-16 pb-16 space-y-4 flex flex-col flex-grow">
+        <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-8">
+          {hasPopularAuthors && (
             <div className="flex items-center gap-1.5">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -87,7 +91,9 @@ export const PostCard: React.FC<PosPropst> = ({
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="font-medium">{(authors[0] as User).name}</span>
+              <span className="font-medium">
+                {formatAuthors(populatedAuthors)}
+              </span>
             </div>
           )}
           {publishedAt && (
@@ -106,7 +112,7 @@ export const PostCard: React.FC<PosPropst> = ({
           )}
         </div>
 
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-[#85ccc6] dark:group-hover:text-indigo-400 transition-colors">
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white line-clamp-2  dark:group-hover:text-indigo-400 transition-colors">
           {postTitle}
         </h3>
 
@@ -120,7 +126,7 @@ export const PostCard: React.FC<PosPropst> = ({
               if (typeof category === "object" && category) {
                 return (
                   <Link key={idx} url={`/blog/category/${category.slug!}`}>
-                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
+                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary dark:bg-blue-900/30 text-[#0e3734] dark:text-blue-300 rounded-full text-xs font-medium hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
                       <svg
                         className="w-3 h-3"
                         fill="currentColor"
@@ -143,7 +149,7 @@ export const PostCard: React.FC<PosPropst> = ({
                     key={idx}
                     url={`/blog/tag/${encodeURIComponent(tag.slug!)}`}
                   >
-                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full text-xs font-medium hover:bg-emerald-200 dark:hover:bg-emerald-900/50 transition-colors">
+                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-yellow-neutral dark:bg-[emerald-900/3] text-[#513c0e] dark:text-emerald-300 rounded-full text-xs font-medium hover:bg-emerald-200 dark:hover:bg-emerald-900/50 transition-colors">
                       #{tag.title}
                     </span>
                   </Link>
@@ -154,8 +160,8 @@ export const PostCard: React.FC<PosPropst> = ({
         </div>
       </div>
 
-      <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300">
-        <div className="bg-indigo-600 text-white rounded-full p-2 shadow-lg">
+      <div className="absolute bottom-4 right-6 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300">
+        <div className="bg-primary text-white rounded-full p-2 shadow-lg">
           <svg
             className="w-5 h-5"
             fill="none"

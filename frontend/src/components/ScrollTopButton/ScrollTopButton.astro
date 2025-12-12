@@ -1,0 +1,47 @@
+---
+
+---
+
+<style>
+    .scroll-top {
+        position: fixed;
+        width: 3rem;
+        height: 3rem;
+        bottom: 2rem;
+        left: 2rem;
+        color: #317670;
+        border-radius: 50%;
+        font-size: 1.3rem;
+        cursor: pointer;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 999;
+        background-color: #f0f0f0;
+    }
+    .scroll-top.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+</style>
+
+<button id="scrollTopBtn" class="scroll-top">↑</button>
+
+<script>
+    const btn = document.getElementById("scrollTopBtn");
+
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > 200) {
+            btn?.classList.add("show");
+        } else {
+            btn?.classList.remove("show");
+        }
+    });
+
+    btn?.addEventListener("click", () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    });
+</script>

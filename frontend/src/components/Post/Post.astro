@@ -5,116 +5,113 @@ import type { Post as PostProps } from "@/lib/payloadTypes";
 import type { Media } from "@/lib/payloadTypes";
 import { formatAuthors } from "@/utils/formatAuthors";
 import { formatDateTime } from "@/utils/formatDateTime";
+import AsteriskIcon from "../AsteriskIcon/AsteriskIcon.astro";
+import PostCard from "../PostCard/PostCard.astro";
 
 const {
     content,
     categories,
-    createdAt,
-    id,
-    slug,
     title,
     heroImage,
     populatedAuthors,
     publishedAt,
+    relatedPosts,
 } = Astro.props as PostProps;
 const mediaData =
     heroImage && typeof heroImage === "object" ? (heroImage as Media) : null;
-const { alt, url, width, height, mimeType } = mediaData || {};
-const hasAuthors =
+const { alt, unpicUrl, width, height, mimeType } = mediaData || {};
+
+const hasRelatedPosts = relatedPosts && relatedPosts.length > 0;
+
+const hasPopularAuthors =
     populatedAuthors &&
-    populatedAuthors.length > 0 &&
-    formatAuthors(populatedAuthors) !== "";
+    Array.isArray(populatedAuthors) &&
+    populatedAuthors.length > 0;
 ---
 
-<div class="max-w-[1232px] m-auto">
-    <article class="max-w-[700px] m-auto">
-        <h1 class="font-bold !text-[40px] leading-[44px] mb-6">{title}</h1>
-        <div class="flex gap-1 mb-4">
-            {
-                categories?.map((category, index) => {
-                    if (typeof category === "object") {
-                        const { title: titleFromCategory } = category;
-
-                        const categoryTitle = titleFromCategory || "Sin Título";
-
-                        return (
-                            <span class="border py-2 px-2 rounded-[4px] leading-[13.7px] ">
-                                {categoryTitle}
-                            </span>
-                        );
-                    }
-                    return null;
-                })
-            }
+<div class="mt-24 pb-12 px-4 relative md:bg-[#fffcf0]">
+    <AsteriskIcon
+        className="w-[40px] lg:w-[60px] absolute top-[-44px] left-[3px] lg:left-[-28px]"
+    />
+    <div
+        class="px-2 md:px-6 pt-16 pb-16 space-y-4 grid grid-rows-[auto_4rem_6rem_1fr] max-w-4xl mx-auto bg-[#fffcf0]"
+    >
+        <div class="">
+            <AstroImage
+                src={unpicUrl!}
+                alt={title}
+                width={width!}
+                height={height!}
+                className="w-full h-full object-cover"
+            />
         </div>
 
-        <div class="flex flex-row flex-wrap gap-x-4 mb-12">
+        <div
+            class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-8"
+        >
             {
-                hasAuthors && (
-                    <div class="flex items-center gap-x-1">
+                hasPopularAuthors && (
+                    <div class="flex items-center gap-1.5">
                         <svg
-                            viewBox="0 0 15 15"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="w-8"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
                         >
-                            <g clip-path="url(#clip0_732_1370)">
-                                <path
-                                    d="M7.49995 0.876953C9.25648 0.876953 10.9411 1.57473 12.1831 2.81678C13.4252 4.05884 14.123 5.74342 14.123 7.49995C14.123 9.25648 13.4252 10.9411 12.1831 12.1831C10.9411 13.4252 9.25648 14.123 7.49995 14.123C5.74342 14.123 4.05884 13.4252 2.81678 12.1831C1.57473 10.9411 0.876953 9.25648 0.876953 7.49995C0.876953 5.74342 1.57473 4.05884 2.81678 2.81678C4.05884 1.57473 5.74342 0.876953 7.49995 0.876953ZM7.49995 9.97495C6.79512 9.97459 6.10259 10.1596 5.49179 10.5113C4.881 10.863 4.37342 11.3692 4.01995 11.979C5.01438 12.7537 6.23935 13.1736 7.49995 13.172C8.76034 13.1731 9.98492 12.7529 10.979 11.978C10.6254 11.3685 10.118 10.8626 9.50737 10.5111C8.89678 10.1596 8.20452 9.97467 7.49995 9.97495ZM7.49995 1.82595C6.40065 1.82662 5.3252 2.14662 4.40435 2.74705C3.4835 3.34747 2.7569 4.20247 2.31287 5.20811C1.86884 6.21375 1.7265 7.32672 1.90315 8.41174C2.07981 9.49677 2.56785 10.5071 3.30795 11.32C3.75754 10.616 4.37731 10.0366 5.10999 9.63551C5.84268 9.23439 6.66465 9.0244 7.49995 9.02495C9.26095 9.02495 10.808 9.94095 11.692 11.319C12.4317 10.5061 12.9195 9.49582 13.096 8.41097C13.2724 7.32611 13.13 6.21335 12.686 5.20791C12.242 4.20246 11.5156 3.34761 10.5949 2.74723C9.67428 2.14686 8.59907 1.8268 7.49995 1.82595ZM7.49995 4.15595C7.8142 4.14678 8.12708 4.20076 8.42009 4.31468C8.7131 4.4286 8.98027 4.60016 9.20579 4.81919C9.4313 5.03822 9.61058 5.30028 9.733 5.58984C9.85542 5.8794 9.9185 6.19058 9.9185 6.50495C9.9185 6.81933 9.85542 7.13051 9.733 7.42007C9.61058 7.70963 9.4313 7.97168 9.20579 8.19072C8.98027 8.40975 8.7131 8.5813 8.42009 8.69523C8.12708 8.80915 7.8142 8.86312 7.49995 8.85395C6.88522 8.84127 6.29994 8.58816 5.86968 8.14893C5.43941 7.70969 5.19843 7.11932 5.19843 6.50445C5.19843 5.88959 5.43941 5.29922 5.86968 4.85998C6.29994 4.42074 6.88522 4.16864 7.49995 4.15595ZM7.49995 5.10395C7.12865 5.10395 6.77255 5.25145 6.51 5.514C6.24745 5.77655 6.09995 6.13265 6.09995 6.50395C6.09995 6.87526 6.24745 7.23135 6.51 7.4939C6.77255 7.75645 7.12865 7.90395 7.49995 7.90395C7.87126 7.90395 8.22735 7.75645 8.4899 7.4939C8.75245 7.23135 8.89995 6.87526 8.89995 6.50395C8.89995 6.13265 8.75245 5.77655 8.4899 5.514C8.22735 5.25145 7.87126 5.10395 7.49995 5.10395Z"
-                                    fill="#e9e9e9"
-                                />
-                            </g>
-                            <defs>
-                                <clipPath id="clip0_732_1370">
-                                    <rect width="15" height="15" fill="white" />
-                                </clipPath>
-                            </defs>
+                            <path
+                                fill-rule="evenodd"
+                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                clip-rule="evenodd"
+                            />
                         </svg>
-                        <p>Escrito por</p>
-                        <p>{formatAuthors(populatedAuthors)}</p>
+                        <span class="font-medium">
+                            {formatAuthors(populatedAuthors)}
+                        </span>
                     </div>
                 )
             }
             {
                 publishedAt && (
-                    <div class="flex items-center gap-x-1">
+                    <div class="flex items-center gap-1.5">
                         <svg
-                            class="w-8"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
                         >
                             <path
-                                d="M12 12H17V17H12V12ZM19 3H18V1H16V3H8V1H6V3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 5V7H5V5H19ZM5 19V9H19V19H5Z"
-                                fill="#e9e9e9"
+                                fill-rule="evenodd"
+                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                clip-rule="evenodd"
                             />
                         </svg>
-                        <p class="">Fecha:</p>
-
-                        <time
-                            date-time={publishedAt}
-                            class="relative top-[1px]"
-                        >
+                        <time date-time={publishedAt.toString()}>
                             {formatDateTime(publishedAt)}
                         </time>
                     </div>
                 )
             }
         </div>
-        <div class="">
-            {
-                heroImage && typeof heroImage === "object" && (
-                    <AstroImage
-                        src={url!}
-                        width={width!}
-                        height={height!}
-                        alt={alt!}
-                        mimeType={mimeType!}
-                    />
-                )
-            }
-            <div class=""></div>
+        <h1 class="text-3xl font-bold mb-6">{title}</h1>
+        <div class="prose">
+            <RichText content={content} />
         </div>
-        <RichText className="post-rich mx-auto" content={content} />
-    </article>
+    </div>
+</div>
+<div class="mt-52 mb-52">
+    <h2 class="!mb-12">También te puede interesar:</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        {
+            hasRelatedPosts
+                ? relatedPosts.map((relatedPost, index) => {
+                      return (
+                          <PostCard
+                              index={index}
+                              post={relatedPost as PostProps}
+                              hasCategories={true}
+                              hasTags={true}
+                          />
+                      );
+                  })
+                : null
+        }
+    </div>
 </div>

@@ -3,6 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@astrojs/react";
 import { imageService } from "@unpic/astro/service";
 import netlify from "@astrojs/netlify";
+import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
   vite: {
@@ -10,8 +11,32 @@ export default defineConfig({
     ssr: {
       noExternal: ["jpeg-js"],
     },
+    server: {
+      allowedHosts: ["mannishly-tactile-emerson.ngrok-free.dev"],
+      host: "0.0.0.0", // Importante para ngrok
+      hmr: {
+        protocol: "wss",
+        host: "mannishly-tactile-emerson.ngrok-free.dev", // Tu dominio de ngrok
+        clientPort: 443,
+      },
+    },
   },
-  integrations: [react()],
+  integrations: [
+    react(),
+    sitemap({
+      filter: (page) => !page.includes("/admin") && !page.includes("/api/"),
+      changefreq: "weekly",
+      priority: 0.7,
+      lastmod: new Date(),
+      i18n: {
+        defaultLocale: "es",
+        locales: {
+          es: "es-ES",
+        },
+      },
+    }),
+  ],
+  site: "http://localhost:4321",
   output: "server",
   server: {
     headers: {
@@ -26,7 +51,5 @@ export default defineConfig({
       layout: "constrained",
     }),
   },
-  // adapter: netlify({
-  // adapter: netlify({ isr: { expiration: 60 * 60 } }), // comentar para dev
-  // }),
+  adapter: netlify({}),
 });

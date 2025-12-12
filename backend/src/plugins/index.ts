@@ -3,13 +3,11 @@ import { Plugin } from 'payload'
 import { GenerateTitle, GenerateURL } from 'node_modules/@payloadcms/plugin-seo/dist/types'
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
-import { cloudinaryStorage } from 'payload-storage-cloudinary'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
-import { BeforeEmail } from 'node_modules/@payloadcms/plugin-form-builder/dist/types'
-import { contactFormSchema } from '@/validation/contactForm'
-
+import { s3Storage } from '@payloadcms/storage-s3'
+import path from 'path'
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
-  return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
+  return doc?.title ? `${doc.title} | Educar Sano` : 'Educar Sano'
 }
 
 const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
@@ -18,10 +16,75 @@ const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
   return doc?.slug ? `${url}/${doc.slug}` : url
 }
 
+// Helper para detectar MIME type por extensión
+const getMimeTypeFromFilename = (filename: string): string => {
+  const ext = path.extname(filename).toLowerCase()
+
+  const mimeTypes: Record<string, string> = {
+    // Imágenes
+    '.svg': 'image/svg+xml',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.webp': 'image/webp',
+    '.gif': 'image/gif',
+    '.avif': 'image/avif',
+
+    // Videos
+    '.mp4': 'video/mp4',
+    '.webm': 'video/webm',
+    '.mov': 'video/quicktime',
+    '.avi': 'video/x-msvideo',
+
+    // Documentos
+    '.pdf': 'application/pdf',
+    '.doc': 'application/msword',
+    '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    '.xls': 'application/vnd.ms-excel',
+    '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    '.ppt': 'application/vnd.ms-powerpoint',
+    '.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    '.txt': 'text/plain',
+    '.csv': 'text/csv',
+  }
+
+  return mimeTypes[ext] || 'application/octet-stream'
+}
+
 export const plugins: Plugin[] = [
   seoPlugin({
-    generateTitle,
-    generateURL,
+    uploadsCollection: 'media',
+    generateTitle: ({ doc }) => {
+      if (doc.slug?.value === 'home') {
+        return doc.title?.value || 'Educar Sano'
+      }
+      return `${doc.title?.value} | Educar Sano`
+    },
+    generateDescription: ({ doc }) => doc.excerpt?.value || doc.content?.value?.slice(0, 160),
+    generateURL: ({ doc }) => {
+      const baseUrl = 'https://educarsano.com'
+      const slug = doc.slug?.value
+
+      if (slug === 'home') return baseUrl
+
+      return `${baseUrl}/${slug}`
+    },
+    generateImage: ({ doc }) => {
+      const image = doc.featuredImage?.value || doc.meta?.image?.value
+
+      if (!image) return 'https://educarsano.com/default-og.jpg'
+
+      // if (typeof image === 'object' && image.url) {
+      //   return `https://educarsano.com${image.url}` // URL completa
+      // }
+
+      if (typeof image === 'object' && image.unpicUrl) {
+        return image.unpicUrl
+      }
+
+      return 'https://educarsano.com/default-og.jpg'
+    },
+    tabbedUI: true,
   }),
   formBuilderPlugin({
     fields: {
@@ -73,19 +136,9 @@ export const plugins: Plugin[] = [
         ],
       },
     },
-
     formOverrides: {
       fields: ({ defaultFields }) => [
         ...defaultFields,
-        // {
-        //   name: 'notificationEmail',
-        //   type: 'email',
-        //   label: 'Email de Notificación',
-        //   admin: {
-        //     description: 'Email donde se enviarán las notificaciones de nuevos envíos',
-        //     position: 'sidebar',
-        //   },
-        // },
         {
           name: 'slug',
           type: 'text',
@@ -93,92 +146,40 @@ export const plugins: Plugin[] = [
         },
       ],
     },
-
-    // formSubmissionOverrides: {
-    //   fields: ({ defaultFields }) => [
-    //     ...defaultFields,
-    //     {
-    //       name: 'ipAddress',
-    //       type: 'text',
-    //       label: 'Dirección IP',
-    //       admin: {
-    //         readOnly: true,
-    //         position: 'sidebar',
-    //       },
-    //     },
-    //     {
-    //       name: 'userAgent',
-    //       type: 'text',
-    //       label: 'Navegador',
-    //       admin: {
-    //         readOnly: true,
-    //         position: 'sidebar',
-    //       },
-    //     },
-    // ],
-
-    // hooks: {
-    //   beforeChange: [
-    //     async ({ data, req, operation }) => {
-    //       if (operation === 'create' && !data.ipAddress) {
-    //         const ip =
-    //           req.headers.get?.('x-forwarded-for')?.split(',')[0]?.trim() ||
-    //           req.headers.get?.('x-real-ip') ||
-    //           'unknown'
-
-    //         const userAgent = req.headers.get?.('user-agent') || 'unknown'
-
-    //         data.ipAddress = ip
-    //         data.userAgent = userAgent
-    //       }
-
-    //       return data
-    //     },
-    //   ],
-
-    //     afterChange: [
-    //       async ({ doc, req }) => {
-    //         // Envía email de notificación usando Resend
-    //         await req.payload.sendEmail({
-    //           to: process.env.DEFAULT_EMAIL,
-    //           subject: `Nuevo formulario enviado: ${doc.form?.title || 'Sin título'}`,
-    //           html: `
-    //                         <h2>Nuevo mensaje</h2>
-    //                         <p><strong>Formulario:</strong> ${doc.form?.title}</p>
-    //                         <p><strong>Datos:</strong></p>
-    //                         <pre>${JSON.stringify(doc.submissionData, null, 2)}</pre>
-    //                       `,
-    //         })
-    //       },
-    //     ],
-    //   },
-    // },
   }),
-
-  cloudinaryStorage({
-    cloudConfig: {
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-    },
-
+  s3Storage({
     collections: {
       media: {
-        folder: {
-          path: 'website/',
-          fieldName: 'Carpetas',
-          skipFieldCreation: false,
+        prefix: 'images',
+        generateFileURL: ({ filename, prefix }) => {
+          return `${process.env.CLOUDFRONT_URL}/${prefix}/${filename}`
         },
-
-        transformations: {
-          default: {
-            quality: 'auto',
-            fetch_format: 'auto',
-          },
-          enablePresetSelection: true,
-          preserveOriginal: true,
+      },
+      videos: {
+        prefix: 'videos',
+        generateFileURL: ({ filename, prefix }) => {
+          return `${process.env.CLOUDFRONT_URL}/${prefix}/${filename}`
+        },
+        signedDownloads: {
+          shouldUseSignedURL: ({ filename }) => filename.endsWith('.mp4'),
+          expiresIn: 3600,
+        },
+      },
+      documents: {
+        prefix: 'documents',
+        generateFileURL: ({ filename, prefix }) => {
+          return `${process.env.CLOUDFRONT_URL}/${prefix}/${filename}`
         },
       },
     },
+    bucket: process.env.S3_BUCKET || '',
+    config: {
+      credentials: {
+        accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+      },
+      region: process.env.S3_REGION || '',
+    },
+    // disablePayloadAccessControl: true,
   }),
 ]

@@ -1,0 +1,23 @@
+---
+import { cn } from "@/utils/ui";
+const { className } = Astro.props;
+---
+
+<svg
+    width="90"
+    height="89"
+    viewBox="0 0 90 89"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    class={cn(`${className}
+           [&>path]:fill-[#FDD172]
+           dark:[&>path]:fill-none
+           dark:[&>path]:stroke-[#f3f4f6]
+           dark:[&>path]:stroke-[2px] dark:opacity-50`)}
+>
+    <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M18.1798 44.3077L0 33.7799L13.3996 10.5279L31.59 21.0375L31.6003 0H58.3997L58.41 21.0375L76.6003 10.5279L90 33.7799L71.82 44.3077L90 54.8355L76.6003 78.0876L58.41 67.5779L58.3997 88.6154H31.6003L31.59 67.5779L13.3996 78.0876L0 54.8355L18.1798 44.3077Z"
+        fill="#FDD172"></path>
+</svg>

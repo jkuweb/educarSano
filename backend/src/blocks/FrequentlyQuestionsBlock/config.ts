@@ -1,9 +1,35 @@
+import { isAdminFieldLevel, publicReadField } from '@/access'
+import { isAdminConditionRoles } from '@/utilities/isAdmin'
 import type { Block } from 'payload'
 
 export const FrequentlyQuestionsBlock: Block = {
   slug: 'frequentlyQuestionsBlock',
   interfaceName: 'FrequentlyQuestionsBlock',
   fields: [
+    {
+      name: 'enableTitle',
+      label: '¿Quieres añadir un título?',
+      type: 'checkbox',
+    },
+    {
+      name: 'title',
+      type: 'text',
+      admin: {
+        condition: (_, siblingData) => siblingData?.enableTitle,
+      },
+    },
+    {
+      name: 'enableText',
+      label: '¿Quieres añadir texto?',
+      type: 'checkbox',
+    },
+    {
+      name: 'content',
+      type: 'richText',
+      admin: {
+        condition: (_, siblingData) => siblingData?.enableText,
+      },
+    },
     {
       name: 'enableImage',
       label: '¿Quieres añadir una imagen a la sección?',
@@ -38,6 +64,14 @@ export const FrequentlyQuestionsBlock: Block = {
       name: 'sectionName',
       type: 'text',
       unique: true,
+      access: {
+        read: publicReadField,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
+      },
+      admin: {
+        condition: isAdminConditionRoles,
+      },
     },
   ],
 }
