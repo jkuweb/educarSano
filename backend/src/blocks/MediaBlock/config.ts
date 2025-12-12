@@ -1,5 +1,4 @@
 import { isAdminFieldLevel, publicReadField } from '@/access'
-import { isAdminConditionRoles } from '@/utilities/isAdmin'
 import type { Block } from 'payload'
 
 export const MediaBlock: Block = {
@@ -21,7 +20,7 @@ export const MediaBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: isAdminConditionRoles,
+        condition: ({ req }) => req.user?.roles?.includes('admin'),
       },
     },
   ],

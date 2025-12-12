@@ -11,7 +11,6 @@ import { Banner } from '../Banner/config'
 import { FrequentlyQuestionsBlock } from '../FrequentlyQuestionsBlock/config'
 import { isAdminFieldLevel, publicReadField } from '@/access'
 import { MediaBlock } from '../MediaBlock/config'
-import { isAdminConditionRoles } from '@/utilities/isAdmin'
 
 export const ContentBlock: Block = {
   slug: 'content',

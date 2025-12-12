@@ -8,7 +8,6 @@ import {
 
 import { linkGroup } from '../../fields/linkGroup'
 import { isAdminFieldLevel, publicReadField } from '@/access'
-import { isAdminConditionRoles } from '@/utilities/isAdmin'
 
 export const CallToAction: Block = {
   slug: 'cta',

@@ -5,7 +5,6 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import { isAdminFieldLevel, publicReadField } from '@/access'
-import { isAdminCondition, isAdminConditionRoles } from '@/utilities/isAdmin'
 
 export const ServiceBlock: Block = {
   slug: 'service',

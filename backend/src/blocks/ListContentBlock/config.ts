@@ -7,7 +7,6 @@ import {
 } from '@payloadcms/richtext-lexical'
 import { isAdminFieldLevel, publicReadField } from '@/access'
 import { link } from '@/fields/link'
-import { isAdminConditionRoles } from '@/utilities/isAdmin'
 
 const columnFields: Field[] = [
   {

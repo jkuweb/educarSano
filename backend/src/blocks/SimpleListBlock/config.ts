@@ -6,7 +6,6 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import { isAdminFieldLevel, isAdminOrOwnerFieldLevel, publicReadField } from '@/access'
-import { isAdminConditionRoles } from '@/utilities/isAdmin'
 const columnFields: Field[] = [
   {
     name: 'enableIcon',
