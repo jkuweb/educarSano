@@ -26,6 +26,10 @@ const dirname = path.dirname(filename)
 
 export default buildConfig({
   endpoints: [contactEndpoint, searchPosts, searchPostsEndpoint, searchPostsSimple],
+
+  // AÑADE ESTO - Muy importante para producción
+  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
+
   admin: {
     user: Users.slug,
     importMap: {
@@ -55,28 +59,29 @@ export default buildConfig({
   },
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URL || '',
+      // CAMBIA ESTO - Acepta ambas variables
+      connectionString: process.env.DATABASE_URI || process.env.DATABASE_URL || '',
     },
   }),
   email: resendAdapter({
-    defaultFromAddress: process.env.RESEND_FROM_EMAIL,
+    defaultFromAddress: process.env.RESEND_FROM_EMAIL || 'noreply@example.com',
     defaultFromName: 'Ane',
     apiKey: process.env.RESEND_API_KEY || '',
   }),
   sharp,
   plugins: [...plugins],
   cors: [
-    process.env.FRONTEND_URL || 'http://localhost:4321', // Puerto por defecto de Astro
-    process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000', // Backend
-    // Si estás en producción, añade tus dominios
-    // 'https://tu-frontend.com',
-    // 'https://tu-backend.com',
+    process.env.FRONTEND_URL,
+    process.env.PAYLOAD_PUBLIC_SERVER_URL,
+    'http://localhost:4321',
+    'http://localhost:3000',
+    'https://educarsano-production.up.railway.app',
   ].filter(Boolean),
   csrf: [
-    process.env.FRONTEND_URL || 'http://localhost:4321', // Puerto por defecto de Astro
-    process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000', // Backend
-    // Si estás en producción, añade tus dominios
-    // 'https://tu-frontend.com',
-    // 'https://tu-backend.com',
+    process.env.FRONTEND_URL,
+    process.env.PAYLOAD_PUBLIC_SERVER_URL,
+    'http://localhost:4321',
+    'http://localhost:3000',
+    'https://educarsano-production.up.railway.app',
   ].filter(Boolean),
 })
