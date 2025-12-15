@@ -823,7 +823,7 @@ html.dark .servicesCallToAction02-image svg {
     margin: 3rem auto;
     &:hover {
         background-color: #4e1c08;
-        border: 1px solid var(#4e1c08);
+        border: 1px solid #4e1c08;
         color: #fff;
     }
 }

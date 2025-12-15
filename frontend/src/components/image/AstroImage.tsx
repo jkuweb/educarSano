@@ -38,7 +38,6 @@ export const MediaImage: React.FC<MediaImageProps> = ({
     src?.endsWith(".svg") ||
     src?.includes(".svg?");
 
-  // Fetch inline SVG
   useEffect(() => {
     if (isSvgFile && src) {
       setIsLoading(true);
@@ -61,7 +60,6 @@ export const MediaImage: React.FC<MediaImageProps> = ({
     }
   }, [src, isSvgFile]);
 
-  // Render inline SVG if available
   if (isSvgFile) {
     if (isLoading) {
       return (

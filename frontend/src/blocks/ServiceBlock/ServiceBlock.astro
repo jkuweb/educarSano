@@ -103,7 +103,7 @@ const hasAccordions = accordions && accordions.length > 0;
             let animating = false;
 
             gsap.set(panel, { height: 0, opacity: 0 });
-            gsap.set(inner, { y: 10 }); // contenido ligeramente desplazado
+            gsap.set(inner, { y: 10 });
 
             function animateIcon(opening) {
                 gsap.to(icon, {
@@ -121,7 +121,6 @@ const hasAccordions = accordions && accordions.length > 0;
                 const isOpen = acc.hasAttribute("open");
 
                 if (isOpen) {
-                    // Cerrar
                     gsap.to(panel, {
                         height: 0,
                         opacity: 0,
@@ -145,7 +144,6 @@ const hasAccordions = accordions && accordions.length > 0;
                         animating = false;
                     }, 450);
                 } else {
-                    // Abrir
                     acc.setAttribute("open", "");
                     requestAnimationFrame(() => {
                         const fullHeight = inner.offsetHeight;

@@ -13,9 +13,10 @@ if (!response.ok) {
 }
 
 const home = await response.json();
+const isHome = Astro.url.pathname === "/";
 ---
 
-<Layout meta={home.meta} isHome={true}>
+<Layout meta={home.meta} isHome={isHome}>
     <Hero {...home.hero} />
     <RenderBlocks blocks={home.layout} />
 </Layout>

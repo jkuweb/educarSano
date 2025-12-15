@@ -28,7 +28,6 @@ const {
     ...rest
 } = Astro.props;
 
-// Detecta si es SVG por la extensión de la URL
 const isSvgFile =
     mimeType === "image/svg+xml" ||
     src?.endsWith(".svg") ||
@@ -36,7 +35,6 @@ const isSvgFile =
 
 let svgContent = "";
 
-// Si es SVG, hace fetch del contenido para renderizarlo inline
 if (isSvgFile && src) {
     try {
         const response = await fetch(src);

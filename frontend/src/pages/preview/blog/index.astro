@@ -12,7 +12,6 @@ const [posts, categories, tags] = await Promise.all([
     getAllCategories(),
     getAllTags(),
 ]);
-console.log(posts);
 Astro.response.headers.set(
     "Cache-Control",
     "no-store, no-cache, must-revalidate",

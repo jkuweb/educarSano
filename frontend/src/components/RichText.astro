@@ -5,7 +5,6 @@ import FrequentlyQuestionsBlock from "@/blocks/FrequentlyQuestionsBlock/Frequent
 import MediaBlock from "@/blocks/MediaBlock/MediaBlock.astro";
 import QuoteBlock from "@/blocks/QuoteBlock/QuoteBlock.astro";
 import SocialMediaBlock from "@/blocks/SocialMediaBlock/SocialMediaBlock.astro";
-import PricesBlock from "@/blocks/PricesBlock/PricesBlock.astro";
 import "@/styles/richtext.css";
 
 interface Props {
@@ -15,8 +14,11 @@ interface Props {
 
 const { content, className } = Astro.props;
 
+const SITE =
+    Astro.site?.toString() || import.meta.env.SITE || "http://localhost:3000";
+
 function RenderBlock(block: any) {
-    const { blockType } = block["fields"];
+    const { blockType } = block.fields || {};
 
     switch (blockType) {
         case "banner":
@@ -31,25 +33,25 @@ function RenderBlock(block: any) {
             return SocialMediaBlock;
         case "frequentlyQuestionsBlock":
             return FrequentlyQuestionsBlock;
-        case "pricesBlock":
-            return PricesBlock;
         default:
             return null;
     }
 }
 
 function lexicalToHTML(nodes: any[]): string {
-    if (!nodes || !Array.isArray(nodes)) return "";
+    if (!Array.isArray(nodes)) return "";
 
     return nodes
         .map((node) => {
             switch (node.type) {
                 case "paragraph":
                     return `<p>${lexicalToHTML(node.children)}</p>`;
+
                 case "heading": {
                     const tag = node.tag || "h2";
                     return `<${tag}>${lexicalToHTML(node.children)}</${tag}>`;
                 }
+
                 case "text": {
                     let text = node.text || "";
                     if (node.format) {
@@ -60,28 +62,21 @@ function lexicalToHTML(nodes: any[]): string {
                     }
                     return text;
                 }
+
                 case "link": {
                     let url = "#";
                     let download = false;
 
                     if (
                         node.fields?.linkType === "internal" &&
-                        node.fields?.doc?.value
+                        node.fields?.doc?.value?.url
                     ) {
-                        // La URL ya viene correcta del plugin de cloud storage
-                        url = node.fields.doc.value.url || "#";
-
-                        // Forzar descarga si es PDF
+                        url = node.fields.doc.value.url;
                         if (
                             node.fields.doc.value.mimeType === "application/pdf"
                         ) {
                             download = true;
                         }
-                    } else if (
-                        node.fields?.linkType === "custom" &&
-                        node.fields?.url
-                    ) {
-                        url = node.fields.url;
                     } else if (node.fields?.url) {
                         url = node.fields.url;
                     } else if (node.url) {
@@ -91,34 +86,60 @@ function lexicalToHTML(nodes: any[]): string {
                     const rel =
                         node.fields?.rel?.join(" ") ||
                         (node.fields?.newTab ? "noopener noreferrer" : "");
+
                     const target = node.fields?.newTab ? "_blank" : "";
                     const downloadAttr = download ? "download" : "";
 
-                    return `<a href="${url}" ${target ? `target="${target}"` : ""} ${rel ? `rel="${rel}"` : ""} ${downloadAttr}>${lexicalToHTML(node.children)}</a>`;
+                    return `<a href="${url}" ${target && `target="${target}"`} ${rel && `rel="${rel}"`} ${downloadAttr}>${lexicalToHTML(
+                        node.children,
+                    )}</a>`;
                 }
+
                 case "list": {
-                    const listTag = node.tag === "ol" ? "ol" : "ul";
-                    return `<${listTag} class="list-bullet">${lexicalToHTML(node.children)}</${listTag}>`;
+                    const tag = node.tag === "ol" ? "ol" : "ul";
+                    return `<${tag}>${lexicalToHTML(node.children)}</${tag}>`;
                 }
+
                 case "listitem":
                     return `<li>${lexicalToHTML(node.children)}</li>`;
+
                 case "quote":
                     return `<blockquote>${lexicalToHTML(node.children)}</blockquote>`;
+
                 case "linebreak":
                     return "<br />";
+
                 case "horizontalrule":
                     return "<hr />";
+
                 case "upload": {
-                    const imgSrc = node.value?.url || node.fields?.url || "";
-                    const imgAlt = node.value?.alt || node.fields?.alt || "";
+                    const rawSrc = node.value?.url || node.fields?.url;
+                    if (!rawSrc) return "";
+
+                    const src = rawSrc.startsWith("http")
+                        ? rawSrc
+                        : new URL(rawSrc, SITE).toString();
+
+                    const alt = node.value?.alt || node.fields?.alt || "";
                     const width = node.value?.width || 800;
                     const height = node.value?.height || 600;
-                    if (!imgSrc) return "";
-                    return `<Image src="${imgSrc}" alt="${imgAlt}" width="${width}" height="${height}" class="mx-auto rounded-lg" />`;
+
+                    return `
+            <img
+              src="${src}"
+              alt="${alt}"
+              width="${width}"
+              height="${height}"
+              loading="lazy"
+              decoding="async"
+              class="mx-auto rounded-lg"
+            />
+          `;
                 }
-                case "block": {
+
+                case "block":
                     return "";
-                }
+
                 default:
                     return node.children ? lexicalToHTML(node.children) : "";
             }
@@ -136,7 +157,7 @@ const nodes = content?.root?.children || [];
                 const BlockComponent = RenderBlock(node);
                 const { fields } = node;
 
-                if (BlockComponent === null) {
+                if (!BlockComponent) {
                     return (
                         <div class="unknown-block">
                             Unknown block: {node.blockType}

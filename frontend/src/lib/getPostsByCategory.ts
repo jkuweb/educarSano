@@ -38,7 +38,6 @@ export async function getPostsByCategory(
     };
   }
 
-  // 🧭 Construir los parámetros de búsqueda
   const params = new URLSearchParams({
     "where[categories.slug][equals]": slug,
     limit: limit.toString(),
@@ -47,12 +46,10 @@ export async function getPostsByCategory(
     depth: depth.toString(),
   });
 
-  // 🚀 Llamada real a PayloadCMS
   const response = await payloadFetch<PayloadResponse<Post>>(
     `/posts?${params.toString()}`,
   );
 
-  // 💾 Guardar en caché
   setCache(cacheKey, response);
 
   return {

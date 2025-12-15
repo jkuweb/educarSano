@@ -4,13 +4,11 @@ import { getCategoryPageData } from "@/lib/getCategoryPageData";
 import { getAllCategories } from "@/lib/getAllCategories";
 import PaginationStatic from "@/components/Pagination/PaginationStatic.astro";
 import PostCard from "@/components/PostCard/PostCard.astro";
-import Post from "@/components/Post/Post.astro";
-import { Link } from "@/components/Link";
+export const prerender = true;
 
 export async function getStaticPaths() {
     const categories = await getAllCategories();
 
-    // Solo generamos la primera página de cada categoría
     return categories
         .filter((cat) => cat.slug)
         .map((cat) => ({
@@ -23,7 +21,7 @@ const currentPage = 1;
 const { posts, totalPages } = await getCategoryPageData(slug!, currentPage);
 ---
 
-<Layout title={`Categoría: ${slug}`}>
+<Layout title={`Categoría: ${slug}`} isHome={false}>
     <section
         class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-slate-900 dark:to-indigo-950"
     >

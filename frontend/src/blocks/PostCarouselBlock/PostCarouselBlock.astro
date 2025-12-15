@@ -180,7 +180,6 @@ const hasPosts = posts && posts.length > 0;
     prev.addEventListener("click", () => goToGroup(groupIndex - 1));
     next.addEventListener("click", () => goToGroup(groupIndex + 1));
 
-    // autoplay
     let autoplay = setInterval(() => goToGroup(groupIndex + 1), 6000);
     carousel.addEventListener("mouseenter", () => clearInterval(autoplay));
     carousel.addEventListener("mouseleave", () => {

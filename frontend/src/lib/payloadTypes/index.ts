@@ -758,7 +758,6 @@ export interface MessageField {
   blockName?: string | null;
 }
 
-// ✅ Unión tipada
 export type FormField =
   | CheckboxField
   | EmailField

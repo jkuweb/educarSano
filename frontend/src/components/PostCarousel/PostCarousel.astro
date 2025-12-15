@@ -61,9 +61,9 @@ const { posts } = Astro.props;
     const next = document.querySelector("#nextBtn");
 
     let index = 0;
-    const visibleCards = 3; // Número visible en escritorio
+    const visibleCards = 3; 
     const total = slides.length;
-    const slideWidth = slides[0].offsetWidth + 24; // card width + gap
+    const slideWidth = slides[0].offsetWidth + 24; 
     let isAnimating = false;
 
     function goToSlide(newIndex) {
@@ -82,7 +82,6 @@ const { posts } = Astro.props;
     prev.addEventListener("click", () => goToSlide(index - 1));
     next.addEventListener("click", () => goToSlide(index + 1));
 
-    // Autoplay
     let autoplay = setInterval(() => goToSlide(index + 1), 4000);
 
     carousel.addEventListener("mouseenter", () => clearInterval(autoplay));
@@ -90,7 +89,6 @@ const { posts } = Astro.props;
         autoplay = setInterval(() => goToSlide(index + 1), 4000);
     });
 
-    // Reset posición al cambiar de tamaño
     window.addEventListener("resize", () => {
         gsap.set(carousel, { x: -index * (slides[0].offsetWidth + 24) });
     });

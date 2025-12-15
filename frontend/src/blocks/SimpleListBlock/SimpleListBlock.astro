@@ -29,8 +29,9 @@ const bgSectionColor =
           : blockColor === "yellow"
             ? "yellow-neutral/30"
             : "transparent";
-const { unpicUrl, alt, width, height, mimeType} = image as Media;
+const { unpicUrl, alt, width, height, mimeType } = image as Media;
 ---
+
 <section
     class={cn(
         "relative pb-12 md:pb-40 pt-12 md:pt-40 dark:bg-section-color dark:!bg-none",
@@ -46,7 +47,14 @@ const { unpicUrl, alt, width, height, mimeType} = image as Media;
                 "p-4 sm:max-w-[660px] sm:m-auto",
             )}
         >
-                <AstroImage src={unpicUrl!} alt={alt!} width={width!} height={height!} mimeType={mimeType!} className="w-1/2 mt-8 mb-20 md:my-20 mx-auto" />
+            <AstroImage
+                src={unpicUrl!}
+                alt={alt!}
+                width={width!}
+                height={height!}
+                mimeType={mimeType!}
+                className="w-1/2 mt-8 mb-20 md:my-20 mx-auto"
+            />
             <div class={`${sectionName}-list-box`}>
                 <ul class={cn(`${sectionName}-list flex flex-col gap-8 `)}>
                     {
@@ -83,43 +91,51 @@ const { unpicUrl, alt, width, height, mimeType} = image as Media;
 
                                 return (
                                     <li
-                                      class={cn(
-                                        bgColor,
-                                        "grid grid-cols-1 place-items-center sm:items-center grid-rows-[3rem_1fr] sm:grid-cols-[3rem_1fr] sm:grid-rows-1 gap-4 md:gap-8 p-4 md:p-8 font-semibold rounded-md relative group",
-                                      )}
-                                    >
-                                      {enableIcon && media ? (
-                                        <div class="sm:w-full grid place-items-center relative">
-                                          <AstroImage
-                                            src={unpicUrl!}
-                                            width={width!}
-                                            height={height!}
-                                            alt={alt!}
-                                            className="w-full z-10 heart-main"
-                                            mimeType={mimeType!}
-                                          />
-                                          <!-- Borde animable -->
-                                          <svg width="51" height="47" viewBox="0 0 51 47" fill="none"
-                                               xmlns="http://www.w3.org/2000/svg" class="heart-border absolute top-0 left-0 z-0">
-                                            <path d="M36.5654 0.5C44.0585 0.500026 49.9346 6.33676 49.9346 13.8262C49.9345 18.3997 47.8701 22.6004 44.1377 27.1523C40.3998 31.7109 35.0422 36.5601 28.5391 42.4385L28.5381 42.4395L25.2168 45.4521L21.8965 42.4395V42.4385L19.5117 40.2812C14.0785 35.3527 9.56754 31.1411 6.29688 27.1523C2.56455 22.6005 0.500097 18.3996 0.5 13.8262C0.5 6.33691 6.37668 0.500251 13.8691 0.5C18.1066 0.5 22.182 2.46842 24.8389 5.55469L25.2178 5.99512L25.5967 5.55469C28.254 2.46855 32.3286 0.5 36.5654 0.5Z"
-                                                  stroke="#EFF8FF" stroke-linecap="round" stroke-linejoin="round"/>
-                                          </svg>
-                                        </div>
-                                      ) : (
-                                        ""
-                                      )}
-                                      <div class="sm:self-center">
-                                        {richText && enableRichText ? (
-                                          <RichText
-                                            content={richText}
-                                            className={`${sectionName}-text [&>p]:!text-center sm:[&>p]:!text-left  [&>p]:!mb-0 sm:[&>p]:!max-w-full`}
-                                          />
-                                        ) : (
-                                          ""
+                                        class={cn(
+                                            bgColor,
+                                            "grid grid-cols-1 place-items-center sm:items-center grid-rows-[3rem_1fr] sm:grid-cols-[3rem_1fr] sm:grid-rows-1 gap-4 md:gap-8 p-4 md:p-8 font-semibold rounded-md relative group",
                                         )}
-                                      </div>
+                                    >
+                                        {enableIcon && media ? (
+                                            <div class="sm:w-full grid place-items-center relative">
+                                                <AstroImage
+                                                    src={unpicUrl!}
+                                                    width={width!}
+                                                    height={height!}
+                                                    alt={alt!}
+                                                    className="w-full z-10 heart-main"
+                                                    mimeType={mimeType!}
+                                                />
+                                                <svg
+                                                    width="51"
+                                                    height="47"
+                                                    viewBox="0 0 51 47"
+                                                    fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    class="heart-border absolute top-0 left-0 z-0"
+                                                >
+                                                    <path
+                                                        d="M36.5654 0.5C44.0585 0.500026 49.9346 6.33676 49.9346 13.8262C49.9345 18.3997 47.8701 22.6004 44.1377 27.1523C40.3998 31.7109 35.0422 36.5601 28.5391 42.4385L28.5381 42.4395L25.2168 45.4521L21.8965 42.4395V42.4385L19.5117 40.2812C14.0785 35.3527 9.56754 31.1411 6.29688 27.1523C2.56455 22.6005 0.500097 18.3996 0.5 13.8262C0.5 6.33691 6.37668 0.500251 13.8691 0.5C18.1066 0.5 22.182 2.46842 24.8389 5.55469L25.2178 5.99512L25.5967 5.55469C28.254 2.46855 32.3286 0.5 36.5654 0.5Z"
+                                                        stroke="#EFF8FF"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                    />
+                                                </svg>
+                                            </div>
+                                        ) : (
+                                            ""
+                                        )}
+                                        <div class="sm:self-center">
+                                            {richText && enableRichText ? (
+                                                <RichText
+                                                    content={richText}
+                                                    className={`${sectionName}-text [&>p]:!text-center sm:[&>p]:!text-left  [&>p]:!mb-0 sm:[&>p]:!max-w-full`}
+                                                />
+                                            ) : (
+                                                ""
+                                            )}
+                                        </div>
                                     </li>
-
                                 );
                             })
                     }
@@ -140,89 +156,119 @@ const { unpicUrl, alt, width, height, mimeType} = image as Media;
     />
 </section>
 <script>
-import gsap from "gsap";
+    import gsap from "gsap";
 
-document.addEventListener("DOMContentLoaded", () => {
-  const items = document.querySelectorAll("li.group");
+    document.addEventListener("DOMContentLoaded", () => {
+        const items = document.querySelectorAll("li.group");
 
-  items.forEach((li) => {
-    const border = li.querySelector(".heart-border");
-    const mainSvg = li.querySelector(".heart-main svg");
+        items.forEach((li) => {
+            const border = li.querySelector(".heart-border");
+            const mainSvg = li.querySelector(".heart-main svg");
 
-    if (!border || !mainSvg) return;
+            if (!border || !mainSvg) return;
 
-    gsap.set(border, { opacity: 0, scale: 1.15, transformOrigin: "50% 50%" });
-    gsap.set(mainSvg, { scale: 1, transformOrigin: "50% 50%" });
+            gsap.set(border, {
+                opacity: 0,
+                scale: 1.15,
+                transformOrigin: "50% 50%",
+            });
+            gsap.set(mainSvg, { scale: 1, transformOrigin: "50% 50%" });
 
-    li.addEventListener("mouseenter", () => {
-      const tl = gsap.timeline();
+            li.addEventListener("mouseenter", () => {
+                const tl = gsap.timeline();
 
-      tl.to(border, { opacity: 1, duration: 0.2 });
+                tl.to(border, { opacity: 1, duration: 0.2 });
 
-      tl.to(border, { scale: 1.3, duration: 0.2, ease: "power2.out" });
-      tl.to(border, { scale: 1.2, duration: 0.15, ease: "power2.inOut" });
+                tl.to(border, {
+                    scale: 1.3,
+                    duration: 0.2,
+                    ease: "power2.out",
+                });
+                tl.to(border, {
+                    scale: 1.2,
+                    duration: 0.15,
+                    ease: "power2.inOut",
+                });
 
-      tl.to(border, { scale: 1.28, duration: 0.2, ease: "power2.out" });
-      tl.to(border, { scale: 1.15, duration: 0.2, ease: "power2.inOut" });
+                tl.to(border, {
+                    scale: 1.28,
+                    duration: 0.2,
+                    ease: "power2.out",
+                });
+                tl.to(border, {
+                    scale: 1.15,
+                    duration: 0.2,
+                    ease: "power2.inOut",
+                });
 
-      tl.to(border, { opacity: 0, duration: 0.2, ease: "power2.out" });
+                tl.to(border, {
+                    opacity: 0,
+                    duration: 0.2,
+                    ease: "power2.out",
+                });
 
-      gsap.to(mainSvg, { scale: 1.05, duration: 0.5, ease: "elastic.out(1,0.5)" });
+                gsap.to(mainSvg, {
+                    scale: 1.05,
+                    duration: 0.5,
+                    ease: "elastic.out(1,0.5)",
+                });
+            });
+
+            li.addEventListener("mouseleave", () => {
+                gsap.to(mainSvg, {
+                    scale: 1,
+                    duration: 0.3,
+                    ease: "power2.out",
+                });
+            });
+        });
     });
-
-    li.addEventListener("mouseleave", () => {
-      gsap.to(mainSvg, { scale: 1, duration: 0.3, ease: "power2.out" });
-    });
-  });
-});
-
-
 </script>
 <script>
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
+    gsap.registerPlugin(ScrollTrigger);
 
-const boxes = document.querySelectorAll('.logo-svg .box');
-const topLetters = document.querySelectorAll('.logo-svg .top-letter');
-const boxLetters = document.querySelectorAll('.logo-svg .box-letter');
+    const boxes = document.querySelectorAll(".logo-svg .box");
+    const topLetters = document.querySelectorAll(".logo-svg .top-letter");
+    const boxLetters = document.querySelectorAll(".logo-svg .box-letter");
 
-gsap.set([boxes, topLetters, boxLetters], { opacity: 0, y: 0 });
+    gsap.set([boxes, topLetters, boxLetters], { opacity: 0, y: 0 });
 
-gsap.to(boxes, {
-  opacity: 1,
-  y: -10,
-  stagger: 0.2,
-  ease: "power2.out",
-  scrollTrigger: {
-    trigger: ".logo-svg",
-    start: "top 80%",
-    end: "bottom 20%",
-    toggleActions: "play none none reverse",
-  }
-});
-gsap.to(topLetters, {
-  opacity: 1,
-  y: 0,
-  ease: "power3.out",
-  stagger: 0.1,
-  scrollTrigger: {
-    trigger: ".logo-svg",
-    start: "top 80%",
-    toggleActions: "play none none reverse",
-  }
-});
+    gsap.to(boxes, {
+        opacity: 1,
+        y: -10,
+        stagger: 0.2,
+        ease: "power2.out",
+        scrollTrigger: {
+            trigger: ".logo-svg",
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none reverse",
+        },
+    });
+    gsap.to(topLetters, {
+        opacity: 1,
+        y: 0,
+        ease: "power3.out",
+        stagger: 0.1,
+        scrollTrigger: {
+            trigger: ".logo-svg",
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+        },
+    });
 
-gsap.to(boxLetters, {
-  opacity: 1,
-  y: 0,
-  ease: "power2.out",
-  stagger: 0.2,
-  scrollTrigger: {
-    trigger: ".logo-svg",
-    start: "top 70%",
-    toggleActions: "play none none reverse",
-  }
-});
+    gsap.to(boxLetters, {
+        opacity: 1,
+        y: 0,
+        ease: "power2.out",
+        stagger: 0.2,
+        scrollTrigger: {
+            trigger: ".logo-svg",
+            start: "top 70%",
+            toggleActions: "play none none reverse",
+        },
+    });
 </script>

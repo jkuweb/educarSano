@@ -102,7 +102,6 @@ const { alt, url, width, height, mimeType } = mediaData || {};
         header.addEventListener("click", () => {
             const isOpen = openIndex === index;
 
-            // Cerrar el FAQ previamente abierto
             if (openIndex !== null && openIndex !== index) {
                 const prevItem = faqItems[openIndex];
                 const prevWrapper = prevItem.querySelector(
@@ -121,7 +120,6 @@ const { alt, url, width, height, mimeType } = mediaData || {};
             }
 
             if (!isOpen) {
-                // Abrir
                 const fullHeight = answer.scrollHeight;
                 gsap.to(answerWrapper, {
                     height: fullHeight,
@@ -131,7 +129,6 @@ const { alt, url, width, height, mimeType } = mediaData || {};
                 gsap.to(icon, { rotate: 180, duration: 0.3 });
                 openIndex = index;
             } else {
-                // Cerrar
                 gsap.to(answerWrapper, {
                     height: 0,
                     duration: 0.4,

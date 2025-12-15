@@ -13,10 +13,10 @@ export default defineConfig({
     },
     server: {
       allowedHosts: ["mannishly-tactile-emerson.ngrok-free.dev"],
-      host: "0.0.0.0", // Importante para ngrok
+      host: "0.0.0.0",
       hmr: {
         protocol: "wss",
-        host: "mannishly-tactile-emerson.ngrok-free.dev", // Tu dominio de ngrok
+        host: "mannishly-tactile-emerson.ngrok-free.dev",
         clientPort: 443,
       },
     },
@@ -36,7 +36,7 @@ export default defineConfig({
       },
     }),
   ],
-  site: "http://localhost:4321",
+  site: "https://educarsano.com",
   output: "server",
   server: {
     headers: {

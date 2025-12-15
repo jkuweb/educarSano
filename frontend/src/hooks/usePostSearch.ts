@@ -18,19 +18,19 @@ interface UsePostSearchParams {
   apiUrl: string;
   initialQuery?: string;
   debounceDelay?: number;
-  initialPosts?: Post[]; // 👈 nuevo
+  initialPosts?: Post[];
 }
 
 export function usePostSearch({
   apiUrl,
   initialQuery = "",
   debounceDelay = 500,
-  initialPosts = [], // 👈 nuevo
+  initialPosts = [],
 }: UsePostSearchParams) {
   const [query, setQuery] = useState(initialQuery);
   const [category, setCategory] = useState("");
   const [tag, setTag] = useState("");
-  const [posts, setPosts] = useState<Post[]>(initialPosts); // 👈 iniciamos con initialPosts
+  const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,7 +38,6 @@ export function usePostSearch({
     SearchResponse["pagination"] | null
   >(null);
 
-  // 👇 Para evitar hacer fetch al montar si ya tenemos posts iniciales
   const hasFetched = useRef(false);
 
   const searchPosts = useCallback(
@@ -82,10 +81,9 @@ export function usePostSearch({
     [query, category, tag, apiUrl],
   );
 
-  // 👇 Solo hace la búsqueda automática si no hay posts iniciales
   useEffect(() => {
     if (hasFetched.current) return;
-    if (initialPosts.length > 0) return; // no buscar si ya hay datos iniciales
+    if (initialPosts.length > 0) return;
 
     hasFetched.current = true;
     const timer = setTimeout(() => {

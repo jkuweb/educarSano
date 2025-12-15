@@ -11,7 +11,6 @@ function buildPageUrl(page: number) {
   return page === 1 ? `/${basePath}` : `/${basePath}/page/${page}`;
 }
 
-// Generar los items de paginación
 const paginationItems = Array.from({ length: totalPages }, (_, i) => {
   const page = i + 1;
   if (
@@ -71,7 +70,6 @@ const paginationItems = Array.from({ length: totalPages }, (_, i) => {
       </button>
     )}
 
-    <!-- Números de página -->
     <div class="flex gap-2">
       {paginationItems.map((item) => (
         item.type === 'ellipsis' ? (
@@ -93,7 +91,6 @@ const paginationItems = Array.from({ length: totalPages }, (_, i) => {
       ))}
     </div>
 
-    <!-- Botón Siguiente -->
     {currentPage < totalPages ? (
       <a
         href={buildPageUrl(currentPage + 1)}

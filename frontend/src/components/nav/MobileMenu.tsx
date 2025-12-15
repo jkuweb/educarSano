@@ -39,7 +39,6 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ navLinks, posts }) => {
   const [openSub, setOpenSub] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close clicking outside
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -51,7 +50,6 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ navLinks, posts }) => {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [open]);
 
-  // Close ESC
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -63,7 +61,6 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({ navLinks, posts }) => {
     return () => document.removeEventListener("keydown", handleKey);
   }, [open]);
 
-  // Resolve link
   function resolveLink(link?: NavLink["link"]): string | null {
     if (!link) return null;
 

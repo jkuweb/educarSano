@@ -1,4 +1,3 @@
-// src/pages/api/revalidate-index.ts
 export const prerender = false; // dynamic route
 export const config = { isr: { expiration: 3600 } }; // revalida cada hora
 
