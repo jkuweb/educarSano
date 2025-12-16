@@ -1,38 +1,34 @@
-name: Migrate PostgreSQL to Railway
+name: Migrate Staging to Railway
 
 on:
   workflow_dispatch:
     inputs:
       confirm:
-        description: "Type YES to confirm"
+        description: "Type YES to confirm DB migration"
         required: true
 
 jobs:
   migrate:
+    if: github.event.inputs.confirm == 'YES'
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧾 Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: 🐘 Install PostgreSQL client
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
-      - name: 🔍 Test LOCAL database connection
+      - name: Test STAGING DB
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          psql "$DATABASE_URL" -c "SELECT 1;"
+        run: psql "$DATABASE_URL" -c "SELECT 1;"
 
-      - name: 🔍 Test Railway connection
+      - name: Test Railway DB
         env:
           RAILWAY_DATABASE_URL: ${{ secrets.RAILWAY_DATABASE_URL }}
-        run: |
-          psql "$RAILWAY_DATABASE_URL" -c "SELECT version();"
+        run: psql "$RAILWAY_DATABASE_URL" -c "SELECT 1;"
 
-      - name: 💾 Dump local database
+      - name: Dump staging DB
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
@@ -42,7 +38,7 @@ jobs:
             --no-acl \
             -f backup.dump
 
-      - name: ☁️ Restore to Railway
+      - name: Restore to Railway
         env:
           RAILWAY_DATABASE_URL: ${{ secrets.RAILWAY_DATABASE_URL }}
         run: |
@@ -52,9 +48,3 @@ jobs:
             --no-owner \
             --dbname="$RAILWAY_DATABASE_URL" \
             backup.dump
-
-      - name: ✅ Verify tables
-        env:
-          RAILWAY_DATABASE_URL: ${{ secrets.RAILWAY_DATABASE_URL }}
-        run: |
-          psql "$RAILWAY_DATABASE_URL" -c "\dt"
