@@ -69,7 +69,9 @@ export const ServiceBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: ({ req }) => req.user?.roles?.includes('admin'),
+        condition: ({ req }) => {
+          return Boolean(req?.user?.roles?.includes('admin'))
+        },
       },
     },
     {
@@ -82,14 +84,18 @@ export const ServiceBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: ({ req }) => req.user?.roles?.includes('admin'),
+        condition: ({ req }) => {
+          return Boolean(req?.user?.roles?.includes('admin'))
+        },
       },
     },
     {
       name: 'separatorType',
       type: 'select',
       admin: {
-        condition: ({ req }) => req.user?.roles?.includes('admin'),
+        condition: ({ req }) => {
+          return Boolean(req?.user?.roles?.includes('admin'))
+        },
       },
       options: [
         {
@@ -121,14 +127,18 @@ export const ServiceBlock: Block = {
         update: isAdminFieldLevel,
       },
       admin: {
-        condition: ({ req }) => req.user?.roles?.includes('admin'),
+        condition: ({ req }) => {
+          return Boolean(req?.user?.roles?.includes('admin'))
+        },
       },
     },
     {
       name: 'darkMode',
       type: 'select',
       admin: {
-        condition: ({ req }) => req.user?.roles?.includes('admin'),
+        condition: ({ req }) => {
+          return Boolean(req?.user?.roles?.includes('admin'))
+        },
       },
       access: {
         read: publicReadField,

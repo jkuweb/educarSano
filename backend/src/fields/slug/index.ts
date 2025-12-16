@@ -1,7 +1,6 @@
 import type { CheckboxField, TextField, TextFieldSingleValidation, FieldHook } from 'payload'
 import { formatSlugHook } from './formatSlug'
 
-// Tipado seguro para overrides de TextField, incluyendo hooks
 type SafeTextFieldOverrides = Partial<
   Pick<
     TextField,

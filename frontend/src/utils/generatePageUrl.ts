@@ -1,22 +1,24 @@
-import type { Page } from "@/lib/payloadTypes";
+import type { Page, Post } from "@/lib/payloadTypes";
 
 export function generatePageUrl(reference: {
   relationTo: "pages" | "posts";
-  value: Page | string | number;
+  value: Page | Post | number;
 }): string {
-  if (typeof reference.value !== "object" || !reference.value.slug) {
+  if (typeof reference.value === "number") {
     return "#";
   }
 
   const slug = reference.value.slug;
 
+  if (!slug) return "#";
+
   if (slug === "home") {
     return "/";
   }
 
-  if (reference.relationTo === "posts") {
-    return `/posts/${slug}`;
+  if (slug === "blog") {
+    return `/${slug}`;
   }
 
-  return `/${slug}`;
+  return `/page/${slug}`;
 }

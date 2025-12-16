@@ -141,11 +141,13 @@ fi
 echo -e "\n${BLUE}☁️  Restaurando en Railway...${NC}"
 echo -e "${YELLOW}Esto puede tomar varios minutos...${NC}\n"
 
-if psql "$RAILWAY_URL" -f "$BACKUP_FILE" 2>&1 | grep -v "already exists" | grep -v "does not exist"; then
+if psql "$RAILWAY_URL" -v ON_ERROR_STOP=1 -f "$BACKUP_FILE"; then
     echo -e "\n${GREEN}✅ Restauración completada${NC}"
 else
-    echo -e "\n${YELLOW}⚠️  Completado con advertencias (esto es normal)${NC}"
+    echo -e "\n${RED}❌ Error durante la restauración${NC}"
+    exit 1
 fi
+
 
 # 8. Verificar
 echo -e "\n${BLUE}🔍 Verificando datos migrados...${NC}\n"

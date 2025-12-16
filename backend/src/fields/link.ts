@@ -80,7 +80,7 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
       admin: {
         condition: (_, siblingData) => siblingData?.type === 'reference',
       },
-      relationTo: ['pages', 'posts'],
+      relationTo: ['pages', 'posts', 'services'],
       required: true,
     },
     {

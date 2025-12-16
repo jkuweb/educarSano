@@ -1,0 +1,60 @@
+name: Migrate PostgreSQL to Railway
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type YES to confirm'
+        required: true
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧾 Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 🐘 Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: 🔍 Test LOCAL database connection
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          psql "$DATABASE_URL" -c "SELECT 1;"
+
+      - name: 🔍 Test Railway connection
+        env:
+          RAILWAY_DATABASE_URL: ${{ secrets.RAILWAY_DATABASE_URL }}
+        run: |
+          psql "$RAILWAY_DATABASE_URL" -c "SELECT version();"
+
+      - name: 💾 Dump local database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          pg_dump "$DATABASE_URL" \
+            --format=custom \
+            --no-owner \
+            --no-acl \
+            -f backup.dump
+
+      - name: ☁️ Restore to Railway
+        env:
+          RAILWAY_DATABASE_URL: ${{ secrets.RAILWAY_DATABASE_URL }}
+        run: |
+          pg_restore \
+            --clean \
+            --if-exists \
+            --no-owner \
+            --dbname="$RAILWAY_DATABASE_URL" \
+            backup.dump
+
+      - name: ✅ Verify tables
+        env:
+          RAILWAY_DATABASE_URL: ${{ secrets.RAILWAY_DATABASE_URL }}
+        run: |
+          psql "$RAILWAY_DATABASE_URL" -c "\dt"

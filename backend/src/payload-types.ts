@@ -73,6 +73,7 @@ export interface Config {
     categories: Category;
     posts: Post;
     tags: Tag;
+    services: Service;
     documents: Document;
     videos: Video;
     forms: Form;
@@ -91,6 +92,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
     videos: VideosSelect<false> | VideosSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
@@ -189,6 +191,10 @@ export interface Page {
               | ({
                   relationTo: 'posts';
                   value: number | Post;
+                } | null)
+              | ({
+                  relationTo: 'services';
+                  value: number | Service;
                 } | null);
             url?: string | null;
             label: string;
@@ -401,6 +407,133 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: number;
+  title: string;
+  hero: {
+    title: string;
+    media: number | Media;
+    removeSvg?: boolean | null;
+    richText?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    isReverse?: boolean | null;
+    bottom?: number | null;
+    separatorType?: ('separatorYellow' | 'separatorWhite' | 'separatorBackground') | null;
+    darkMode?: ('blue' | 'dark') | null;
+    links?:
+      | {
+          link: {
+            type?: ('reference' | 'custom' | 'calendly') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null)
+              | ({
+                  relationTo: 'services';
+                  value: number | Service;
+                } | null);
+            url?: string | null;
+            label: string;
+            /**
+             * Elija cómo debe representarse el enlace
+             */
+            appearance?: ('default' | 'outline') | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+  };
+  layout: ServiceBlock[];
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  publishedAt?: string | null;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ServiceBlock".
+ */
+export interface ServiceBlock {
+  title?: string | null;
+  richText: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  accordions?:
+    | {
+        title?: string | null;
+        content?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  enableBackgroundImage?: boolean | null;
+  bottom?: number | null;
+  isReverse?: boolean | null;
+  separatorType?: ('separatorYellow' | 'separatorWhite' | 'separatorBackground') | null;
+  sectionName?: string | null;
+  darkMode?: ('blue' | 'dark') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'service';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "CallToActionBlock".
  */
 export interface CallToActionBlock {
@@ -434,6 +567,10 @@ export interface CallToActionBlock {
             | ({
                 relationTo: 'posts';
                 value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'services';
+                value: number | Service;
               } | null);
           url?: string | null;
           label: string;
@@ -492,6 +629,10 @@ export interface ContentBlock {
       | ({
           relationTo: 'posts';
           value: number | Post;
+        } | null)
+      | ({
+          relationTo: 'services';
+          value: number | Service;
         } | null);
     url?: string | null;
     label: string;
@@ -579,6 +720,10 @@ export interface ListContentBlock {
             | ({
                 relationTo: 'posts';
                 value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'services';
+                value: number | Service;
               } | null);
           url?: string | null;
           label: string;
@@ -778,6 +923,10 @@ export interface SocialMediaBlock {
             | ({
                 relationTo: 'posts';
                 value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'services';
+                value: number | Service;
               } | null);
           url?: string | null;
           label: string;
@@ -867,6 +1016,10 @@ export interface QuoteBlock {
             | ({
                 relationTo: 'posts';
                 value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'services';
+                value: number | Service;
               } | null);
           url?: string | null;
           label: string;
@@ -994,6 +1147,10 @@ export interface ServiceListBlock {
             | ({
                 relationTo: 'posts';
                 value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'services';
+                value: number | Service;
               } | null);
           url?: string | null;
           label: string;
@@ -1013,58 +1170,6 @@ export interface ServiceListBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'serviceListBlock';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ServiceBlock".
- */
-export interface ServiceBlock {
-  title?: string | null;
-  richText: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  accordions?:
-    | {
-        title?: string | null;
-        content?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        id?: string | null;
-      }[]
-    | null;
-  enableBackgroundImage?: boolean | null;
-  bottom?: number | null;
-  isReverse?: boolean | null;
-  separatorType?: ('separatorYellow' | 'separatorWhite' | 'separatorBackground') | null;
-  sectionName?: string | null;
-  darkMode?: ('blue' | 'dark') | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'service';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1268,6 +1373,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'tags';
         value: number | Tag;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: number | Service;
       } | null)
     | ({
         relationTo: 'documents';
@@ -1815,6 +1924,58 @@ export interface TagsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  title?: T;
+  hero?:
+    | T
+    | {
+        title?: T;
+        media?: T;
+        removeSvg?: T;
+        richText?: T;
+        isReverse?: T;
+        bottom?: T;
+        separatorType?: T;
+        darkMode?: T;
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                    appearance?: T;
+                  };
+              id?: T;
+            };
+      };
+  layout?:
+    | T
+    | {
+        service?: T | ServiceBlockSelect<T>;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  publishedAt?: T;
+  slug?: T;
+  slugLock?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "documents_select".
  */
 export interface DocumentsSelect<T extends boolean = true> {
@@ -2082,6 +2243,10 @@ export interface Header {
                         | ({
                             relationTo: 'posts';
                             value: number | Post;
+                          } | null)
+                        | ({
+                            relationTo: 'services';
+                            value: number | Service;
                           } | null);
                       url?: string | null;
                     };
@@ -2102,6 +2267,10 @@ export interface Header {
                               | ({
                                   relationTo: 'posts';
                                   value: number | Post;
+                                } | null)
+                              | ({
+                                  relationTo: 'services';
+                                  value: number | Service;
                                 } | null);
                             url?: string | null;
                           };
@@ -2139,6 +2308,10 @@ export interface Footer {
             | ({
                 relationTo: 'posts';
                 value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'services';
+                value: number | Service;
               } | null);
           url?: string | null;
           label: string;

@@ -20,6 +20,7 @@ import { searchPostsEndpoint, searchPostsSimple } from './api/searchPosts'
 import { Tags } from './collections/Tags'
 import { Documents } from './collections/Documents/Documents'
 import { Videos } from './collections/Videos/Videos'
+import { Services } from './collections/Services/Services'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -27,7 +28,6 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   endpoints: [contactEndpoint, searchPosts, searchPostsEndpoint, searchPostsSimple],
 
-  // AÑADE ESTO - Muy importante para producción
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
 
   admin: {
@@ -50,7 +50,7 @@ export default buildConfig({
   i18n: {
     supportedLanguages: { es },
   },
-  collections: [Pages, Users, Media, Categories, Posts, Tags, Documents, Videos],
+  collections: [Pages, Users, Media, Categories, Posts, Tags, Services, Documents, Videos],
   globals: [Header, Footer],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
@@ -59,7 +59,6 @@ export default buildConfig({
   },
   db: postgresAdapter({
     pool: {
-      // CAMBIA ESTO - Acepta ambas variables
       connectionString: process.env.DATABASE_URI || process.env.DATABASE_URL || '',
     },
   }),

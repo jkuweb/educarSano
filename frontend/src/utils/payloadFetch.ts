@@ -22,6 +22,7 @@ export async function payloadFetch<T>(
 
   const fullUrl = `${import.meta.env.PAYLOAD_URL}/api${endpoint}`;
 
+  console.log(fullUrl);
   try {
     const response = await fetch(fullUrl, {
       ...fetchOptions,

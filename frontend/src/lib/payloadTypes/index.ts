@@ -1059,3 +1059,77 @@ export interface PostCarouselBlock {
   blockName?: string | null;
   blockType: "postCarouselBlock";
 }
+
+export interface Service {
+  id: number;
+  title: string;
+  hero: {
+    title: string;
+    media: number | Media;
+    removeSvg?: boolean | null;
+    richText?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ("ltr" | "rtl") | null;
+        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    isReverse?: boolean | null;
+    bottom?: number | null;
+    separatorType?:
+      | ("separatorYellow" | "separatorWhite" | "separatorBackground")
+      | null;
+    darkMode?: ("blue" | "dark") | null;
+    links?:
+      | {
+          link: {
+            type?: ("reference" | "custom" | "calendly") | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: "pages";
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: "posts";
+                  value: number | Post;
+                } | null)
+              | ({
+                  relationTo: "services";
+                  value: number | Service;
+                } | null);
+            url?: string | null;
+            label: string;
+            /**
+             * Elija cómo debe representarse el enlace
+             */
+            appearance?: ("default" | "outline") | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+  };
+  layout: ServiceBlock[];
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  publishedAt?: string | null;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ("draft" | "published") | null;
+}

@@ -1,0 +1,29 @@
+---
+import RenderBlocks from "@/blocks/RenderBlocks.astro";
+import Hero from "@/globals/Hero.astro";
+import Layout from "@/layouts/Layout.astro";
+import { getAllServices, getServiceBySlug } from "@/lib/getAllServices";
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+    const services = await getAllServices();
+
+    return services.map((service) => ({
+        params: { slug: service.slug },
+    }));
+}
+
+const { slug } = Astro.params;
+const service = await getServiceBySlug(slug);
+console.log(service);
+
+if (!service) {
+    return Astro.redirect("/404");
+}
+---
+
+<Layout meta={service.meta}>
+    <Hero {...service.hero} />
+    <RenderBlocks blocks={service.layout} slug={slug} />
+</Layout>

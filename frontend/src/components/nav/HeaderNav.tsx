@@ -15,7 +15,6 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ data, posts }) => {
     (navItem) =>
       navItem.navLinks?.flatMap((linkGroup) => linkGroup.items ?? []) ?? [],
   );
-
   return (
     <ThemeProvider>
       <div className="flex w-full justify-end">

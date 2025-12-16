@@ -10,7 +10,7 @@ export interface NavLink {
     type?: "reference" | "custom" | "calendly" | null;
     newTab?: boolean | null;
     reference?: {
-      relationTo: "pages";
+      relationTo: Page | Post;
       value: number | Page | Post;
     } | null;
     url?: string | null;
@@ -48,11 +48,23 @@ const getHref = (
 
   const { link } = item;
 
-  if (link.type === "calendly" && link.url) return link.url;
-  if (link.type === "custom" && link.url) return link.url;
+  if (link.url) {
+    let url = link.url;
+
+    if (link.type === "custom" && link.reference?.relationTo === "pages") {
+      if (!url.startsWith("http") && !url.startsWith("/page/")) {
+        const [path, hash] = url.split("#");
+        const slug = path.replace(/^\//, "");
+        url = hash ? `/page/${slug}#${hash}` : `/page/${slug}`;
+      }
+    }
+
+    return url;
+  }
 
   if (link.type === "reference" && link.reference) {
-    return generatePageUrl(link.reference);
+    const url = generatePageUrl(link.reference);
+    return url.startsWith("/") ? url : `/${url}`;
   }
 
   return "#";
