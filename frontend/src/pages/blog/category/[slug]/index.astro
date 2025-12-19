@@ -4,7 +4,7 @@ import { getCategoryPageData } from "@/lib/getCategoryPageData";
 import { getAllCategories } from "@/lib/getAllCategories";
 import PaginationStatic from "@/components/Pagination/PaginationStatic.astro";
 import PostCard from "@/components/PostCard/PostCard.astro";
-export const prerender = true;
+export const prerender = false;
 
 export async function getStaticPaths() {
     const categories = await getAllCategories();
