@@ -4,15 +4,29 @@ import Layout from "@/layouts/Layout.astro";
 import RenderBlocks from "@/blocks/RenderBlocks.astro";
 import Hero from "@/globals/Hero.astro";
 
-const PAYLOAD_API = import.meta.env.PAYLOAD_API_URL || "http://localhost:3000";
+const PAYLOAD_API = import.meta.env.PAYLOAD_URL;
 
-const response = await fetch(`${PAYLOAD_API}/api/pages/1?depth=2`);
+let home = null;
 
-if (!response.ok) {
+if (PAYLOAD_API) {
+    try {
+        const response = await fetch(`${PAYLOAD_API}/api/pages/1?depth=2`);
+        if (response.ok) {
+            home = await response.json();
+        } else {
+            console.warn(`Payload API returned ${response.status} for home page`);
+        }
+    } catch (err) {
+        console.warn("Payload fetch failed during build:", err);
+    }
+} else {
+    console.warn("PAYLOAD_URL not set — skipping build-time fetch for home page");
+}
+
+if (!home) {
     return Astro.redirect("/404");
 }
 
-const home = await response.json();
 const isHome = Astro.url.pathname === "/";
 ---
 

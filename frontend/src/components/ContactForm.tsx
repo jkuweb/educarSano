@@ -163,7 +163,7 @@ export const ContactForm: React.FC<Props> = ({ form }) => {
   const [recaptchaReady, setRecaptchaReady] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
   const recaptchaSiteKey = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY;
-  const payloadUrl = import.meta.env.PAYLOAD_API_URL || "http://localhost:3000";
+  const payloadUrl = import.meta.env.PAYLOAD_URL;
   const recaptchaLoadedRef = useRef(false);
 
   useEffect(() => setIsHydrated(true), []);
