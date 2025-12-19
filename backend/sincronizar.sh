@@ -128,11 +128,30 @@ LIMIT 10;
 "
 
 # 10. Resumen final
-echo -e "\n${GREEN}🎉 MIGRACIÓN Y VERIFICACIÓN COMPLETADAS${NC}"
-echo -e "${BLUE}📁 Backup guardado en:${NC} $BACKUP_FILE"
-echo -e "${GREEN}🌐 Admin panel:${NC} https://${RAILWAY_HOST}/admin"
+echo -e "\n${GREEN}╔═══════════════════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║          🎉 MIGRACIÓN COMPLETADA EXITOSAMENTE 🎉          ║${NC}"
+echo -e "${GREEN}╚═══════════════════════════════════════════════════════════╝${NC}"
 
-# 11. Exportar RAILWAY_URL para terminal
-echo -e "\n${YELLOW}🔹 Para verificar desde tu terminal o usar en tu app:${NC}"
-echo -e "export RAILWAY_URL=\"$RAILWAY_URL\""
-echo -e "Luego puedes ejecutar por ejemplo: psql \"\$RAILWAY_URL\" -c \"\\dt\""
+echo -e "\n${BLUE}📁 Backup guardado en:${NC} $BACKUP_FILE"
+echo -e "${BLUE}💾 Tamaño:${NC} $BACKUP_SIZE"
+
+echo -e "\n${YELLOW}🔹 Próximos pasos:${NC}"
+echo -e "\n${GREEN}1. Ver tus servicios en Railway:${NC}"
+echo -e "   👉 https://railway.app/dashboard"
+
+echo -e "\n${GREEN}2. Conectarte a la base de datos:${NC}"
+echo -e "   ${BLUE}# Desde tu terminal:${NC}"
+echo -e "   export RAILWAY_DATABASE_URL=\"$RAILWAY_URL\""
+echo -e "   psql \"\$RAILWAY_DATABASE_URL\""
+
+echo -e "\n${GREEN}3. Actualizar tu aplicación:${NC}"
+echo -e "   ${BLUE}# En Railway Dashboard > Tu Proyecto > Variables:${NC}"
+echo -e "   DATABASE_URL = $RAILWAY_URL"
+
+echo -e "\n${GREEN}4. Herramientas recomendadas para administrar la BD:${NC}"
+echo -e "   • TablePlus: ${BLUE}https://tableplus.com${NC}"
+echo -e "   • DBeaver: ${BLUE}https://dbeaver.io${NC}"
+echo -e "   • pgAdmin: ${BLUE}https://www.pgadmin.org${NC}"
+
+echo -e "\n${YELLOW}💡 Tip: Guarda la RAILWAY_DATABASE_URL en un lugar seguro${NC}"
+echo -e "${YELLOW}💡 No compartas esta URL públicamente (contiene contraseña)${NC}\n"
