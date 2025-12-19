@@ -74,13 +74,13 @@ export default buildConfig({
     process.env.PAYLOAD_PUBLIC_SERVER_URL,
     'http://localhost:4321',
     'http://localhost:3000',
-    'https://educarsano-production.up.railway.app',
+    'https://educar-sano-production.up.railway.app',
   ].filter(Boolean),
   csrf: [
     process.env.FRONTEND_URL,
     process.env.PAYLOAD_PUBLIC_SERVER_URL,
     'http://localhost:4321',
     'http://localhost:3000',
-    'https://educarsano-production.up.railway.app',
+    'https://educar-sano-production.up.railway.app',
   ].filter(Boolean),
 })
